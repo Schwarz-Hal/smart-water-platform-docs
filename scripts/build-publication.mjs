@@ -67,12 +67,14 @@ if (process.argv.includes('--bundle')) {
       assets: manifestAssets,
     });
   }
-  const commit = process.env.GITHUB_SHA ?? (await new Promise((resolveResult) => {
-    const child = spawn('git', ['rev-parse', 'HEAD'], {cwd: root}); let output = '';
+  const gitValue = async (args) => new Promise((resolveResult) => {
+    const child = spawn('git', args, {cwd: root}); let output = '';
     child.stdout.on('data', (chunk) => { output += chunk; }); child.on('close', () => resolveResult(output.trim()));
-  }));
+  });
+  const commit = process.env.GITHUB_SHA ?? await gitValue(['rev-parse', 'HEAD']);
+  const publishedAt = await gitValue(['show', '-s', '--format=%cI', 'HEAD']);
   const tag = process.env.DOCS_PUBLICATION_TAG ?? 'unapproved-local-build';
-  const manifest = {schema_version: '1.0', publication: {tag, commit, published_at: new Date().toISOString(), progress_included: !process.argv.includes('--exclude-progress')}, documents};
+  const manifest = {schema_version: '1.0', publication: {tag, commit, published_at: publishedAt, progress_included: !process.argv.includes('--exclude-progress')}, documents};
   await writeFile(resolve(delivery, 'publication-manifest.json'), `${JSON.stringify(manifest, null, 2)}\n`);
   console.log(`Prepared ${documents.length} documents for publication bundle (${relative(root, delivery)}).`);
 }
