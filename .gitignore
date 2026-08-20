@@ -33,3 +33,4 @@ yarn-error.log*
 # Local helper logs and delivery output.
 /.npm-install*.log
 /delivery/
+/src/generated/progress.json
