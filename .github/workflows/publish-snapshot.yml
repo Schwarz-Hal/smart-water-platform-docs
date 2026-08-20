@@ -31,6 +31,7 @@ jobs:
       - run: if git ls-remote --exit-code --tags origin "refs/tags/${{ inputs.tag }}"; then echo "Snapshot tag already exists"; exit 1; fi
       - run: DOCS_PUBLICATION_TAG="${{ inputs.tag }}" node scripts/build-publication.mjs --bundle
       - run: npm run build
+      - run: git config user.name "github-actions[bot]" && git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
       - run: git tag -a "${{ inputs.tag }}" -m "Approved documentation snapshot" "${{ github.sha }}" && git push origin "${{ inputs.tag }}"
       - run: docker build -f export/Dockerfile -t smart-water-docs-export:${{ github.sha }} .
       - run: rm -rf delivery && mkdir delivery && docker run --rm -v "$PWD/delivery:/workspace/delivery" smart-water-docs-export:${{ github.sha }} --ref HEAD --formats pdf,docx,html ${{ inputs.include_progress && '--include-progress' || '--exclude-progress' }}
