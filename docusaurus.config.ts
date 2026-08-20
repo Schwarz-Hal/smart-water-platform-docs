@@ -8,7 +8,7 @@ import rehypeKatex from 'rehype-katex';
 
 const config: Config = {
   title: '智慧水务算法平台文档中心',
-  tagline: '面向使用、交付与持续演进的统一文档',
+  tagline: '面向水务时序治理、算法算子编排与管网漏损评估的统一技术文档',
   favicon: 'assets/platform-mark.svg',
 
   // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
@@ -76,7 +76,10 @@ const config: Config = {
           position: 'left',
           label: '文档',
         },
-        {to: '/progress', label: '交付进度', position: 'left'},
+        {to: '/docs/quick-start/quickstart.first-quality-workflow', label: '快速开始', position: 'left'},
+        {to: '/docs/algorithms/algorithm.chronos2.overview', label: '算法库', position: 'left'},
+        {to: '/docs/scenarios/scenario.s01-dma-leakage', label: '业务场景', position: 'left'},
+        {to: '/docs/development/development.first-api-call', label: 'API 参考', position: 'left'},
         {to: '/search', label: '搜索', position: 'left'},
         {
           href: 'https://github.com/Schwarz-Hal/smart-water-platform-docs',
@@ -89,46 +92,66 @@ const config: Config = {
       style: 'dark',
       links: [
         {
-          title: '文档',
+          title: '产品与指南',
           items: [
+            {
+              label: '平台架构概览',
+              to: '/docs/platform/platform.overview',
+            },
             {
               label: '快速开始',
               to: '/docs/quick-start/quickstart.first-quality-workflow',
             },
-          ],
-        },
-        {
-          title: '交付',
-          items: [
             {
-              label: '验收清单',
-              to: '/docs/acceptance/acceptance.workflow-closure',
+              label: '用户手册',
+              to: '/docs/user-guide/user.workflow-editor',
             },
             {
-              label: '当前阶段进度',
-              to: '/progress',
-            },
-            {
-              label: 'X',
-              to: '/docs/platform/platform.document-publication',
+              label: '业务场景实践',
+              to: '/docs/scenarios/scenario.s01-dma-leakage',
             },
           ],
         },
         {
-          title: '项目',
+          title: '核心算法库',
           items: [
             {
-              label: '平台源码',
+              label: 'Chronos-2 时序预测',
+              to: '/docs/algorithms/algorithm.chronos2.overview',
+            },
+            {
+              label: 'DMA 水量平衡分析',
+              to: '/docs/scenarios/scenario.s01-dma-leakage',
+            },
+            {
+              label: '最小夜间流量 (MNF)',
+              to: '/docs/scenarios/scenario.s01-dma-leakage',
+            },
+          ],
+        },
+        {
+          title: '开发者与运维',
+          items: [
+            {
+              label: 'API 快速调用',
+              to: '/docs/development/development.first-api-call',
+            },
+            {
+              label: '服务拓扑与运维',
+              to: '/docs/operations/operations.health-topology',
+            },
+            {
+              label: '平台源码 (GitHub)',
               href: 'https://github.com/Schwarz-Hal/smart-water-platform-backend',
             },
             {
-              label: '文档仓库',
+              label: '文档仓库 (GitHub)',
               href: 'https://github.com/Schwarz-Hal/smart-water-platform-docs',
             },
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} 智慧水务算法平台。文档仅在批准快照发布后对外更新。`,
+      copyright: `Copyright © ${new Date().getFullYear()} 智慧水务算法平台. All rights reserved.`,
     },
     prism: {
       theme: prismThemes.github,
