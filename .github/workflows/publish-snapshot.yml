@@ -34,7 +34,7 @@ jobs:
       - run: git config user.name "github-actions[bot]" && git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
       - run: git tag -a "${{ inputs.tag }}" -m "Approved documentation snapshot" "${{ github.sha }}" && git push origin "${{ inputs.tag }}"
       - run: docker build -f export/Dockerfile -t smart-water-docs-export:${{ github.sha }} .
-      - run: rm -rf delivery && mkdir delivery && docker run --rm -v "$PWD/delivery:/workspace/delivery" smart-water-docs-export:${{ github.sha }} --ref HEAD --formats pdf,docx,html ${{ inputs.include_progress && '--include-progress' || '--exclude-progress' }}
+      - run: rm -rf delivery && mkdir delivery && docker run --rm -e DOCS_PUBLICATION_TAG="${{ inputs.tag }}" -v "$PWD/delivery:/workspace/delivery" smart-water-docs-export:${{ github.sha }} --ref HEAD --formats pdf,docx,html ${{ inputs.include_progress && '--include-progress' || '--exclude-progress' }}
       - run: cd delivery && zip -qr content-bundle.zip content && zip -qr smart-water-platform-offline-html.zip offline-html
       - uses: softprops/action-gh-release@v2
         with:
