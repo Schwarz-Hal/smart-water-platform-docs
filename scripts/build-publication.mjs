@@ -19,6 +19,11 @@ const invoke = (args) => new Promise((resolve, reject) => {
   const child = spawn(command, commandArgs, {stdio: 'inherit'});
   child.on('exit', (code) => code === 0 ? resolve() : reject(new Error(`${args.join(' ')} failed with ${code}`)));
 });
+const emptyDirectory = async (directory) => {
+  const {readdir} = await import('node:fs/promises');
+  await mkdir(directory, {recursive: true});
+  await Promise.all((await readdir(directory)).map((entry) => rm(resolve(directory, entry), {recursive: true, force: true})));
+};
 if (process.argv.includes('--site')) {
   await invoke(['run', 'validate']);
   await invoke(['run', 'progress']);
@@ -30,7 +35,9 @@ if (process.argv.includes('--site')) {
 if (process.argv.includes('--bundle')) {
   await invoke(['run', 'validate']);
   await invoke(['run', 'progress']);
-  await rm(delivery, {recursive: true, force: true});
+  // `delivery` may be a Docker bind mount during release export. Clear its
+  // contents instead of removing the mount point itself.
+  await emptyDirectory(delivery);
   const contentRoot = resolve(delivery, 'content');
   await mkdir(contentRoot, {recursive: true});
   const assets = (yaml.parse(await readFile(resolve(root, 'catalog/assets.yml'), 'utf8'))?.assets ?? []);
