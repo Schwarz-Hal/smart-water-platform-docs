@@ -1,0 +1,11 @@
+schema_version: 1
+title: 智慧水务算法平台完整文档
+chapters:
+  - docs/01-platform/overview.md
+  - docs/02-quick-start/first-quality-workflow.md
+  - docs/03-user-guide/workflow-editor.md
+  - docs/04-scenarios/s01-dma-leakage.md
+  - docs/05-algorithms/chronos2.md
+  - docs/06-development/first-api-call.md
+  - docs/07-operations/health-and-topology.md
+  - docs/08-acceptance/workflow-closure.md

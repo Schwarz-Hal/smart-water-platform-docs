@@ -1,0 +1,20 @@
+schema_version: 1
+terms:
+  - key: operator
+    zh: 算子
+    definition: 可被工作流编排、具有输入输出契约和版本的分析单元。
+  - key: workflow
+    zh: 工作流
+    definition: 由数据、处理、算法和输出算子组成的有向分析流程。
+  - key: data_asset
+    zh: 数据资产
+    definition: 平台管理、可授权使用的一份分析数据及其版本。
+  - key: dataset_version
+    zh: 数据版本
+    definition: 数据资产在某次导入或治理后形成的不可变快照。
+  - key: release
+    zh: 发布版本
+    definition: 固定实现、模型、参数、契约和文档的可用版本。
+  - key: risk_candidate
+    zh: 风险候选
+    definition: 需要结合现场或业务信息进一步核验的可疑时段或事件。

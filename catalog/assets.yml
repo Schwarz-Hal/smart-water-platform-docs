@@ -1,0 +1,8 @@
+schema_version: 1
+assets:
+  - path: static/assets/chronos2-architecture.svg
+    title: Chronos-2 时序预测架构示意图
+    alt: 历史时序经过分块编码和预测模型后输出未来多个分位数预测值。
+    source: 基于 Chronos-2 论文方法重绘
+    license: CC-BY-4.0 方法说明的衍生示意
+    used_by: [algorithm.chronos2.overview]

@@ -1,0 +1,1 @@
+{"$schema":"https://json-schema.org/draft/2020-12/schema","type":"object","required":["id","name","complexity","evidence"],"properties":{"id":{"pattern":"^M\\d+$"},"name":{"type":"string"},"complexity":{"enum":[1,2,3,5,8]},"evidence":{"type":"object"}}}
