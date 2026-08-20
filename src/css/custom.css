@@ -1,14 +1,258 @@
 @import 'katex/dist/katex.min.css';
 
 /**
- * Any CSS included here will be global. The classic template
- * bundles Infima by default. Infima is a CSS framework designed to
- * work well for content-centric websites.
+ * 智慧水务算法平台文档中心 - 工业水务科技视觉设计系统
  */
 
-/* You can override the default Infima variables here. */
-:root { --ifm-color-primary:#087c9e; --ifm-color-primary-dark:#056b8a; --ifm-color-primary-darker:#055f7a; --ifm-color-primary-darkest:#04435a; --ifm-color-primary-light:#1091b4; --ifm-color-primary-lighter:#20a0c1; --ifm-color-primary-lightest:#52b9d2; --ifm-font-family-base: Inter, "Microsoft YaHei", "Noto Sans CJK SC", system-ui, sans-serif; --ifm-code-font-size:92%; --ifm-background-color:#f6f9fc; --ifm-navbar-background-color:#fff; --ifm-footer-background-color:#073b53; --docusaurus-highlighted-code-line-bg:rgb(8 124 158 / 10%); }
+:root {
+  --ifm-color-primary: #0284c7;
+  --ifm-color-primary-dark: #0369a1;
+  --ifm-color-primary-darker: #075985;
+  --ifm-color-primary-darkest: #0c4a6e;
+  --ifm-color-primary-light: #38bdf8;
+  --ifm-color-primary-lighter: #7dd3fc;
+  --ifm-color-primary-lightest: #bae6fd;
+  
+  --ifm-font-family-base: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+  --ifm-font-family-monospace: "JetBrains Mono", "Fira Code", "Cascadia Code", Consolas, Monaco, monospace;
+  --ifm-code-font-size: 90%;
+  
+  --ifm-background-color: #f3f8fc;
+  --ifm-background-surface-color: #ffffff;
+  --ifm-navbar-background-color: rgba(255, 255, 255, 0.88);
+  --ifm-footer-background-color: #081d2a;
+  
+  --docusaurus-highlighted-code-line-bg: rgba(2, 132, 199, 0.08);
+  --tech-cyan-glow: rgba(56, 189, 248, 0.35);
+  --tech-border-glow: rgba(2, 132, 199, 0.22);
+}
 
-/* For readability concerns, you should choose a lighter palette in dark mode. */
-[data-theme='dark'] { --ifm-color-primary:#55c6e5; --ifm-color-primary-dark:#36bbdf; --ifm-color-primary-darker:#27b3da; --ifm-color-primary-darkest:#1b91b5; --ifm-background-color:#092334; --ifm-navbar-background-color:#0c2c40; --docusaurus-highlighted-code-line-bg:rgb(85 198 229 / 16%); }
-.markdown h1 { letter-spacing: -.025em; } .markdown h2 { margin-top: 2.2rem; padding-bottom: .45rem; border-bottom: 1px solid var(--ifm-color-emphasis-200); } .markdown img { border-radius: 10px; }
+[data-theme='dark'] {
+  --ifm-color-primary: #38bdf8;
+  --ifm-color-primary-dark: #0ea5e9;
+  --ifm-color-primary-darker: #0284c7;
+  --ifm-color-primary-darkest: #0369a1;
+  --ifm-color-primary-light: #7dd3fc;
+  --ifm-color-primary-lighter: #bae6fd;
+  --ifm-color-primary-lightest: #e0f2fe;
+
+  --ifm-background-color: #06131c;
+  --ifm-background-surface-color: #0a1e2c;
+  --ifm-navbar-background-color: rgba(6, 19, 28, 0.88);
+  --ifm-footer-background-color: #030c12;
+  
+  --docusaurus-highlighted-code-line-bg: rgba(56, 189, 248, 0.12);
+  --tech-cyan-glow: rgba(56, 189, 248, 0.45);
+  --tech-border-glow: rgba(56, 189, 248, 0.25);
+}
+
+/* 全局背景微科技网格 */
+body {
+  background-image: 
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(14, 165, 233, 0.12), transparent),
+    linear-gradient(rgba(56, 189, 248, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(56, 189, 248, 0.02) 1px, transparent 1px);
+  background-size: 100% 100%, 32px 32px, 32px 32px;
+  background-attachment: fixed;
+  letter-spacing: -0.01em;
+}
+
+/* 顶部导航栏 (Navbar) 毛玻璃与科技流光 */
+.navbar {
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--tech-border-glow);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  transition: all 0.25s ease;
+}
+
+.navbar__title {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, var(--ifm-color-primary), #00f2fe);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.navbar__link {
+  font-weight: 500;
+  font-size: 0.92rem;
+  padding: 0.45rem 0.85rem;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.navbar__link--active {
+  color: var(--ifm-color-primary) !important;
+  background: rgba(56, 189, 248, 0.08);
+  border-bottom: 2px solid var(--ifm-color-primary);
+}
+
+/* 侧边栏 (Sidebar) 工业科技风格 */
+.theme-doc-sidebar-menu {
+  font-size: 0.92rem;
+  padding: 0.5rem 0;
+}
+
+.theme-doc-sidebar-item-link .menu__link {
+  border-radius: 6px;
+  transition: all 0.18s ease;
+  position: relative;
+}
+
+.theme-doc-sidebar-item-link .menu__link--active {
+  background: rgba(56, 189, 248, 0.12) !important;
+  color: var(--ifm-color-primary) !important;
+  font-weight: 600;
+  border-left: 3px solid var(--ifm-color-primary);
+}
+
+.menu__link:hover {
+  background: rgba(56, 189, 248, 0.06);
+}
+
+/* 正文标题与排版 */
+.markdown h1:first-child {
+  font-size: 2.2rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  margin-bottom: 1.5rem;
+  position: relative;
+  padding-bottom: 0.8rem;
+  border-bottom: 1px solid var(--tech-border-glow);
+}
+
+.markdown h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-top: 2.5rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--ifm-toc-border-color);
+  letter-spacing: -0.02em;
+}
+
+.markdown h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-top: 1.8rem;
+  color: var(--ifm-color-primary);
+}
+
+.markdown p, .markdown li {
+  line-height: 1.75;
+  color: var(--ifm-font-color-base);
+}
+
+/* 表格工业样式 */
+.markdown table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--tech-border-glow);
+  margin: 1.5rem 0;
+  font-size: 0.92rem;
+}
+
+.markdown th {
+  background: rgba(56, 189, 248, 0.08);
+  color: var(--ifm-color-primary);
+  font-weight: 600;
+  padding: 0.8rem 1rem;
+  border-bottom: 1px solid var(--tech-border-glow);
+}
+
+.markdown td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid rgba(56, 189, 248, 0.08);
+}
+
+.markdown tr:last-child td {
+  border-bottom: none;
+}
+
+.markdown tr:hover td {
+  background: rgba(56, 189, 248, 0.04);
+}
+
+/* KaTeX 数学公式玻璃卡片 */
+.katex-display {
+  padding: 1.2rem 1.5rem;
+  background: rgba(10, 30, 45, 0.5);
+  border: 1px solid var(--tech-border-glow);
+  border-radius: 8px;
+  box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.2);
+  margin: 1.5rem 0;
+  overflow-x: auto;
+}
+
+/* Callout / Admonition 工业提示框 */
+.alert {
+  border-radius: 8px;
+  border: 1px solid;
+  backdrop-filter: blur(8px);
+  padding: 1rem 1.25rem;
+}
+
+.alert--info {
+  background: rgba(14, 165, 233, 0.08);
+  border-color: rgba(14, 165, 233, 0.35);
+  color: inherit;
+}
+
+.alert--success {
+  background: rgba(16, 185, 129, 0.08);
+  border-color: rgba(16, 185, 129, 0.35);
+  color: inherit;
+}
+
+.alert--warning {
+  background: rgba(245, 158, 11, 0.08);
+  border-color: rgba(245, 158, 11, 0.35);
+  color: inherit;
+}
+
+/* 代码块工业风格 */
+.theme-code-block {
+  border-radius: 8px;
+  border: 1px solid var(--tech-border-glow);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+}
+
+/* 页脚 (Footer) */
+.footer {
+  border-top: 1px solid var(--tech-border-glow);
+  padding: 3.5rem 0 2rem;
+  background: #040e15;
+}
+
+.footer__title {
+  color: #38bdf8;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.footer__link-item {
+  color: #94a3b8;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.footer__link-item:hover {
+  color: #38bdf8;
+  text-decoration: none;
+  transform: translateX(2px);
+}
+
+.footer__copyright {
+  color: #64748b;
+  font-size: 0.85rem;
+  margin-top: 2.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding-top: 1.5rem;
+}
+

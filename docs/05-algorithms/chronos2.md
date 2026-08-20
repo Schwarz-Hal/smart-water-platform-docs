@@ -30,7 +30,7 @@ $$
 
 ## 模型架构
 
-![Chronos-2 架构示意图](pathname:///assets/chronos2-architecture.svg)
+![Chronos-2 架构示意图](../../static/assets/chronos2-architecture.svg)
 
 *图：根据 Ansari 等（2025）论文 Figure 1 重绘。原始时序经过稳健缩放、元特征构造和分块嵌入后，进入交替的时间注意力与组注意力层，最后由分位数预测头一次性生成多个未来时间步。*
 
