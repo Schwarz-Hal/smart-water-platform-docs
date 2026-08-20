@@ -1,6 +1,7 @@
 import {execFileSync} from 'node:child_process';
-import {cp, mkdir, readFile, rm, writeFile} from 'node:fs/promises';
+import {cp, mkdtemp, mkdir, readFile, rm, writeFile} from 'node:fs/promises';
 import {resolve} from 'node:path';
+import {tmpdir} from 'node:os';
 import crypto from 'node:crypto';
 import matter from 'gray-matter';
 import yaml from 'yaml';
@@ -14,8 +15,21 @@ const delivery = resolve(root, 'delivery');
 const sha = (value) => crypto.createHash('sha256').update(value).digest('hex');
 const run = (command, commandArgs) => execFileSync(command, commandArgs, {cwd: root, stdio: 'inherit'});
 
-if (ref !== 'HEAD' && ref !== execFileSync('git', ['rev-parse', 'HEAD'], {cwd: root, encoding: 'utf8'}).trim()) {
-  throw new Error('Export must run from the requested immutable checkout; check out the tag before calling this command.');
+const head = execFileSync('git', ['rev-parse', 'HEAD'], {cwd: root, encoding: 'utf8'}).trim();
+if (ref !== 'HEAD' && ref !== head) {
+  const worktree = await mkdtemp(resolve(tmpdir(), 'smart-water-docs-export-'));
+  const childArgs = args.filter((value, index) => value !== '--ref' && args[index - 1] !== '--ref');
+  try {
+    execFileSync('git', ['worktree', 'add', '--detach', worktree, ref], {cwd: root, stdio: 'inherit'});
+    execFileSync(process.execPath, ['scripts/export-docs.mjs', '--ref', 'HEAD', ...childArgs], {cwd: worktree, stdio: 'inherit'});
+    await rm(delivery, {recursive: true, force: true});
+    await cp(resolve(worktree, 'delivery'), delivery, {recursive: true});
+    console.log(`Delivery export restored from immutable ref ${ref}.`);
+  } finally {
+    try { execFileSync('git', ['worktree', 'remove', '--force', worktree], {cwd: root, stdio: 'ignore'}); }
+    catch { await rm(worktree, {recursive: true, force: true}); }
+  }
+  process.exit(0);
 }
 run('node', ['scripts/build-publication.mjs', '--bundle', ...(includeProgress ? [] : ['--exclude-progress'])]);
 if (formats.includes('html')) {
