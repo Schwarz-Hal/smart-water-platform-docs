@@ -30,7 +30,8 @@ jobs:
       - uses: actions/setup-node@v4
         with: {node-version: 24, cache: npm}
       - run: npm ci
-      - run: npm run build
-      - run: npm run export -- --ref "${{ inputs.ref }}" --formats "${{ inputs.formats }}" ${{ inputs.include_progress && '--include-progress' || '--exclude-progress' }}
+      - run: docker build -f export/Dockerfile -t smart-water-docs-export:${{ github.sha }} .
+      - run: docker run --rm -v "$PWD:/workspace" smart-water-docs-export:${{ github.sha }} --ref HEAD --formats "${{ inputs.formats }}" ${{ inputs.include_progress && '--include-progress' || '--exclude-progress' }}
+      - run: cd delivery && test ! -d offline-html || zip -qr smart-water-platform-offline-html.zip offline-html
       - uses: actions/upload-artifact@v4
-        with: {name: smart-water-platform-delivery-${{ inputs.ref }}, path: build, retention-days: 90}
+        with: {name: smart-water-platform-delivery-${{ inputs.ref }}, path: delivery, retention-days: 90}

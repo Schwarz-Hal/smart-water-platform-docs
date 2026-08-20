@@ -28,8 +28,23 @@ jobs:
         with: {node-version: 24, cache: npm}
       - run: npm ci
       - run: npm run snapshot -- ${{ inputs.tag }}
+      - run: if git ls-remote --exit-code --tags origin "refs/tags/${{ inputs.tag }}"; then echo "Snapshot tag already exists"; exit 1; fi
+      - run: DOCS_PUBLICATION_TAG="${{ inputs.tag }}" node scripts/build-publication.mjs --bundle
       - run: npm run build
       - run: git tag -a "${{ inputs.tag }}" -m "Approved documentation snapshot" "${{ github.sha }}" && git push origin "${{ inputs.tag }}"
+      - run: docker build -f export/Dockerfile -t smart-water-docs-export:${{ github.sha }} .
+      - run: docker run --rm -v "$PWD:/workspace" smart-water-docs-export:${{ github.sha }} --ref HEAD --formats pdf,docx,html ${{ inputs.include_progress && '--include-progress' || '--exclude-progress' }}
+      - run: cd delivery && zip -qr content-bundle.zip content && zip -qr smart-water-platform-offline-html.zip offline-html
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ inputs.tag }}
+          files: |
+            delivery/publication-manifest.json
+            delivery/content-bundle.zip
+            delivery/smart-water-platform-complete.pdf
+            delivery/smart-water-platform-complete.docx
+            delivery/smart-water-platform-offline-html.zip
+            delivery/SHA256SUMS
       - uses: actions/upload-pages-artifact@v3
         with: {path: build}
       - uses: actions/deploy-pages@v4
