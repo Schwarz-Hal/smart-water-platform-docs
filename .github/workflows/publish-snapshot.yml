@@ -1,0 +1,35 @@
+name: Publish approved documentation snapshot
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Immutable tag, for example docs-snapshot-2026-08-20
+        required: true
+        type: string
+      include_progress:
+        description: Include progress page in publication metadata
+        required: true
+        default: true
+        type: boolean
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: 24, cache: npm}
+      - run: npm ci
+      - run: npm run snapshot -- ${{ inputs.tag }}
+      - run: npm run build
+      - run: git tag -a "${{ inputs.tag }}" -m "Approved documentation snapshot" "${{ github.sha }}" && git push origin "${{ inputs.tag }}"
+      - uses: actions/upload-pages-artifact@v3
+        with: {path: build}
+      - uses: actions/deploy-pages@v4

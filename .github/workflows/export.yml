@@ -1,0 +1,36 @@
+name: Export delivery bundle
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: Immutable docs tag to export
+        required: true
+        type: string
+      formats:
+        description: pdf,docx,html
+        required: true
+        default: pdf,docx,html
+        type: string
+      include_progress:
+        description: Include progress information
+        required: true
+        default: true
+        type: boolean
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with: {ref: ${{ inputs.ref }}, fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: 24, cache: npm}
+      - run: npm ci
+      - run: npm run build
+      - run: npm run export -- --ref "${{ inputs.ref }}" --formats "${{ inputs.formats }}" ${{ inputs.include_progress && '--include-progress' || '--exclude-progress' }}
+      - uses: actions/upload-artifact@v4
+        with: {name: smart-water-platform-delivery-${{ inputs.ref }}, path: build, retention-days: 90}
