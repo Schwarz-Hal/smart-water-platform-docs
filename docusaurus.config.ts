@@ -63,7 +63,9 @@ const config: Config = {
     // Replace with your project's social card
     image: 'assets/social-card.svg',
     colorMode: {
-      respectPrefersColorScheme: true,
+      defaultMode: 'dark',
+      disableSwitch: false,
+      respectPrefersColorScheme: false,
     },
     navbar: {
       title: '智慧水务算法平台文档中心',
@@ -74,14 +76,28 @@ const config: Config = {
       items: [
         {
           type: 'docSidebar',
-          sidebarId: 'documentationSidebar',
+          sidebarId: 'productSidebar',
           position: 'left',
-          label: '文档',
+          label: '产品指南',
         },
-        {to: '/docs/quick-start/quickstart.first-quality-workflow', label: '快速开始', position: 'left'},
-        {to: '/docs/algorithms/algorithm.chronos2.overview', label: '算法库', position: 'left'},
-        {to: '/docs/scenarios/scenario.s01-dma-leakage', label: '业务场景', position: 'left'},
-        {to: '/docs/development/development.first-api-call', label: 'API 参考', position: 'left'},
+        {
+          type: 'docSidebar',
+          sidebarId: 'algorithmSidebar',
+          position: 'left',
+          label: '算法与场景',
+        },
+        {
+          type: 'docSidebar',
+          sidebarId: 'devSidebar',
+          position: 'left',
+          label: '开发者中心',
+        },
+        {
+          type: 'docSidebar',
+          sidebarId: 'opsSidebar',
+          position: 'left',
+          label: '部署与运维',
+        },
         {to: '/search', label: '搜索', position: 'left'},
       ],
     },
@@ -154,7 +170,7 @@ const config: Config = {
       theme: prismThemes.github,
       darkTheme: prismThemes.dracula,
     },
-    mermaid: {theme: {light: 'neutral', dark: 'forest'}},
+    mermaid: {theme: {light: 'neutral', dark: 'dark'}},
   } satisfies Preset.ThemeConfig,
 };
 

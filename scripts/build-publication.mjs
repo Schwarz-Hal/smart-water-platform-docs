@@ -29,6 +29,9 @@ if (process.argv.includes('--site')) {
   await invoke(['run', 'progress']);
   await invoke(['run', 'build:site']);
   await invoke(['run', 'build:search']);
+  const pagefindBuild = resolve(root, 'build/pagefind');
+  const pagefindStatic = resolve(root, 'static/pagefind');
+  await cp(pagefindBuild, pagefindStatic, {recursive: true});
   console.log('Static documentation site and Pagefind index built.');
 }
 
