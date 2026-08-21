@@ -1,0 +1,178 @@
+schema_version: 1
+inventory_version: 2026-08-21.1
+reviewed_against:
+  backend_commit: 7b2c7d15
+  frontend_commit: b165fb3f
+  docs_commit: f407ac78
+  migration: 0017_document_publication_sync
+
+# This is the canonical documentation inventory, not a short-lived task board.
+# Use the backend coordination board to claim a document before editing it.
+# After a documentation PR is merged, update only that document's status,
+# version and path here. Keep document IDs stable even when files move.
+collaboration:
+  coordination_task_prefix: DOC-
+  claim_authority: backend coordination board
+  recommended_claim_scope: one document path per agent
+  lookup_examples:
+    - "rg -n 'id: algorithm.hampel' catalog/document-backlog.yml"
+    - "rg -n 'status: (missing|expand)' catalog/document-backlog.yml"
+  status_values:
+    ready: Current content is adequate for the implemented capability and has been reviewed.
+    expand: A published sample exists but does not yet cover the complete implemented capability.
+    missing: The implemented capability has no dedicated document yet.
+    deferred: The capability is retained for compatibility or later delivery and is not a current writing priority.
+  priority_values:
+    P0: Required for current demonstration, handover, or September closed-loop acceptance.
+    P1: Required for the complete platform delivery and routine operation.
+    P2: Compatibility, advanced administration, or supporting reference material.
+  completion_rule: A document becomes ready only after content review, link and metadata validation, site build, and inclusion in an approved snapshot.
+
+summary:
+  total: 92
+  ready: 2
+  expand: 7
+  missing: 83
+  deferred: 0
+  by_area:
+    platform: 7
+    quick_start: 5
+    user_guide: 19
+    scenario: 4
+    algorithm_operator: 27
+    api_development: 10
+    operations: 10
+    acceptance: 10
+
+areas:
+  - id: platform
+    name: 平台说明
+    evidence_sources: [catalog/modules.yml, backend/docs/DEVELOPMENT_ROADMAP.md]
+    documents:
+      - {id: platform.overview, title: 智慧水务算法平台总体架构与能力地图, path: docs/01-platform/overview.md, status: expand, priority: P0, version: 1.0.1, modules: [M01, M02, M03, M04, M05, M06, M07, M08]}
+      - {id: platform.architecture, title: 平台组成、数据流与运行架构, path: docs/01-platform/architecture.md, status: missing, priority: P1, modules: [M08]}
+      - {id: platform.core-concepts, title: 数据资产、版本、算子、工作流和任务概念, path: docs/01-platform/core-concepts.md, status: missing, priority: P0, modules: [M02, M04, M05, M07]}
+      - {id: platform.roles-permissions, title: 用户角色、权限和资源可见范围, path: docs/01-platform/roles-and-permissions.md, status: missing, priority: P0, modules: [M01]}
+      - {id: platform.resource-lifecycle, title: 数据、工作流、任务和账户生命周期, path: docs/01-platform/resource-lifecycle.md, status: missing, priority: P1, modules: [M01, M02, M05, M07]}
+      - {id: platform.algorithm-workflow-lifecycle, title: 算法发布版本、模型与工作流复现关系, path: docs/01-platform/algorithm-workflow-lifecycle.md, status: missing, priority: P1, modules: [M04, M05]}
+      - {id: platform.document-publication, title: 文档快照、发布与交付文件, path: docs/01-platform/document-publication.md, status: ready, priority: P1, version: 1.0.1, modules: [M08]}
+
+  - id: quick_start
+    name: 快速开始
+    evidence_sources: [frontend/src/app/app.routes.ts, backend/app/workflows/templates.py]
+    documents:
+      - {id: quickstart.first-quality-workflow, title: 从上传 CSV 到运行第一个质量分析工作流, path: docs/02-quick-start/first-quality-workflow.md, status: expand, priority: P0, version: 1.0.0, modules: [M02, M03, M05]}
+      - {id: quickstart.s01-leakage, title: 使用内置结构完成一次 DMA 漏损评估, path: docs/02-quick-start/s01-leakage.md, status: missing, priority: P0, modules: [M05, M06]}
+      - {id: quickstart.chronos-forecast, title: 使用 Chronos-2 完成一次流量预测, path: docs/02-quick-start/chronos-forecast.md, status: missing, priority: P1, modules: [M04, M05]}
+      - {id: quickstart.dataset-governance, title: 从原始数据生成治理派生版本, path: docs/02-quick-start/dataset-governance.md, status: missing, priority: P0, modules: [M02, M03, M05]}
+      - {id: quickstart.train-anomaly-model, title: 训练并使用季节稳健异常检测模型, path: docs/02-quick-start/train-anomaly-model.md, status: missing, priority: P1, modules: [M04, M05]}
+
+  - id: user_guide
+    name: 用户操作手册
+    evidence_sources: [frontend/src/app/features, backend/docs/API_CONTRACT_V1.md]
+    documents:
+      - {id: user.account-access, title: 注册、登录、退出与账户注销, path: docs/03-user-guide/account-access.md, status: missing, priority: P0, modules: [M01]}
+      - {id: user.portal, title: 平台概览、快捷入口与继续工作, path: docs/03-user-guide/platform-portal.md, status: missing, priority: P1, modules: [M01, M07]}
+      - {id: user.csv-import, title: CSV 上传、预览、字段映射与导入, path: docs/03-user-guide/csv-import.md, status: missing, priority: P0, modules: [M02]}
+      - {id: user.mysql-source, title: 接入和导入只读 MySQL 数据源, path: docs/03-user-guide/mysql-source.md, status: missing, priority: P1, modules: [M02]}
+      - {id: user.dataset-assets, title: 数据资产详情、通道和当前版本, path: docs/03-user-guide/dataset-assets.md, status: missing, priority: P0, modules: [M02]}
+      - {id: user.dataset-lineage, title: 数据版本血缘树与历史版本查看, path: docs/03-user-guide/dataset-lineage.md, status: missing, priority: P1, modules: [M02, M03]}
+      - {id: user.data-quality-governance, title: 质量报告、治理方案与模拟扩展, path: docs/03-user-guide/data-quality-governance.md, status: missing, priority: P0, modules: [M03]}
+      - {id: user.operator-center, title: 算子搜索、筛选、详情和版本选择, path: docs/03-user-guide/operator-center.md, status: missing, priority: P0, modules: [M04]}
+      - {id: user.algorithm-training-models, title: 算法训练任务与私有模型管理, path: docs/03-user-guide/algorithm-training-models.md, status: missing, priority: P1, modules: [M04]}
+      - {id: user.algorithm-release-review, title: 算法发布、审核、激活和回滚, path: docs/03-user-guide/algorithm-release-review.md, status: missing, priority: P1, modules: [M04]}
+      - {id: user.external-algorithm-package, title: 外部算法包接入与环境制备, path: docs/03-user-guide/external-algorithm-package.md, status: missing, priority: P2, modules: [M04]}
+      - {id: user.workflow-library, title: 新建、克隆、派生、归档和删除工作流, path: docs/03-user-guide/workflow-library.md, status: missing, priority: P0, modules: [M05]}
+      - {id: user.workflow-editor, title: 工作流编辑、连线、参数和工作区布局, path: docs/03-user-guide/workflow-editor.md, status: expand, priority: P0, version: 1.0.0, modules: [M05]}
+      - {id: user.workflow-run, title: 数据绑定、校验、发布与运行工作流, path: docs/03-user-guide/workflow-run.md, status: missing, priority: P0, modules: [M05]}
+      - {id: user.workflow-results, title: 节点结果、Artifact 和最终报告查看, path: docs/03-user-guide/workflow-results.md, status: missing, priority: P0, modules: [M05, M06, M07]}
+      - {id: user.task-center, title: 任务筛选、日志、取消、重运行和删除, path: docs/03-user-guide/task-center.md, status: missing, priority: P1, modules: [M07]}
+      - {id: user.users-roles, title: 用户、角色和批量权限管理, path: docs/03-user-guide/users-and-roles.md, status: missing, priority: P1, modules: [M01]}
+      - {id: user.recycle-bin, title: 管理员回收站、恢复与永久清理, path: docs/03-user-guide/recycle-bin.md, status: missing, priority: P1, modules: [M01, M02, M05, M07]}
+      - {id: user.documentation-center, title: 文档中心、版本快照与离线文档, path: docs/03-user-guide/documentation-center.md, status: missing, priority: P1, modules: [M08]}
+
+  - id: scenario
+    name: 业务场景方案
+    evidence_sources: [backend/app/workflows/templates.py, backend/app/scenarios, backend/app/services/data_governance.py]
+    documents:
+      - {id: scenario.s01-dma-leakage, title: S01 DMA 漏损评估流程与结果解释, path: docs/04-scenarios/s01-dma-leakage.md, status: expand, priority: P0, version: 1.0.0, modules: [M06]}
+      - {id: scenario.timeseries-governance, title: 多通道时序数据质量分析与治理, path: docs/04-scenarios/timeseries-governance.md, status: missing, priority: P0, modules: [M03]}
+      - {id: scenario.flow-forecast, title: 15 分钟流量预测场景与结果解释, path: docs/04-scenarios/flow-forecast.md, status: missing, priority: P1, modules: [M04, M05]}
+      - {id: scenario.anomaly-detection, title: 时序异常检测、模型训练与候选核验, path: docs/04-scenarios/anomaly-detection.md, status: missing, priority: P1, modules: [M04, M05]}
+
+  - id: algorithm_operator
+    name: 算法与算子说明
+    evidence_sources: [backend/app/algorithms/registry.py, backend/app/workflows/registry.py, backend/app/operators/s01.py]
+    documents:
+      - {id: algorithm.qscore, title: 数据质量评分 Qscore, path: docs/05-algorithms/qscore.md, status: missing, priority: P0, scope_keys: [qscore_v1]}
+      - {id: algorithm.seasonal-naive, title: 季节朴素时序预测, path: docs/05-algorithms/seasonal-naive.md, status: missing, priority: P1, scope_keys: [seasonal_naive]}
+      - {id: algorithm.chronos2.overview, title: Chronos-2 时序预测, path: docs/05-algorithms/chronos2.md, status: ready, priority: P0, version: 1.1.1, scope_keys: [chronos2_flow_forecast]}
+      - {id: algorithm.hampel, title: Hampel 滑动窗口异常检测, path: docs/05-algorithms/hampel.md, status: missing, priority: P0, scope_keys: [hampel]}
+      - {id: algorithm.seasonal-robust-anomaly, title: 季节稳健基线异常检测, path: docs/05-algorithms/seasonal-robust-anomaly.md, status: missing, priority: P0, scope_keys: [seasonal_robust_anomaly]}
+      - {id: operator.data-quality-profile, title: 整体数据质量分析算子, path: docs/05-algorithms/data-quality-profile.md, status: missing, priority: P0, scope_keys: [data_quality_profile_v1]}
+      - {id: operator.dataset-deduplicate, title: 数据集去重算子, path: docs/05-algorithms/dataset-deduplicate.md, status: missing, priority: P1, scope_keys: [deduplicate_dataset_v1]}
+      - {id: operator.dataset-resample, title: 数据集重采样算子, path: docs/05-algorithms/dataset-resample.md, status: missing, priority: P1, scope_keys: [resample_dataset_v1]}
+      - {id: operator.missing-value-repair, title: 缺失值修复算子, path: docs/05-algorithms/missing-value-repair.md, status: missing, priority: P0, scope_keys: [missing_value_repair_dataset_v1]}
+      - {id: operator.outlier-repair, title: 异常值检测与处理算子, path: docs/05-algorithms/outlier-repair.md, status: missing, priority: P0, scope_keys: [outlier_repair_dataset_v1]}
+      - {id: operator.synthetic-extension, title: 时序模拟扩展算子, path: docs/05-algorithms/synthetic-extension.md, status: missing, priority: P1, scope_keys: [synthetic_extend_dataset_v1]}
+      - {id: operator.dataset-channel, title: 数据通道绑定算子, path: docs/05-algorithms/dataset-channel.md, status: missing, priority: P0, scope_keys: [dataset_channel_v1]}
+      - {id: operator.dataset-asset, title: 整体数据资产绑定算子, path: docs/05-algorithms/dataset-asset.md, status: missing, priority: P1, scope_keys: [dataset_asset_v1]}
+      - {id: operator.time-range, title: 时间范围算子, path: docs/05-algorithms/time-range.md, status: missing, priority: P1, scope_keys: [time_range_v1]}
+      - {id: operator.align-timeseries, title: 时序对齐算子, path: docs/05-algorithms/align-timeseries.md, status: missing, priority: P0, scope_keys: [align_timeseries_v1]}
+      - {id: operator.unit-convert, title: 单位换算算子, path: docs/05-algorithms/unit-convert.md, status: missing, priority: P1, scope_keys: [unit_convert_v1]}
+      - {id: operator.quality-gate, title: 数据质量门算子, path: docs/05-algorithms/quality-gate.md, status: missing, priority: P0, scope_keys: [quality_gate_v1]}
+      - {id: operator.dataset-publish, title: 派生数据版本发布算子, path: docs/05-algorithms/dataset-publish.md, status: missing, priority: P1, scope_keys: [dataset_publish_v1]}
+      - {id: operator.candidate-table, title: 漏损候选表算子, path: docs/05-algorithms/candidate-table.md, status: missing, priority: P1, scope_keys: [candidate_table_v1]}
+      - {id: algorithm.s01-water-balance, title: DMA 水量平衡, path: docs/05-algorithms/s01-water-balance.md, status: missing, priority: P0, scope_keys: [s01_water_balance_v1]}
+      - {id: algorithm.s01-minimum-night-flow, title: 最小夜间流量分析, path: docs/05-algorithms/s01-minimum-night-flow.md, status: missing, priority: P0, scope_keys: [s01_minimum_night_flow_v1]}
+      - {id: algorithm.s01-pressure-correction, title: 压力修正, path: docs/05-algorithms/s01-pressure-correction.md, status: missing, priority: P1, scope_keys: [s01_pressure_correction_v1]}
+      - {id: algorithm.s01-seasonal-baseline, title: 季节基线残差, path: docs/05-algorithms/s01-seasonal-baseline.md, status: missing, priority: P0, scope_keys: [s01_seasonal_baseline_v1]}
+      - {id: algorithm.s01-ewma-cusum, title: EWMA/CUSUM 持续变化检测, path: docs/05-algorithms/s01-ewma-cusum.md, status: missing, priority: P0, scope_keys: [s01_ewma_cusum_v1]}
+      - {id: algorithm.s01-evidence-normalize, title: 漏损证据归一化, path: docs/05-algorithms/s01-evidence-normalize.md, status: missing, priority: P0, scope_keys: [s01_evidence_normalize_v1]}
+      - {id: algorithm.s01-evidence-fusion, title: 漏损证据融合, path: docs/05-algorithms/s01-evidence-fusion.md, status: missing, priority: P0, scope_keys: [s01_evidence_fusion_v1]}
+      - {id: operator.s01-assessment-report, title: S01 漏损评估报告算子, path: docs/05-algorithms/s01-assessment-report.md, status: missing, priority: P0, scope_keys: [s01_assessment_report_v1]}
+
+  - id: api_development
+    name: API 与开发集成
+    evidence_sources: [backend/docs/API_CONTRACT_V1.md, backend/app/api/routers, backend/app/operators/sdk.py]
+    documents:
+      - {id: development.first-api-call, title: 登录认证与调用第一个 API, path: docs/06-development/first-api-call.md, status: expand, priority: P1, version: 1.0.0}
+      - {id: api.auth-users, title: 认证、账户、用户与角色 API, path: docs/06-development/api-auth-users.md, status: missing, priority: P1}
+      - {id: api.data-assets, title: 数据源、CSV 导入、数据资产与质量 API, path: docs/06-development/api-data-assets.md, status: missing, priority: P0}
+      - {id: api.algorithms, title: 算子目录、训练、模型、发布和文档 API, path: docs/06-development/api-algorithms.md, status: missing, priority: P0}
+      - {id: api.workflows, title: 工作流模板、草稿、发布、运行和 Artifact API, path: docs/06-development/api-workflows.md, status: missing, priority: P0}
+      - {id: api.tasks-events, title: 任务、结果、日志与 WebSocket API, path: docs/06-development/api-tasks-events.md, status: missing, priority: P1}
+      - {id: api.lifecycle, title: 资源回收与用户生命周期 API, path: docs/06-development/api-resource-lifecycle.md, status: missing, priority: P1}
+      - {id: api.external-runtime, title: 外部算法包与 Runtime Profile API, path: docs/06-development/api-external-runtime.md, status: missing, priority: P2}
+      - {id: development.operator-sdk, title: 内置算法接入与 Operator SDK 开发指南, path: docs/06-development/operator-sdk.md, status: missing, priority: P1}
+      - {id: development.document-sync, title: 文档发布清单与平台同步协议, path: docs/06-development/document-sync.md, status: missing, priority: P1}
+
+  - id: operations
+    name: 部署运维
+    evidence_sources: [backend/deploy, backend/app/workers, backend/app/services/dependency_health.py]
+    documents:
+      - {id: operations.health-topology, title: 服务拓扑、健康检查与安全化排障, path: docs/07-operations/health-and-topology.md, status: expand, priority: P0, version: 1.0.0}
+      - {id: operations.deployment, title: 前后端统一部署、升级与回退, path: docs/07-operations/deployment.md, status: missing, priority: P0}
+      - {id: operations.configuration, title: 配置项、密钥边界与环境检查, path: docs/07-operations/configuration.md, status: missing, priority: P1}
+      - {id: operations.middleware, title: MySQL、RabbitMQ、Redis 和 MinIO 运维, path: docs/07-operations/middleware.md, status: missing, priority: P0}
+      - {id: operations.worker-queues, title: CPU、工作流、调度、制备和训练 Worker, path: docs/07-operations/worker-queues.md, status: missing, priority: P0}
+      - {id: operations.gpu-runtime, title: GPU Runtime、Chronos 模型缓存与诊断, path: docs/07-operations/gpu-runtime.md, status: missing, priority: P0}
+      - {id: operations.backup-recovery, title: MySQL、MinIO 与发布版本备份恢复, path: docs/07-operations/backup-and-recovery.md, status: missing, priority: P1}
+      - {id: operations.monitoring-logs, title: 任务状态、服务日志与常见故障排查, path: docs/07-operations/monitoring-and-logs.md, status: missing, priority: P0}
+      - {id: operations.security, title: 账户、网络、凭据和只读数据源安全, path: docs/07-operations/security.md, status: missing, priority: P1}
+      - {id: operations.document-publication, title: 文档快照发布、同步和失败恢复, path: docs/07-operations/document-publication.md, status: missing, priority: P1}
+
+  - id: acceptance
+    name: 测试验收与交付
+    evidence_sources: [backend/tests, frontend/src/app/**/*.spec.ts, catalog/modules.yml]
+    documents:
+      - {id: acceptance.workflow-closure, title: 工作流闭环验收与证据清单, path: docs/08-acceptance/workflow-closure.md, status: expand, priority: P0, version: 1.0.1}
+      - {id: acceptance.identity-permissions, title: 注册、权限隔离与管理员操作验收, path: docs/08-acceptance/identity-and-permissions.md, status: missing, priority: P1}
+      - {id: acceptance.data-ingestion, title: CSV 与只读 MySQL 数据接入验收, path: docs/08-acceptance/data-ingestion.md, status: missing, priority: P0}
+      - {id: acceptance.governance-lineage, title: 数据治理、质量报告和版本血缘验收, path: docs/08-acceptance/governance-and-lineage.md, status: missing, priority: P0}
+      - {id: acceptance.s01-leakage, title: S01 DMA 漏损闭环验收, path: docs/08-acceptance/s01-leakage.md, status: missing, priority: P0}
+      - {id: acceptance.cpu-algorithms, title: 内置 CPU 算法与结果契约验收, path: docs/08-acceptance/cpu-algorithms.md, status: missing, priority: P1}
+      - {id: acceptance.gpu-chronos, title: GPU Worker 与 Chronos-2 预测验收, path: docs/08-acceptance/gpu-chronos.md, status: missing, priority: P0}
+      - {id: acceptance.algorithm-lifecycle, title: 训练、模型、审核、激活与回滚验收, path: docs/08-acceptance/algorithm-lifecycle.md, status: missing, priority: P1}
+      - {id: acceptance.resource-lifecycle, title: 回收站、注销和自动清理验收, path: docs/08-acceptance/resource-lifecycle.md, status: missing, priority: P1}
+      - {id: acceptance.documentation-delivery, title: 文档站、快照、PDF、DOCX 和离线包验收, path: docs/08-acceptance/documentation-delivery.md, status: missing, priority: P1}
