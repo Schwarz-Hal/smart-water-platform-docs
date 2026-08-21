@@ -525,7 +525,7 @@ body {
 }
 
 /* ==========================================================================
-   Pagefind 搜索界面工业水务科技主题定制
+   Pagefind 搜索界面工业水务科技主题定制 (Light & Dark Modes)
    ========================================================================== */
 
 :root {
@@ -549,10 +549,11 @@ body {
   --pagefind-ui-tag: #0284c7;
 }
 
+/* 搜索输入框 */
 .pagefind-ui .pagefind-ui__search-input {
   border-radius: 8px !important;
   font-weight: 500 !important;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06) !important;
   border: 1px solid var(--pagefind-ui-border) !important;
   background: var(--pagefind-ui-background) !important;
   color: var(--pagefind-ui-text) !important;
@@ -560,58 +561,105 @@ body {
 }
 
 .pagefind-ui .pagefind-ui__search-input:focus {
-  border-color: #38bdf8 !important;
-  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.25) !important;
+  border-color: var(--ifm-color-primary) !important;
+  box-shadow: 0 0 0 3px var(--tech-cyan-glow) !important;
   outline: none !important;
 }
 
+/* 浅色模式下的结果卡片 (Light Mode Result Card) */
 .pagefind-ui .pagefind-ui__result {
   border-radius: 10px !important;
-  border: 1px solid var(--tech-border-glow) !important;
-  background: rgba(10, 30, 46, 0.5) !important;
-  backdrop-filter: blur(8px) !important;
+  border: 1px solid rgba(2, 132, 199, 0.15) !important;
+  background: #ffffff !important;
+  box-shadow: 0 4px 14px rgba(2, 132, 199, 0.05) !important;
   padding: 1.25rem 1.5rem !important;
   margin: 1rem 0 !important;
   transition: all 0.2s ease !important;
 }
 
 .pagefind-ui .pagefind-ui__result:hover {
-  border-color: #38bdf8 !important;
+  border-color: #0284c7 !important;
   transform: translateY(-2px) !important;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25) !important;
+  box-shadow: 0 8px 20px rgba(2, 132, 199, 0.12) !important;
 }
 
 .pagefind-ui .pagefind-ui__result-link {
-  color: #38bdf8 !important;
+  color: #0369a1 !important;
   font-weight: 700 !important;
   font-size: 1.05rem !important;
   text-decoration: none !important;
 }
 
+.pagefind-ui .pagefind-ui__result-link:hover {
+  color: #0284c7 !important;
+  text-decoration: underline !important;
+}
+
 .pagefind-ui .pagefind-ui__result-excerpt {
-  color: #94a3b8 !important;
-  line-height: 1.6 !important;
-  font-size: 0.9rem !important;
+  color: #475569 !important;
+  line-height: 1.65 !important;
+  font-size: 0.92rem !important;
 }
 
 .pagefind-ui mark {
-  background: rgba(56, 189, 248, 0.25) !important;
-  color: #38bdf8 !important;
+  background: rgba(2, 132, 199, 0.12) !important;
+  color: #0284c7 !important;
   font-weight: 600 !important;
   border-radius: 3px !important;
-  padding: 0.1em 0.3em !important;
+  padding: 0.1em 0.35em !important;
 }
 
 .pagefind-ui .pagefind-ui__button {
-  background: rgba(56, 189, 248, 0.1) !important;
-  border: 1px solid rgba(56, 189, 248, 0.3) !important;
-  color: #38bdf8 !important;
+  background: rgba(2, 132, 199, 0.08) !important;
+  border: 1px solid rgba(2, 132, 199, 0.25) !important;
+  color: #0284c7 !important;
   border-radius: 6px !important;
   font-weight: 600 !important;
   transition: all 0.2s ease !important;
 }
 
 .pagefind-ui .pagefind-ui__button:hover {
+  background: rgba(2, 132, 199, 0.15) !important;
+  border-color: #0284c7 !important;
+}
+
+/* 暗色模式下的结果卡片 (Dark Mode Result Card) */
+[data-theme='dark'] .pagefind-ui .pagefind-ui__result {
+  border: 1px solid var(--tech-border-glow) !important;
+  background: rgba(10, 30, 46, 0.6) !important;
+  backdrop-filter: blur(8px) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25) !important;
+}
+
+[data-theme='dark'] .pagefind-ui .pagefind-ui__result:hover {
+  border-color: #38bdf8 !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35) !important;
+}
+
+[data-theme='dark'] .pagefind-ui .pagefind-ui__result-link {
+  color: #38bdf8 !important;
+}
+
+[data-theme='dark'] .pagefind-ui .pagefind-ui__result-link:hover {
+  color: #7dd3fc !important;
+}
+
+[data-theme='dark'] .pagefind-ui .pagefind-ui__result-excerpt {
+  color: #94a3b8 !important;
+}
+
+[data-theme='dark'] .pagefind-ui mark {
+  background: rgba(56, 189, 248, 0.25) !important;
+  color: #38bdf8 !important;
+}
+
+[data-theme='dark'] .pagefind-ui .pagefind-ui__button {
+  background: rgba(56, 189, 248, 0.1) !important;
+  border: 1px solid rgba(56, 189, 248, 0.3) !important;
+  color: #38bdf8 !important;
+}
+
+[data-theme='dark'] .pagefind-ui .pagefind-ui__button:hover {
   background: rgba(56, 189, 248, 0.2) !important;
   border-color: #38bdf8 !important;
 }

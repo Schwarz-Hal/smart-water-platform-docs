@@ -12,18 +12,6 @@ declare global {
   }
 }
 
-const hotTags = [
-  'Chronos-2',
-  'DMA漏损',
-  '时序数据治理',
-  '工作流编排',
-  'JWT认证',
-  'Celery队列',
-  '只读MySQL',
-  'Hampel异常检测',
-  '算子参数'
-];
-
 export default function SearchPage(): ReactNode {
   const bundlePath = useBaseUrl('pagefind/');
   const [loadError, setLoadError] = useState(false);
@@ -70,56 +58,16 @@ export default function SearchPage(): ReactNode {
     };
   }, [bundlePath]);
 
-  const handleTagClick = (tag: string) => {
-    const inputEl = document.querySelector('#documentation-search input') as HTMLInputElement | null;
-    if (inputEl) {
-      inputEl.value = tag;
-      inputEl.dispatchEvent(new Event('input', {bubbles: true}));
-      inputEl.focus();
-    }
-  };
-
   return (
     <Layout title="全文搜索" description="检索智慧水务算法平台全量技术文档与 API 规范">
       <main className="container margin-vert--lg" style={{maxWidth: '920px', minHeight: '65vh'}}>
-        <div style={{marginBottom: '1.5rem'}}>
+        <div style={{marginBottom: '1.75rem'}}>
           <h1 style={{fontSize: '2rem', fontWeight: 800, marginBottom: '0.5rem', letterSpacing: '-0.02em'}}>
             🔍 文档全库检索
           </h1>
           <p style={{color: '#94a3b8', fontSize: '0.95rem', margin: 0}}>
             基于毫秒级全文静态索引，覆盖平台架构、快速入门、算法模型库、API 契约及运维测试全量 96 篇文档。
           </p>
-        </div>
-
-        <div style={{marginBottom: '1.5rem', display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem'}}>
-          <span style={{fontSize: '0.85rem', color: '#64748b', fontWeight: 600}}>热门检索：</span>
-          {hotTags.map((tag) => (
-            <button
-              key={tag}
-              onClick={() => handleTagClick(tag)}
-              type="button"
-              style={{
-                background: 'rgba(56, 189, 248, 0.08)',
-                border: '1px solid rgba(56, 189, 248, 0.22)',
-                color: '#38bdf8',
-                borderRadius: '16px',
-                padding: '0.2rem 0.65rem',
-                fontSize: '0.82rem',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'rgba(56, 189, 248, 0.18)';
-                e.currentTarget.style.borderColor = '#38bdf8';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'rgba(56, 189, 248, 0.08)';
-                e.currentTarget.style.borderColor = 'rgba(56, 189, 248, 0.22)';
-              }}
-            >
-              {tag}
-            </button>
-          ))}
         </div>
 
         {loadError && (

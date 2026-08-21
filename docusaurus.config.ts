@@ -63,7 +63,9 @@ const config: Config = {
     // Replace with your project's social card
     image: 'assets/social-card.svg',
     colorMode: {
-      respectPrefersColorScheme: true,
+      defaultMode: 'dark',
+      disableSwitch: false,
+      respectPrefersColorScheme: false,
     },
     navbar: {
       title: '智慧水务算法平台文档中心',
