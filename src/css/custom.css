@@ -138,21 +138,39 @@ body {
   color: var(--ifm-color-primary);
 }
 
+.markdown {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  min-width: 0;
+}
+
 .markdown p, .markdown li {
   line-height: 1.75;
   color: var(--ifm-font-color-base);
 }
 
-/* 表格工业样式 */
+/* ==========================================================================
+   表格防溢出与自适应断词优化 (Table Responsive & Word Wrap)
+   ========================================================================== */
+
 .markdown table {
+  display: table;
   width: 100%;
+  max-width: 100%;
   border-collapse: separate;
   border-spacing: 0;
   border-radius: 8px;
-  overflow: hidden;
   border: 1px solid var(--tech-border-glow);
   margin: 1.5rem 0;
   font-size: 0.92rem;
+  table-layout: auto;
+  box-sizing: border-box;
+}
+
+/* 外层文档容器响应式防溢出 */
+.theme-doc-markdown {
+  overflow-x: auto;
+  max-width: 100%;
 }
 
 .markdown th {
@@ -161,11 +179,29 @@ body {
   font-weight: 600;
   padding: 0.8rem 1rem;
   border-bottom: 1px solid var(--tech-border-glow);
+  white-space: nowrap;
 }
 
 .markdown td {
   padding: 0.75rem 1rem;
   border-bottom: 1px solid rgba(56, 189, 248, 0.08);
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  vertical-align: top;
+  line-height: 1.6;
+}
+
+/* 表格内部的长标识符代码块强制自适应换行，防止撑破列宽 */
+.markdown table code {
+  display: inline-block;
+  white-space: break-spaces;
+  word-break: break-all;
+  overflow-wrap: anywhere;
+  padding: 0.15rem 0.4rem;
+  font-size: 0.85em;
+  background: rgba(14, 165, 233, 0.08);
+  border: 1px solid rgba(56, 189, 248, 0.18);
+  border-radius: 4px;
 }
 
 .markdown tr:last-child td {
@@ -176,6 +212,130 @@ body {
   background: rgba(56, 189, 248, 0.04);
 }
 
+/* 斑马纹微弱交替 (Dark Mode) */
+[data-theme='dark'] .markdown tr:nth-child(even) td {
+  background: rgba(10, 30, 46, 0.35);
+}
+
+[data-theme='dark'] .markdown tr:hover td {
+  background: rgba(56, 189, 248, 0.06);
+}
+
+/* ==========================================================================
+   Mermaid 图表工业水务科技主题定制 (Dark Mode & Light Mode)
+   ========================================================================== */
+
+.docusaurus-mermaid-container {
+  display: flex;
+  justify-content: center;
+  margin: 2rem 0;
+  padding: 1.5rem;
+  background: rgba(8, 24, 38, 0.45);
+  border: 1px solid var(--tech-border-glow);
+  border-radius: 12px;
+  backdrop-filter: blur(8px);
+  overflow-x: auto;
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.25);
+  max-width: 100%;
+}
+
+/* 暗色模式下的 Mermaid 节点深度配色 */
+[data-theme='dark'] .docusaurus-mermaid-container svg {
+  max-width: 100%;
+  height: auto;
+}
+
+[data-theme='dark'] .docusaurus-mermaid-container .node rect,
+[data-theme='dark'] .docusaurus-mermaid-container .node polygon,
+[data-theme='dark'] .docusaurus-mermaid-container .node circle,
+[data-theme='dark'] .docusaurus-mermaid-container .node ellipse {
+  fill: #0c2338 !important;
+  stroke: #38bdf8 !important;
+  stroke-width: 1.5px !important;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.4));
+  rx: 6px;
+  ry: 6px;
+}
+
+/* 数据库/Cylinder 存储节点 */
+[data-theme='dark'] .docusaurus-mermaid-container .node.cylinder rect,
+[data-theme='dark'] .docusaurus-mermaid-container .node.cylinder path,
+[data-theme='dark'] .docusaurus-mermaid-container .node path[d*="M"] {
+  fill: #081d2f !important;
+  stroke: #0ea5e9 !important;
+  stroke-width: 1.5px !important;
+}
+
+/* 节点内部文字高对比度与清晰度 */
+[data-theme='dark'] .docusaurus-mermaid-container .node .label,
+[data-theme='dark'] .docusaurus-mermaid-container .node text,
+[data-theme='dark'] .docusaurus-mermaid-container .node foreignObject,
+[data-theme='dark'] .docusaurus-mermaid-container .node span,
+[data-theme='dark'] .docusaurus-mermaid-container .node div {
+  fill: #f8fafc !important;
+  color: #f8fafc !important;
+  font-family: var(--ifm-font-family-base) !important;
+  font-weight: 600 !important;
+  font-size: 0.92rem !important;
+  letter-spacing: -0.01em;
+}
+
+/* 连线与箭头 */
+[data-theme='dark'] .docusaurus-mermaid-container .flowchart-link,
+[data-theme='dark'] .docusaurus-mermaid-container .edgePath .path {
+  stroke: #38bdf8 !important;
+  stroke-width: 1.5px !important;
+}
+
+[data-theme='dark'] .docusaurus-mermaid-container .marker {
+  fill: #38bdf8 !important;
+  stroke: #38bdf8 !important;
+}
+
+/* 连线文字标签 (Edge Label) */
+[data-theme='dark'] .docusaurus-mermaid-container .edgeLabel {
+  background-color: transparent !important;
+}
+
+[data-theme='dark'] .docusaurus-mermaid-container .edgeLabel rect {
+  fill: #061522 !important;
+  stroke: rgba(56, 189, 248, 0.3) !important;
+  stroke-width: 1px !important;
+  rx: 4px;
+  ry: 4px;
+}
+
+[data-theme='dark'] .docusaurus-mermaid-container .edgeLabel span,
+[data-theme='dark'] .docusaurus-mermaid-container .edgeLabel text,
+[data-theme='dark'] .docusaurus-mermaid-container .edgeLabel div {
+  fill: #94a3b8 !important;
+  color: #94a3b8 !important;
+  font-size: 0.82rem !important;
+  font-weight: 500 !important;
+}
+
+/* 子图集群 (Cluster / Subgraph) */
+[data-theme='dark'] .docusaurus-mermaid-container .cluster rect {
+  fill: rgba(6, 19, 28, 0.6) !important;
+  stroke: rgba(56, 189, 248, 0.25) !important;
+  stroke-width: 1px !important;
+  stroke-dasharray: 4 4 !important;
+  rx: 8px;
+  ry: 8px;
+}
+
+[data-theme='dark'] .docusaurus-mermaid-container .cluster text,
+[data-theme='dark'] .docusaurus-mermaid-container .cluster span {
+  fill: #7dd3fc !important;
+  color: #7dd3fc !important;
+  font-weight: 700 !important;
+  font-size: 0.95rem !important;
+}
+
+/* ==========================================================================
+   KaTeX、代码块与提示框容器防溢出
+   ========================================================================== */
+
 /* KaTeX 数学公式玻璃卡片 */
 .katex-display {
   padding: 1.2rem 1.5rem;
@@ -185,6 +345,8 @@ body {
   box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.2);
   margin: 1.5rem 0;
   overflow-x: auto;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 /* Callout / Admonition 工业提示框 */
@@ -193,6 +355,9 @@ body {
   border: 1px solid;
   backdrop-filter: blur(8px);
   padding: 1rem 1.25rem;
+  max-width: 100%;
+  box-sizing: border-box;
+  word-break: break-word;
 }
 
 .alert--info {
@@ -219,6 +384,36 @@ body {
   border: 1px solid var(--tech-border-glow);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
   overflow: hidden;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* ==========================================================================
+   极细工业科技滚动条 (Custom Scrollbars)
+   ========================================================================== */
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(6, 19, 28, 0.4);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(56, 189, 248, 0.25);
+  border-radius: 3px;
+  transition: background 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(56, 189, 248, 0.5);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(56, 189, 248, 0.25) rgba(6, 19, 28, 0.4);
 }
 
 /* 页脚 (Footer) */
