@@ -1,50 +1,35 @@
 ---
 id: user.data-quality-governance
-title: 质量报告、治理方案与模拟扩展
+title: 质量报告、治理方案与派生版本
 document_type: user_guide
-document_version: 1.0.0
+document_version: 1.3.0
 status: published
 locale: zh-CN
-audience: [platform_user, operator, developer]
+audience: [platform_user, operator]
 related_modules: [M03]
-related_operators: [data_quality_profile_v1, qscore_v1, synthetic_extend_dataset_v1]
-related_apis: ["/api/v1/datasets/{id}/quality"]
+related_operators: [timeseries_quality_profile, timeseries_governance_basic, timeseries_synthetic_extension]
+related_apis: ["/api/v1/dataset-versions/{version_id}/quality-profiles", "/api/v1/dataset-versions/{version_id}/quality-reports"]
 owners: [product-team]
 reviewed_at: 2026-08-21
-summary: 说明五维数据质量评估雷达模型、Qscore 评分标准、治理策略配置与时序模拟扩展功能。
+summary: 在数据资产页面查看质量报告，并从治理工作流生成派生版本。
 ---
 
-# 质量报告、治理方案与模拟扩展
+# 质量报告、治理方案与派生版本
 
-低质量的管网时序数据会导致漏损评估假阳性或时序预测失真。平台内置了五维数据质量评估体系与一键治理模拟能力。
+## 用途
 
----
+质量报告帮助用户判断数据是否适合分析；治理流程生成新的派生版本，不改写原始版本。
 
-## 1. 五维数据质量评估体系 (Qscore)
+## 前置条件与角色
 
-平台对每一份导入的数据资产从五个核心维度进行量化诊断（总分 0~100 分）：
+需要查看数据质量的权限；生成派生版本还需要数据治理权限。要处理的数据版本必须已经准备完成。
 
-| 质量维度 | 评估要点 | 典型问题示例 |
-| :--- | :--- | :--- |
-| **完整性 (Completeness)** | 采样点覆盖率、连续缺失与离散缺失比例 | 传感器断电或通信中断造成的长时间无数据 |
-| **时间一致性 (Consistency)** | 采样步长是否恒定、是否存在时钟回退或乱序 | 本应 15 分钟上报一次的数据出现 3 分钟、28 分钟波动 |
-| **唯一性 (Uniqueness)** | 同一时间戳下是否存在重复记录 | 通信重发导致同一时间点存在多条冲突数据 |
-| **有效性 (Validity)** | 数值是否在物理合理区间（如流量非负、压力范围） | 传感器超量程出现负数或极大野值 |
-| **稳定性 (Stability)** | 异常突变率、方差分布与阶跃毛刺 | 瞬时强干扰导致的单点毛刺跳变 |
+## 操作步骤
 
----
+1. 在【数据源与导入】的【可用数据资产】中打开【详情与治理】，选择要查看的资产版本。
+2. 在资产详情查看当前版本、版本血缘树、指标通道和【质量报告】列表。页面没有单独的 Quality/【质量评估】页签，也没有手动重新评估按钮。
+3. 需要生成治理后的派生版本时，点击【创建治理工作流】；入口会带入当前资产版本，并预选 `timeseries_governance_basic`，然后按工作流页面的实际配置继续。
 
-## 2. 质量雷达与诊断报告
+## 结果与失败处理
 
-在数据资产详情页切换至【质量评估】选项卡：
-- **质量雷达图**：直观对比五维得分与综合 Qscore 等级（优秀 A > 90，良好 B > 75，需治理 C &lt; 75）；
-- **问题诊断明细**：表格精准列出异常时间区间、异常类型与受影响的通道；
-- **一键推荐治理方案**：系统基于诊断结果推荐治理算子组合（如 `时钟对齐` + `Hampel 去噪` + `线性插补`）。
-
----
-
-## 3. 时序模拟扩展 (Synthetic Extension)
-
-针对历史样本不足（如新建管网只有 3 天数据）的场景，可使用【模拟扩展】功能：
-- 提取现有数据的日周期与周周期特性；
-- 叠加高斯噪声与趋势漂移，生成长周期的逼真时序数据，用于验证算法长程鲁棒性。
+质量报告和派生版本状态以资产详情实际显示为准。治理完成后，资产详情会出现新的派生版本，父版本仍可查看。版本未准备好、报告缺失或治理任务失败时，先检查资产状态和任务详情，再按工作流页面提示修正输入并重新运行；质量报告不是业务结论。

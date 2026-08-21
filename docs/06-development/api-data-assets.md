@@ -2,89 +2,46 @@
 id: api.data-assets
 title: 数据源、CSV 导入、数据资产与质量 API
 document_type: development
-document_version: 1.0.0
+document_version: 1.1.0
 status: published
 locale: zh-CN
 audience: [developer]
 related_modules: [M02, M03]
 related_operators: []
-related_apis: ["/api/v1/datasets/upload", "/api/v1/datasets/import", "/api/v1/datasets", "/api/v1/datasets/{id}", "/api/v1/datasets/{id}/quality"]
+related_apis: ["/api/v1/data-sources", "/api/v1/data-sources/csv-uploads", "/api/v1/datasets", "/api/v1/data-quality-reports/{report_id}"]
 owners: [backend-team]
 reviewed_at: 2026-08-21
-summary: 数据源接入、文件上传预检、异步导入、资产元数据及 Qscore 质量报告查询 RESTful API 规范。
+summary: 记录只读 MySQL、CSV 草稿、数据版本、质量报告和派生版本接口。
 ---
 
 # 数据源、CSV 导入、数据资产与质量 API
 
----
+## 用途与权限
 
-## 1. CSV 文件上传预检
+用于只读数据源、CSV、资产版本和质量报告；权限分别使用 `data_source:*`、`ingestion:create`、`dataset:*`。
 
-- **接口**：`POST /api/v1/datasets/upload`
-- **请求头**：`Content-Type: multipart/form-data`, `Authorization: Bearer <TOKEN>`
-- **响应示例**：
+## 请求
 
-```json
-{
-  "code": "SUCCESS",
-  "data": {
-    "upload_id": "upl_98a72b",
-    "filename": "dma_sensors_202608.csv",
-    "total_rows_estimate": 2880,
-    "columns": ["timestamp", "inflow", "pressure", "night_flow"],
-    "preview_rows": [
-      {"timestamp": "2026-08-01 00:00:00", "inflow": "125.4", "pressure": "0.38"}
-    ]
-  },
-  "trace_id": "tr_190a2c"
-}
-```
+JSON 接口使用 `application/json`；CSV 上传使用 multipart，不要手动设置边界。
 
----
+## 响应
 
-## 2. 提交异步导入与通道映射
+异步导入和评分返回 `task_id`；资产与报告返回 `data` 包络。
 
-- **接口**：`POST /api/v1/datasets/import`
-- **请求体 (JSON)**：
+## 错误与重试
 
-```json
-{
-  "upload_id": "upl_98a72b",
-  "asset_name": "城东DMA-202608监测数据",
-  "time_column": "timestamp",
-  "time_format": "%Y-%m-%d %H:%M:%S",
-  "channel_mappings": {
-    "inflow": {"column": "inflow", "unit": "m3/h"},
-    "pressure": {"column": "pressure", "unit": "MPa"}
-  }
-}
-```
+表头、映射和权限错误按 `422`/`404` 处理；队列或对象存储故障先查看任务，再按策略人工重运行。
 
-- **响应**：返回 `task_id`，后台 Celery 队列异步解析并触发 Qscore 评估。
+## 1. 数据源和导入
 
----
+`POST /api/v1/data-sources` 只接受 `source_type: "mysql"` 且 `is_read_only: true`；`GET /api/v1/data-sources` 返回摘要；`POST /api/v1/data-sources/{source_id}/test` 测试保存连接；`POST /api/v1/ingestions` 提交已有源的异步导入。
 
-## 3. 查询数据资产详情与质量报告
+CSV 使用 `POST /api/v1/data-sources/csv-uploads` 的 multipart 字段 `source_name`、`csv_file`，响应包含 `batch_code`、表头、样例和映射建议。预览为 `GET /api/v1/csv-uploads/{batch_code}/preview`；提交映射为 `POST /api/v1/csv-uploads/{batch_code}/imports`，至少含 `point_column`、`time_column` 和一个 `metrics` 项。
 
-- **接口**：`GET /api/v1/datasets/{dataset_id}`
-- **质量接口**：`GET /api/v1/datasets/{dataset_id}/quality`
-- **响应示例**：
+## 2. 资产、版本和血缘
 
-```json
-{
-  "code": "SUCCESS",
-  "data": {
-    "dataset_id": "ds_48710f",
-    "version": "v1",
-    "qscore": 92.4,
-    "grade": "A",
-    "radar": {
-      "completeness": 0.98,
-      "timeliness": 0.95,
-      "uniqueness": 1.00,
-      "validity": 0.96,
-      "stability": 0.91
-    }
-  }
-}
-```
+`GET /api/v1/datasets` 查询资产，`GET /api/v1/datasets/{dataset_id}/versions` 查询版本，`GET /api/v1/dataset-versions/{version_id}/channels` 查询真实通道，`GET /api/v1/dataset-versions/{version_id}/lineage` 查询血缘。导入版本从平台 MySQL 时序表读取；治理形成的派生版本物化为 MinIO Parquet，调用方不直接依赖存储后端。
+
+## 3. 质量报告
+
+重新评分：`POST /api/v1/dataset-versions/{version_id}/quality-profiles`；报告列表：`GET /api/v1/dataset-versions/{version_id}/quality-reports`；报告详情：`GET /api/v1/data-quality-reports/{report_id}`；内容：`GET /api/v1/data-quality-reports/{report_id}/content?format=json|html`。等级为 A（≥90）、B（80–89.999）、C（60–79.999）、D（`<60`）。

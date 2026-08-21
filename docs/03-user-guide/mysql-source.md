@@ -2,39 +2,39 @@
 id: user.mysql-source
 title: 接入和导入只读 MySQL 数据源
 document_type: user_guide
-document_version: 1.0.0
+document_version: 1.3.0
 status: published
 locale: zh-CN
 audience: [platform_user, operator, developer]
 related_modules: [M02]
 related_operators: []
-related_apis: ["/api/v1/datasources/mysql"]
+related_apis: ["/api/v1/data-sources", "/api/v1/data-sources/{source_id}/test", "/api/v1/ingestions"]
 owners: [product-team]
 reviewed_at: 2026-08-21
-summary: 指导用户配置只读 MySQL 外部数据源连接、安全探查数据表、编写取数 SQL 并导入为平台资产。
+summary: 通过数据源页面连接只读 MySQL 并启动导入。
 ---
 
 # 接入和导入只读 MySQL 数据源
 
-针对已具备 SCADA、GIS 或营销抄表 MySQL 数据库的水务企业，平台支持通过**只读（Read-Only）连接**直接定时抽取或一次性导入管网时序数据。
+## 用途
 
----
+从已有水务 MySQL 读取监测数据，形成平台数据资产。平台只读取外部源库，不回写、修改或删除源数据。
 
-## 1. 数据源安全原则
+## 前置条件与角色
 
-- 平台仅要求外部数据库提供 `SELECT` 权限的只读账号；
-- 平台后端驱动默认开启 `read_only=True` 事务隔离模式，严禁向源数据库执行任何写入或修改操作。
+需要数据源和导入权限，并向源库管理员取得只读账号、连接信息和字段说明。不要在页面备注、截图或工单中复制密码。
 
----
+## 操作步骤
 
-## 2. 配置与导入步骤
+1. 打开【数据源与导入】，点击【接入只读 MySQL】。
+2. 在表单填写【数据源编码】、【数据源名称】、【只读 MySQL URI】、【表名】、【主键/水位字段】、【点位字段】、【时间字段】和【流量字段】，点击【保存只读数据源】。
+3. 保存后，在同页【数据接入记录】找到该数据源，先点击【测试连接】；连接成功后点击【开始增量导入】。
+4. 等待接入记录显示完成，再到【可用数据资产】打开生成的资产，选择需要的版本、点位和指标。
 
-1. **新建数据源连接**：
-   - 进入【数据管理】→【外部数据源】，点击【新建 MySQL 数据源】；
-   - 填写连接名称、主机 IP、端口（默认 3306）、数据库名、只读用户名与密码；
-   - 点击【测试连通性】，系统向源库发起轻量心跳探针；
-2. **探查与编写抽取 SQL**：
-   - 在 SQL 编辑器中输入时序抽取语句（如 `SELECT record_time, flow_rate, pressure FROM dma_sensor_log WHERE record_time >= '2026-08-01'`）；
-   - 点击【执行采样预览】，核验前 10 行时序样本；
-3. **映射通道并导入**：
-   - 指定时间戳列与各指标通道，提交导入任务，生成平台标准数据资产。
+## 结果与失败处理
+
+连接测试失败时，检查只读账号、URI、网络策略、表名和字段填写；不要改用写账号绕过限制。增量导入失败时打开接入记录或任务详情查看原因，修正源数据或表单后重新执行导入。资产未完成前不要把处理中状态当成可运行数据。
+
+## 开发联调
+
+页面与后端请求的字段约束见开发文档中的数据资产 API；用户操作不需要手写查询语句或接口请求。

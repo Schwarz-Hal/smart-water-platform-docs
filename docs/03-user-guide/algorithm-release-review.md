@@ -2,49 +2,34 @@
 id: user.algorithm-release-review
 title: 算法发布、审核、激活和回滚
 document_type: user_guide
-document_version: 1.0.0
+document_version: 1.3.0
 status: published
 locale: zh-CN
 audience: [developer, admin]
 related_modules: [M04]
 related_operators: []
-related_apis: ["/api/v1/operators/{code}/versions/{version}/publish"]
+related_apis: ["/api/v1/algorithms/{algorithm_code}/releases", "/api/v1/algorithm-releases/{release_id}/approve", "/api/v1/algorithm-releases/{release_id}/rollback"]
 owners: [algorithm-team]
 reviewed_at: 2026-08-21
-summary: 说明算子新版本提交发布申请、管理员安全审核、生产环境激活与故障版本一键回滚流程。
+summary: 查看算子版本与活动发布状态，并了解发布生命周期管理的当前入口边界。
 ---
 
 # 算法发布、审核、激活和回滚
 
-为保障生产环境工作流运行稳定性，平台对算法与算子的升级实行严格的**“研发提交 $\rightarrow$ 管理员审核 $\rightarrow$ 生产激活”**四眼原则管控。
+## 用途
 
----
+把实现版本、默认参数、模型、验证信息和算法文档组合成可审计的发布版本。
 
-## 1. 算法发布审批全流程
+## 前置条件与角色
 
-```mermaid
-sequenceDiagram
-    autonumber
-    actor Dev as 算法工程师
-    participant UI as 算子中心
-    actor Admin as 管理员
-    participant Core as 算子版本注册引擎
+算法作者或发布人员负责准备版本；具备审核权限的管理员负责独立审核。审核者不能是该版本的创建者或提交者。
 
-    Dev->>UI: 1. 提交新版本算子 (含代码包 & Schema)
-    UI->>Core: 记录为 PENDING_REVIEW 审核态
-    Admin->>UI: 2. 查验接口契约、安全扫描报告与测试用例
-    alt 审核通过
-        Admin->>UI: 3. 批准发布
-        UI->>Core: 状态标记为 ACTIVE 激活可用
-    else 驳回修改
-        Admin->>UI: 填写驳回意见
-        UI->>Core: 状态标记为 REJECTED
-    end
-```
+## 当前页面能力
 
----
+1. 打开【算子中心】，选择目标算子并进入【版本与评估】。
+2. 查看已登记的算子版本、版本状态/成熟度/可用性，以及页面显示的【活动发布版本】。
+3. 当前页面没有创建发布草稿、校验、提交审核、批准、激活、退役或回滚的完整管理控件。需要执行这些生命周期操作时，由具备相应权限的维护人员按 API 和开发文档操作；普通用户不应在页面上寻找不存在的按钮。
 
-## 2. 生产版本激活与紧急回滚
+## 结果与失败处理
 
-- **多版本并存**：新版本激活后，历史版本仍保持可用，避免破坏依赖旧版本的历史工作流；
-- **紧急停用与回滚**：若新版本在生产运行中出现非预期缺陷，管理员可一键将其标记为 `DEPRECATED`（弃用），工作流将自动回退调用最近的稳定版。
+版本与活动发布信息以【版本与评估】页实际显示为准。若需要创建或变更发布，先确认维护人员具备对应权限，并保留 API 返回的状态和错误信息；算法发布的审核规则要求创建者/提交者不能自行审核。生命周期操作只改变发布状态或活动指针，不覆盖历史版本，也不承诺自动回退或零停机。

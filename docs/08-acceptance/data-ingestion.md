@@ -2,33 +2,38 @@
 id: acceptance.data-ingestion
 title: CSV 与只读 MySQL 数据接入验收
 document_type: acceptance
-document_version: 1.0.0
+document_version: 1.0.1
 status: published
 locale: zh-CN
 audience: [project_stakeholder, operator, developer]
 related_modules: [M02]
 related_operators: [dataset_asset_v1]
-related_apis: ["/api/v1/datasets/upload", "/api/v1/datasets/import"]
+related_apis: ["/api/v1/data-sources/csv-uploads", "/api/v1/csv-uploads/{batch_code}/imports"]
 owners: [quality-team]
 reviewed_at: 2026-08-21
-summary: 验证标准 CSV 导入、采样预览、字段映射、时间戳解析及只读 MySQL 接入的验收步骤。
+summary: 验证 CSV 和只读 MySQL 数据接入步骤，并记录资产、任务和权限证据。
 ---
 
 # CSV 与只读 MySQL 数据接入验收
 
----
+## 1. 验收步骤
 
-## 1. 验收测试步骤
+- [ ] 准备经批准的测试 CSV，记录文件版本、字段和时间范围。
+- [ ] 执行上传预检和采样预览，记录解析、编码和字段映射结果。
+- [ ] 提交异步导入，记录任务状态变化和完成事件。
+- [ ] 查看生成的数据资产、版本和统计信息，并验证原始只读边界。
+- [ ] 如包含 MySQL 场景，使用只读凭据执行导入并记录失败处理结果。
 
-1. **准备测试数据集**：准备包含时间戳、`inflow` ($m^3/h$)、`pressure` ($MPa$) 的标准管网测试 CSV；
-2. **执行上传预检**：在前端上传文件，确认 10 行采样数据正确解析，列名无乱码；
-3. **完成字段映射**：正确映射时间列与各指标通道，提交异步导入；
-4. **验证资产生成与只读性**：进入资产列表，确认生成初始版本 `v1`，通道统计数据完整，且原始数据不可就地修改。
+## 2. 预期结果
 
----
+数据资产、版本、通道和导入任务应可通过记录的标识复核；任何字段、权限或状态异常都应保留失败证据。
 
-## 2. 验收核验标准
+## 3. 证据记录
 
-- [x] CSV 格式自动识别与编码自适应正常；
-- [x] 导入任务异步执行并实时推送完成通知；
-- [x] 数据资产元数据、时间跨度与各通道均值/极值计算准确。
+| 步骤 ID | 证据标识/链接 | 审阅人 | 日期 | 结论 |
+| --- | --- | --- | --- | --- |
+| DI-01 | 待执行：填写数据版本、文件校验值或报告链接 | 待指定 | 待填写 | [ ] 通过 |
+| DI-02 | 待执行：填写导入 run_id 或报告链接 | 待指定 | 待填写 | [ ] 通过 |
+| DI-03 | 待执行：填写任务 run_id、事件或报告链接 | 待指定 | 待填写 | [ ] 通过 |
+| DI-04 | 待执行：填写资产版本、trace_id 或报告链接 | 待指定 | 待填写 | [ ] 通过 |
+| DI-05 | 待执行：填写只读连接测试或报告链接 | 待指定 | 待填写 | [ ] 通过 |

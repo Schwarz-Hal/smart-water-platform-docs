@@ -2,42 +2,43 @@
 id: operations.middleware
 title: MySQL、RabbitMQ、Redis 和 MinIO 运维
 document_type: operations
-document_version: 1.0.0
+document_version: 1.1.0
 status: published
 locale: zh-CN
 audience: [operator]
 related_modules: [M07]
 related_operators: []
-related_apis: []
+related_apis: ["/health/ready"]
 owners: [operations-team]
 reviewed_at: 2026-08-21
-summary: 说明平台依赖的四个核心中间件配置要求、持久化存储、连接池与健康检查。
+summary: 说明四个依赖组件的职责、开发默认端口和健康检查边界。
 ---
 
 # MySQL、RabbitMQ、Redis 和 MinIO 运维
 
----
+## 前置条件
 
-## 1. 中间件规格与端口矩阵
+组件由服务器基础设施项目管理。端口只作为受控环境的配置参考，不应对浏览器或公共网络开放。
 
-| 中间件 | 版本要求 | 默认端口 | 平台职责与数据类型 |
-| :--- | :--- | :---: | :--- |
-| **MySQL** | 8.4 LTS | `3306` | 系统元数据、用户权限、工作流 DAG 拓扑、任务状态最终事实来源 |
-| **RabbitMQ** | 3.13+ | `5672` / `15672` | Celery 分布式任务队列 Broker，支持消息确认与任务持久化 |
-| **Redis** | 7.2+ | `6379` | 会话缓存、数据质量热数据缓存与 WebSocket 事件 Pub/Sub 广播 |
-| **MinIO** | Latest | `9000` / `9001` | S3 兼容对象存储，保存 CSV 数据集文件、中间时序表与图表 Artifacts |
+## 职责与开发默认端口
 
----
+| 组件 | 配置默认端口 | 平台职责 |
+| --- | ---: | --- |
+| MySQL | `13306` | 业务元数据、任务最终状态、审计和对象摘要 |
+| RabbitMQ | `15672` | 当前 Celery Broker，接收任务消息 |
+| Redis | `16379` | 缓存、实时进度事件和 WebSocket 发布订阅 |
+| MinIO | `19000` | CSV 原件、算法包、模型、Parquet 和大 Artifact |
 
-## 2. 常用运维指令
+端口来自后端配置默认值，服务器实际值以私有环境文件为准。
 
-```bash
-# 检查各中间件容器运行状态
-docker compose -f /opt/smart-water-platform/docker-compose.yml ps
+## 检查与失败处理
 
-# 查看 RabbitMQ 队列积压情况
-rabbitmqctl list_queues name messages_ready messages_unacknowledged
+发布后使用 `/health/ready` 检查四个依赖。RabbitMQ 中断时由 Scheduler 按任务分发表恢复投递；Redis 事件丢失时由 MySQL 查询恢复状态；MinIO 不可用时不要删除或覆盖 MySQL 元数据。运维命令必须在受控服务器执行，凭据使用安全工具注入。
 
-# 查看 Redis 内存与连接数
-redis-cli -a <REDIS_PASSWORD> info memory
-```
+## 操作步骤
+
+在基础设施项目中检查组件状态、持久化卷和连接；按组件责任修复后，再执行 readiness 和任务查询验证。
+
+## 验证与回退
+
+依赖全部就绪且代表性任务状态可查询后恢复业务。组件升级失败时按基础设施项目的已验证版本回退，不删除平台数据库或对象。
