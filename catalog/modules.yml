@@ -7,67 +7,123 @@ progress:
   show_breakdown: false
   label: 当前阶段交付完成度
 modules:
-  - id: M01
-    name: 用户与权限
-    category: platform
-    complexity: 3
-    milestone: 2026-11
-    included: true
-    evidence: {implementation: complete, tests: partial, integration: complete, user_docs: partial, api_docs: partial, deployment: complete}
-    documents: [platform.overview]
-  - id: M02
-    name: 数据资产接入与版本管理
-    category: data
-    complexity: 8
-    milestone: 2026-09
-    included: true
-    evidence: {implementation: complete, tests: complete, integration: complete, user_docs: partial, api_docs: complete, deployment: complete}
-    documents: [quickstart.first-quality-workflow]
-  - id: M03
-    name: 数据治理与质量分析
-    category: data
-    complexity: 5
-    milestone: 2026-11
-    included: true
-    evidence: {implementation: complete, tests: complete, integration: partial, user_docs: partial, api_docs: partial, deployment: complete}
-    documents: [quickstart.first-quality-workflow]
-  - id: M04
-    name: 算子与算法管理
-    category: algorithm
-    complexity: 8
-    milestone: 2026-11
-    included: true
-    evidence: {implementation: complete, tests: partial, integration: complete, user_docs: partial, api_docs: complete, deployment: complete}
-    documents: [algorithm.chronos2.overview]
-  - id: M05
-    name: 工作流编排中心
-    category: workflow
-    complexity: 8
-    milestone: 2026-09
-    included: true
-    evidence: {implementation: complete, tests: complete, integration: complete, user_docs: partial, api_docs: complete, deployment: complete}
-    documents: [user.workflow-editor]
-  - id: M06
-    name: S01 DMA 漏损评估
-    category: scenario
-    complexity: 8
-    milestone: 2026-09
-    included: true
-    evidence: {implementation: complete, tests: complete, integration: complete, user_docs: partial, api_docs: partial, deployment: complete}
-    documents: [scenario.s01-dma-leakage]
-  - id: M07
-    name: 任务中心与运行追溯
-    category: operations
-    complexity: 5
-    milestone: 2026-11
-    included: true
-    evidence: {implementation: complete, tests: complete, integration: complete, user_docs: partial, api_docs: complete, deployment: complete}
-    documents: [acceptance.workflow-closure]
-  - id: M08
-    name: 部署、运行时与健康检查
-    category: operations
-    complexity: 5
-    milestone: 2026-11
-    included: true
-    evidence: {implementation: complete, tests: partial, integration: complete, user_docs: partial, api_docs: partial, deployment: complete}
-    documents: [operations.health-topology]
+- id: M01
+  name: 用户与权限
+  category: platform
+  complexity: 3
+  milestone: 2026-11
+  included: true
+  evidence:
+    implementation: complete
+    tests: partial
+    integration: complete
+    user_docs: complete
+    api_docs: complete
+    deployment: complete
+  documents:
+  - platform.overview
+- id: M02
+  name: 数据资产接入与版本管理
+  category: data
+  complexity: 8
+  milestone: 2026-09
+  included: true
+  evidence:
+    implementation: complete
+    tests: complete
+    integration: complete
+    user_docs: complete
+    api_docs: complete
+    deployment: complete
+  documents:
+  - quickstart.first-quality-workflow
+- id: M03
+  name: 数据治理与质量分析
+  category: data
+  complexity: 5
+  milestone: 2026-11
+  included: true
+  evidence:
+    implementation: complete
+    tests: complete
+    integration: partial
+    user_docs: complete
+    api_docs: complete
+    deployment: complete
+  documents:
+  - quickstart.first-quality-workflow
+- id: M04
+  name: 算子与算法管理
+  category: algorithm
+  complexity: 8
+  milestone: 2026-11
+  included: true
+  evidence:
+    implementation: complete
+    tests: partial
+    integration: complete
+    user_docs: complete
+    api_docs: complete
+    deployment: complete
+  documents:
+  - algorithm.chronos2.overview
+- id: M05
+  name: 工作流编排中心
+  category: workflow
+  complexity: 8
+  milestone: 2026-09
+  included: true
+  evidence:
+    implementation: complete
+    tests: complete
+    integration: complete
+    user_docs: complete
+    api_docs: complete
+    deployment: complete
+  documents:
+  - user.workflow-editor
+- id: M06
+  name: S01 DMA 漏损评估
+  category: scenario
+  complexity: 8
+  milestone: 2026-09
+  included: true
+  evidence:
+    implementation: complete
+    tests: complete
+    integration: complete
+    user_docs: complete
+    api_docs: complete
+    deployment: complete
+  documents:
+  - scenario.s01-dma-leakage
+- id: M07
+  name: 任务中心与运行追溯
+  category: operations
+  complexity: 5
+  milestone: 2026-11
+  included: true
+  evidence:
+    implementation: complete
+    tests: complete
+    integration: complete
+    user_docs: complete
+    api_docs: complete
+    deployment: complete
+  documents:
+  - acceptance.workflow-closure
+- id: M08
+  name: 部署、运行时与健康检查
+  category: operations
+  complexity: 5
+  milestone: 2026-11
+  included: true
+  evidence:
+    implementation: complete
+    tests: partial
+    integration: complete
+    user_docs: complete
+    api_docs: complete
+    deployment: complete
+  documents:
+  - operations.health-topology

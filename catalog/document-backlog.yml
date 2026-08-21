@@ -28,9 +28,9 @@ collaboration:
     validation, site build, and inclusion in an approved snapshot.
 summary:
   total: 92
-  ready: 50
+  ready: 92
   expand: 0
-  missing: 42
+  missing: 0
   deferred: 0
   by_area:
     platform: 7
@@ -66,10 +66,11 @@ areas:
   - id: platform.architecture
     title: 平台组成、数据流与运行架构
     path: docs/01-platform/architecture.md
-    status: missing
+    status: ready
     priority: P1
     modules:
     - M08
+    version: 1.0.0
   - id: platform.core-concepts
     title: 数据资产、版本、算子、工作流和任务概念
     path: docs/01-platform/core-concepts.md
@@ -92,21 +93,23 @@ areas:
   - id: platform.resource-lifecycle
     title: 数据、工作流、任务和账户生命周期
     path: docs/01-platform/resource-lifecycle.md
-    status: missing
+    status: ready
     priority: P1
     modules:
     - M01
     - M02
     - M05
     - M07
+    version: 1.0.0
   - id: platform.algorithm-workflow-lifecycle
     title: 算法发布版本、模型与工作流复现关系
     path: docs/01-platform/algorithm-workflow-lifecycle.md
-    status: missing
+    status: ready
     priority: P1
     modules:
     - M04
     - M05
+    version: 1.0.0
   - id: platform.document-publication
     title: 文档快照、发布与交付文件
     path: docs/01-platform/document-publication.md
@@ -143,11 +146,12 @@ areas:
   - id: quickstart.chronos-forecast
     title: 使用 Chronos-2 完成一次流量预测
     path: docs/02-quick-start/chronos-forecast.md
-    status: missing
+    status: ready
     priority: P1
     modules:
     - M04
     - M05
+    version: 1.0.0
   - id: quickstart.dataset-governance
     title: 从原始数据生成治理派生版本
     path: docs/02-quick-start/dataset-governance.md
@@ -161,11 +165,12 @@ areas:
   - id: quickstart.train-anomaly-model
     title: 训练并使用季节稳健异常检测模型
     path: docs/02-quick-start/train-anomaly-model.md
-    status: missing
+    status: ready
     priority: P1
     modules:
     - M04
     - M05
+    version: 1.0.0
 - id: user_guide
   name: 用户操作手册
   evidence_sources:
@@ -183,11 +188,12 @@ areas:
   - id: user.portal
     title: 平台概览、快捷入口与继续工作
     path: docs/03-user-guide/platform-portal.md
-    status: missing
+    status: ready
     priority: P1
     modules:
     - M01
     - M07
+    version: 1.0.0
   - id: user.csv-import
     title: CSV 上传、预览、字段映射与导入
     path: docs/03-user-guide/csv-import.md
@@ -199,10 +205,11 @@ areas:
   - id: user.mysql-source
     title: 接入和导入只读 MySQL 数据源
     path: docs/03-user-guide/mysql-source.md
-    status: missing
+    status: ready
     priority: P1
     modules:
     - M02
+    version: 1.0.0
   - id: user.dataset-assets
     title: 数据资产详情、通道和当前版本
     path: docs/03-user-guide/dataset-assets.md
@@ -214,11 +221,12 @@ areas:
   - id: user.dataset-lineage
     title: 数据版本血缘树与历史版本查看
     path: docs/03-user-guide/dataset-lineage.md
-    status: missing
+    status: ready
     priority: P1
     modules:
     - M02
     - M03
+    version: 1.0.0
   - id: user.data-quality-governance
     title: 质量报告、治理方案与模拟扩展
     path: docs/03-user-guide/data-quality-governance.md
@@ -238,24 +246,27 @@ areas:
   - id: user.algorithm-training-models
     title: 算法训练任务与私有模型管理
     path: docs/03-user-guide/algorithm-training-models.md
-    status: missing
+    status: ready
     priority: P1
     modules:
     - M04
+    version: 1.0.0
   - id: user.algorithm-release-review
     title: 算法发布、审核、激活和回滚
     path: docs/03-user-guide/algorithm-release-review.md
-    status: missing
+    status: ready
     priority: P1
     modules:
     - M04
+    version: 1.0.0
   - id: user.external-algorithm-package
     title: 外部算法包接入与环境制备
     path: docs/03-user-guide/external-algorithm-package.md
-    status: missing
+    status: ready
     priority: P2
     modules:
     - M04
+    version: 1.0.0
   - id: user.workflow-library
     title: 新建、克隆、派生、归档和删除工作流
     path: docs/03-user-guide/workflow-library.md
@@ -293,34 +304,38 @@ areas:
   - id: user.task-center
     title: 任务筛选、日志、取消、重运行和删除
     path: docs/03-user-guide/task-center.md
-    status: missing
+    status: ready
     priority: P1
     modules:
     - M07
+    version: 1.0.0
   - id: user.users-roles
     title: 用户、角色和批量权限管理
     path: docs/03-user-guide/users-and-roles.md
-    status: missing
+    status: ready
     priority: P1
     modules:
     - M01
+    version: 1.0.0
   - id: user.recycle-bin
     title: 管理员回收站、恢复与永久清理
     path: docs/03-user-guide/recycle-bin.md
-    status: missing
+    status: ready
     priority: P1
     modules:
     - M01
     - M02
     - M05
     - M07
+    version: 1.0.0
   - id: user.documentation-center
     title: 文档中心、版本快照与离线文档
     path: docs/03-user-guide/documentation-center.md
-    status: missing
+    status: ready
     priority: P1
     modules:
     - M08
+    version: 1.0.0
 - id: scenario
   name: 业务场景方案
   evidence_sources:
@@ -347,19 +362,21 @@ areas:
   - id: scenario.flow-forecast
     title: 15 分钟流量预测场景与结果解释
     path: docs/04-scenarios/flow-forecast.md
-    status: missing
+    status: ready
     priority: P1
     modules:
     - M04
     - M05
+    version: 1.0.0
   - id: scenario.anomaly-detection
     title: 时序异常检测、模型训练与候选核验
     path: docs/04-scenarios/anomaly-detection.md
-    status: missing
+    status: ready
     priority: P1
     modules:
     - M04
     - M05
+    version: 1.0.0
 - id: algorithm_operator
   name: 算法与算子说明
   evidence_sources:
@@ -378,10 +395,11 @@ areas:
   - id: algorithm.seasonal-naive
     title: 季节朴素时序预测
     path: docs/05-algorithms/seasonal-naive.md
-    status: missing
+    status: ready
     priority: P1
     scope_keys:
     - seasonal_naive
+    version: 1.0.0
   - id: algorithm.chronos2.overview
     title: Chronos-2 时序预测
     path: docs/05-algorithms/chronos2.md
@@ -417,17 +435,19 @@ areas:
   - id: operator.dataset-deduplicate
     title: 数据集去重算子
     path: docs/05-algorithms/dataset-deduplicate.md
-    status: missing
+    status: ready
     priority: P1
     scope_keys:
     - deduplicate_dataset_v1
+    version: 1.0.0
   - id: operator.dataset-resample
     title: 数据集重采样算子
     path: docs/05-algorithms/dataset-resample.md
-    status: missing
+    status: ready
     priority: P1
     scope_keys:
     - resample_dataset_v1
+    version: 1.0.0
   - id: operator.missing-value-repair
     title: 缺失值修复算子
     path: docs/05-algorithms/missing-value-repair.md
@@ -447,10 +467,11 @@ areas:
   - id: operator.synthetic-extension
     title: 时序模拟扩展算子
     path: docs/05-algorithms/synthetic-extension.md
-    status: missing
+    status: ready
     priority: P1
     scope_keys:
     - synthetic_extend_dataset_v1
+    version: 1.0.0
   - id: operator.dataset-channel
     title: 数据通道绑定算子
     path: docs/05-algorithms/dataset-channel.md
@@ -462,17 +483,19 @@ areas:
   - id: operator.dataset-asset
     title: 整体数据资产绑定算子
     path: docs/05-algorithms/dataset-asset.md
-    status: missing
+    status: ready
     priority: P1
     scope_keys:
     - dataset_asset_v1
+    version: 1.0.0
   - id: operator.time-range
     title: 时间范围算子
     path: docs/05-algorithms/time-range.md
-    status: missing
+    status: ready
     priority: P1
     scope_keys:
     - time_range_v1
+    version: 1.0.0
   - id: operator.align-timeseries
     title: 时序对齐算子
     path: docs/05-algorithms/align-timeseries.md
@@ -484,10 +507,11 @@ areas:
   - id: operator.unit-convert
     title: 单位换算算子
     path: docs/05-algorithms/unit-convert.md
-    status: missing
+    status: ready
     priority: P1
     scope_keys:
     - unit_convert_v1
+    version: 1.0.0
   - id: operator.quality-gate
     title: 数据质量门算子
     path: docs/05-algorithms/quality-gate.md
@@ -499,17 +523,19 @@ areas:
   - id: operator.dataset-publish
     title: 派生数据版本发布算子
     path: docs/05-algorithms/dataset-publish.md
-    status: missing
+    status: ready
     priority: P1
     scope_keys:
     - dataset_publish_v1
+    version: 1.0.0
   - id: operator.candidate-table
     title: 漏损候选表算子
     path: docs/05-algorithms/candidate-table.md
-    status: missing
+    status: ready
     priority: P1
     scope_keys:
     - candidate_table_v1
+    version: 1.0.0
   - id: algorithm.s01-water-balance
     title: DMA 水量平衡
     path: docs/05-algorithms/s01-water-balance.md
@@ -529,10 +555,11 @@ areas:
   - id: algorithm.s01-pressure-correction
     title: 压力修正
     path: docs/05-algorithms/s01-pressure-correction.md
-    status: missing
+    status: ready
     priority: P1
     scope_keys:
     - s01_pressure_correction_v1
+    version: 1.0.0
   - id: algorithm.s01-seasonal-baseline
     title: 季节基线残差
     path: docs/05-algorithms/s01-seasonal-baseline.md
@@ -589,8 +616,9 @@ areas:
   - id: api.auth-users
     title: 认证、账户、用户与角色 API
     path: docs/06-development/api-auth-users.md
-    status: missing
+    status: ready
     priority: P1
+    version: 1.0.0
   - id: api.data-assets
     title: 数据源、CSV 导入、数据资产与质量 API
     path: docs/06-development/api-data-assets.md
@@ -612,28 +640,33 @@ areas:
   - id: api.tasks-events
     title: 任务、结果、日志与 WebSocket API
     path: docs/06-development/api-tasks-events.md
-    status: missing
+    status: ready
     priority: P1
+    version: 1.0.0
   - id: api.lifecycle
     title: 资源回收与用户生命周期 API
     path: docs/06-development/api-resource-lifecycle.md
-    status: missing
+    status: ready
     priority: P1
+    version: 1.0.0
   - id: api.external-runtime
     title: 外部算法包与 Runtime Profile API
     path: docs/06-development/api-external-runtime.md
-    status: missing
+    status: ready
     priority: P2
+    version: 1.0.0
   - id: development.operator-sdk
     title: 内置算法接入与 Operator SDK 开发指南
     path: docs/06-development/operator-sdk.md
-    status: missing
+    status: ready
     priority: P1
+    version: 1.0.0
   - id: development.document-sync
     title: 文档发布清单与平台同步协议
     path: docs/06-development/document-sync.md
-    status: missing
+    status: ready
     priority: P1
+    version: 1.0.0
 - id: operations
   name: 部署运维
   evidence_sources:
@@ -656,8 +689,9 @@ areas:
   - id: operations.configuration
     title: 配置项、密钥边界与环境检查
     path: docs/07-operations/configuration.md
-    status: missing
+    status: ready
     priority: P1
+    version: 1.0.0
   - id: operations.middleware
     title: MySQL、RabbitMQ、Redis 和 MinIO 运维
     path: docs/07-operations/middleware.md
@@ -679,8 +713,9 @@ areas:
   - id: operations.backup-recovery
     title: MySQL、MinIO 与发布版本备份恢复
     path: docs/07-operations/backup-and-recovery.md
-    status: missing
+    status: ready
     priority: P1
+    version: 1.0.0
   - id: operations.monitoring-logs
     title: 任务状态、服务日志与常见故障排查
     path: docs/07-operations/monitoring-and-logs.md
@@ -690,13 +725,15 @@ areas:
   - id: operations.security
     title: 账户、网络、凭据和只读数据源安全
     path: docs/07-operations/security.md
-    status: missing
+    status: ready
     priority: P1
+    version: 1.0.0
   - id: operations.document-publication
     title: 文档快照发布、同步和失败恢复
     path: docs/07-operations/document-publication.md
-    status: missing
+    status: ready
     priority: P1
+    version: 1.0.0
 - id: acceptance
   name: 测试验收与交付
   evidence_sources:
@@ -713,8 +750,9 @@ areas:
   - id: acceptance.identity-permissions
     title: 注册、权限隔离与管理员操作验收
     path: docs/08-acceptance/identity-and-permissions.md
-    status: missing
+    status: ready
     priority: P1
+    version: 1.0.0
   - id: acceptance.data-ingestion
     title: CSV 与只读 MySQL 数据接入验收
     path: docs/08-acceptance/data-ingestion.md
@@ -736,8 +774,9 @@ areas:
   - id: acceptance.cpu-algorithms
     title: 内置 CPU 算法与结果契约验收
     path: docs/08-acceptance/cpu-algorithms.md
-    status: missing
+    status: ready
     priority: P1
+    version: 1.0.0
   - id: acceptance.gpu-chronos
     title: GPU Worker 与 Chronos-2 预测验收
     path: docs/08-acceptance/gpu-chronos.md
@@ -747,15 +786,18 @@ areas:
   - id: acceptance.algorithm-lifecycle
     title: 训练、模型、审核、激活与回滚验收
     path: docs/08-acceptance/algorithm-lifecycle.md
-    status: missing
+    status: ready
     priority: P1
+    version: 1.0.0
   - id: acceptance.resource-lifecycle
     title: 回收站、注销和自动清理验收
     path: docs/08-acceptance/resource-lifecycle.md
-    status: missing
+    status: ready
     priority: P1
+    version: 1.0.0
   - id: acceptance.documentation-delivery
     title: 文档站、快照、PDF、DOCX 和离线包验收
     path: docs/08-acceptance/documentation-delivery.md
-    status: missing
+    status: ready
     priority: P1
+    version: 1.0.0
