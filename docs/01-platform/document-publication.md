@@ -2,7 +2,7 @@
 id: platform.document-publication
 title: 平台版本生命周期与契约规范
 document_type: platform
-document_version: 1.0.0
+document_version: 1.0.1
 status: published
 locale: zh-CN
 audience: [platform_user, developer, project_stakeholder]
