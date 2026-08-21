@@ -38,6 +38,9 @@ flowchart LR
 | 工作流 | 通过节点与连接组织数据处理和算法分析步骤。 |
 | 任务中心 | 查询运行状态、日志、重试信息与结果追溯。 |
 
-## 文档快照
+## 下一步指引
 
-本仓库的 `main` 用于协作更新。公开文档站、平台内文档与交付文件只使用人工批准的不可变快照，因此日常写作不会自动改变对外交付内容。
+- **快速上手**：参考 [从上传 CSV 到运行第一个质量分析工作流](/docs/quick-start/quickstart.first-quality-workflow)，在 5 分钟内创建并运行首个分析流；
+- **探索算法**：查阅 [Chronos-2 时序预测](/docs/algorithms/algorithm.chronos2.overview) 与水务算法模型库；
+- **业务场景**：了解 [S01 DMA 漏损评估流程与结果解释](/docs/scenarios/scenario.s01-dma-leakage)；
+- **开发者与 API**：查阅 [登录认证与调用第一个 API](/docs/development/development.first-api-call)。

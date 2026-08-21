@@ -1,21 +1,43 @@
 ---
 id: platform.document-publication
-title: 文档发布与快照说明
+title: 平台版本生命周期与契约规范
 document_type: platform
 document_version: 1.0.0
 status: published
 locale: zh-CN
-audience: [project_stakeholder, developer]
-related_modules: [M08]
+audience: [platform_user, developer, project_stakeholder]
+related_modules: [M01, M04, M05, M08]
 related_operators: []
 related_apis: []
-owners: [documentation-team]
+owners: [platform-team]
 reviewed_at: 2026-08-20
-summary: 说明文档如何从协作内容冻结为可复现的交付快照。
+summary: 说明平台数据资产、算法算子、工作流拓扑及执行记录的版本不可变性与契约设计。
 ---
 
-# 文档发布与快照说明
+# 平台版本生命周期与契约规范
 
-文档发布使用不可移动的 Git Tag 作为快照标识，例如 `docs-snapshot-2026-08-20`。每个快照记录来源提交、章节清单、导出文件及其 SHA256。公开站点只在人工发布快照后更新。
+智慧水务算法平台以**高可靠、可复现、可追溯**为核心设计原则。平台中流转的数据资产、算法模型、算子拓扑与运行执行均遵循严格的不可变生命周期与契约规范。
 
-快照可重复导出为 PDF、DOCX 和离线 HTML。交付方可通过快照 Tag、提交 ID 和校验和确认文件来源。
+---
+
+## 1. 算法算子版本机制
+
+1. **语义化版本 (SemVer)**：所有算子与算法包均遵循 `MAJOR.MINOR.PATCH` 规范；
+2. **不可变发布承诺**：一旦算子版本发布并处于 `active` 状态，其输入输出端口契约（JSON Schema）与底层执行代码即刻冻结，杜绝因下游隐式变更导致的既有流程失效；
+3. **参数快照与默认值隔离**：
+   - 算子版本定义其合法的 `parameter_schema` 及全局默认执行参数；
+   - 工作流节点实例化时生成参数覆写快照，确保历史任务的参数环境终身可重现。
+
+---
+
+## 2. 数据资产治理与血缘不可变性
+
+1. **只读数据版本**：导入的管网监测时序数据以版本化只读方式存储，任何数据清洗、对齐、插补与扩展操作均作为派生算子生成新的数据资产版本；
+2. **多通道血缘溯源**：平台自动记录并呈现数据通道的血缘演进链条（Lineage Tree），清晰回溯派生数据对应的原始采集源。
+
+---
+
+## 3. 工作流拓扑冻结与执行追溯
+
+1. **草稿与发布解耦**：工作流支持多人交互式草稿调试；进入生产运行前必须通过有向无环图（DAG）连通性与端口兼容性强校验，并生成不可变发布版本；
+2. **全链路 Artifacts 追溯**：每次任务运行均完整记录 `trace_id`、使用的节点算子版本号、输入数据快照哈希、节点标准日志与产出的可视化图表或中间表结果，提供工业级的审计支撑能力。
