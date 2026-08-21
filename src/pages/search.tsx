@@ -62,12 +62,9 @@ export default function SearchPage(): ReactNode {
     <Layout title="全文搜索" description="检索智慧水务算法平台全量技术文档与 API 规范">
       <main className="container margin-vert--lg" style={{maxWidth: '920px', minHeight: '65vh'}}>
         <div style={{marginBottom: '1.75rem'}}>
-          <h1 style={{fontSize: '2rem', fontWeight: 800, marginBottom: '0.5rem', letterSpacing: '-0.02em'}}>
-            🔍 文档全库检索
+          <h1 style={{fontSize: '2rem', fontWeight: 800, margin: 0, letterSpacing: '-0.02em'}}>
+            🔍 文档检索
           </h1>
-          <p style={{color: '#94a3b8', fontSize: '0.95rem', margin: 0}}>
-            基于毫秒级全文静态索引，覆盖平台架构、快速入门、算法模型库、API 契约及运维测试全量 96 篇文档。
-          </p>
         </div>
 
         {loadError && (
