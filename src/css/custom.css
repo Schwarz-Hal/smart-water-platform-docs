@@ -88,27 +88,100 @@ body {
   border-bottom: 2px solid var(--ifm-color-primary);
 }
 
-/* 侧边栏 (Sidebar) 工业科技风格 */
+/* ==========================================================================
+   侧边栏 (Sidebar) 层级分明工业科技风格与字号层级
+   ========================================================================== */
 .theme-doc-sidebar-menu {
   font-size: 0.92rem;
-  padding: 0.5rem 0;
+  padding: 0.75rem 0.5rem 2rem;
 }
 
-.theme-doc-sidebar-item-link .menu__link {
+/* 一级分类标题（如 01 平台说明、02 快速开始、03 用户操作手册...） */
+.theme-doc-sidebar-item-category-level-1 {
+  margin-top: 1rem;
+  border-bottom: 1px solid rgba(56, 189, 248, 0.08);
+  padding-bottom: 0.35rem;
+}
+
+.theme-doc-sidebar-item-category-level-1:first-child {
+  margin-top: 0.25rem;
+}
+
+.theme-doc-sidebar-item-category-level-1 > .menu__list-item-collapsible > .menu__link,
+.theme-doc-sidebar-item-category-level-1 > .menu__link {
+  font-size: 1.02rem !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.01em;
+  padding: 0.55rem 0.75rem;
   border-radius: 6px;
+  color: var(--ifm-font-color-base) !important;
+  transition: all 0.2s ease;
+}
+
+[data-theme='dark'] .theme-doc-sidebar-item-category-level-1 > .menu__list-item-collapsible > .menu__link,
+[data-theme='dark'] .theme-doc-sidebar-item-category-level-1 > .menu__link {
+  color: #f1f5f9 !important;
+}
+
+.theme-doc-sidebar-item-category-level-1 > .menu__list-item-collapsible > .menu__link:hover,
+.theme-doc-sidebar-item-category-level-1 > .menu__link:hover {
+  background: rgba(56, 189, 248, 0.08) !important;
+  color: var(--ifm-color-primary) !important;
+}
+
+/* 一级分类的折叠箭头 */
+.theme-doc-sidebar-item-category-level-1 .menu__caret {
+  padding: 0.55rem 0.75rem;
+}
+
+.theme-doc-sidebar-item-category-level-1 .menu__caret:before {
+  background: var(--ifm-color-primary);
+}
+
+/* 二级文档链接项（如 算法发布版本、平台组成、数据资产...） */
+.theme-doc-sidebar-item-link-level-2 .menu__link,
+.menu__list .menu__list .menu__link {
+  font-size: 0.88rem !important;
+  font-weight: 400 !important;
+  line-height: 1.45;
+  padding: 0.4rem 0.75rem 0.4rem 1.1rem;
+  margin: 0.15rem 0;
+  border-radius: 6px;
+  color: #64748b !important;
   transition: all 0.18s ease;
   position: relative;
 }
 
-.theme-doc-sidebar-item-link .menu__link--active {
-  background: rgba(56, 189, 248, 0.12) !important;
-  color: var(--ifm-color-primary) !important;
-  font-weight: 600;
-  border-left: 3px solid var(--ifm-color-primary);
+[data-theme='dark'] .theme-doc-sidebar-item-link-level-2 .menu__link,
+[data-theme='dark'] .menu__list .menu__list .menu__link {
+  color: #94a3b8 !important;
 }
 
-.menu__link:hover {
-  background: rgba(56, 189, 248, 0.06);
+/* 二级链接悬停 */
+.theme-doc-sidebar-item-link-level-2 .menu__link:hover,
+.menu__list .menu__list .menu__link:hover {
+  background: rgba(56, 189, 248, 0.06) !important;
+  color: var(--ifm-color-primary) !important;
+  transform: translateX(2px);
+}
+
+/* 二级链接当前活跃高亮状态 (Active) */
+.theme-doc-sidebar-item-link-level-2 .menu__link--active,
+.menu__list .menu__list .menu__link--active {
+  background: rgba(56, 189, 248, 0.12) !important;
+  color: var(--ifm-color-primary) !important;
+  font-weight: 600 !important;
+  border-left: 3px solid var(--ifm-color-primary) !important;
+  padding-left: calc(1.1rem - 3px) !important;
+  box-shadow: 0 2px 10px rgba(56, 189, 248, 0.08);
+}
+
+/* 三级子菜单项（若有） */
+.theme-doc-sidebar-item-link-level-3 .menu__link,
+.menu__list .menu__list .menu__list .menu__link {
+  font-size: 0.82rem !important;
+  padding-left: 1.6rem !important;
+  color: #64748b !important;
 }
 
 /* 正文标题与排版 */
