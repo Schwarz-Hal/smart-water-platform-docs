@@ -524,3 +524,95 @@ body {
   padding-top: 1.5rem;
 }
 
+/* ==========================================================================
+   Pagefind 搜索界面工业水务科技主题定制
+   ========================================================================== */
+
+:root {
+  --pagefind-ui-scale: 0.95;
+  --pagefind-ui-primary: #0284c7;
+  --pagefind-ui-text: #1e293b;
+  --pagefind-ui-background: #ffffff;
+  --pagefind-ui-border: rgba(2, 132, 199, 0.2);
+  --pagefind-ui-tag: #0284c7;
+  --pagefind-ui-border-width: 1px;
+  --pagefind-ui-border-radius: 8px;
+  --pagefind-ui-image-border-radius: 6px;
+  --pagefind-ui-font: var(--ifm-font-family-base);
+}
+
+[data-theme='dark'] {
+  --pagefind-ui-primary: #38bdf8;
+  --pagefind-ui-text: #f1f5f9;
+  --pagefind-ui-background: #081d2f;
+  --pagefind-ui-border: rgba(56, 189, 248, 0.25);
+  --pagefind-ui-tag: #0284c7;
+}
+
+.pagefind-ui .pagefind-ui__search-input {
+  border-radius: 8px !important;
+  font-weight: 500 !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12) !important;
+  border: 1px solid var(--pagefind-ui-border) !important;
+  background: var(--pagefind-ui-background) !important;
+  color: var(--pagefind-ui-text) !important;
+  transition: all 0.2s ease !important;
+}
+
+.pagefind-ui .pagefind-ui__search-input:focus {
+  border-color: #38bdf8 !important;
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.25) !important;
+  outline: none !important;
+}
+
+.pagefind-ui .pagefind-ui__result {
+  border-radius: 10px !important;
+  border: 1px solid var(--tech-border-glow) !important;
+  background: rgba(10, 30, 46, 0.5) !important;
+  backdrop-filter: blur(8px) !important;
+  padding: 1.25rem 1.5rem !important;
+  margin: 1rem 0 !important;
+  transition: all 0.2s ease !important;
+}
+
+.pagefind-ui .pagefind-ui__result:hover {
+  border-color: #38bdf8 !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25) !important;
+}
+
+.pagefind-ui .pagefind-ui__result-link {
+  color: #38bdf8 !important;
+  font-weight: 700 !important;
+  font-size: 1.05rem !important;
+  text-decoration: none !important;
+}
+
+.pagefind-ui .pagefind-ui__result-excerpt {
+  color: #94a3b8 !important;
+  line-height: 1.6 !important;
+  font-size: 0.9rem !important;
+}
+
+.pagefind-ui mark {
+  background: rgba(56, 189, 248, 0.25) !important;
+  color: #38bdf8 !important;
+  font-weight: 600 !important;
+  border-radius: 3px !important;
+  padding: 0.1em 0.3em !important;
+}
+
+.pagefind-ui .pagefind-ui__button {
+  background: rgba(56, 189, 248, 0.1) !important;
+  border: 1px solid rgba(56, 189, 248, 0.3) !important;
+  color: #38bdf8 !important;
+  border-radius: 6px !important;
+  font-weight: 600 !important;
+  transition: all 0.2s ease !important;
+}
+
+.pagefind-ui .pagefind-ui__button:hover {
+  background: rgba(56, 189, 248, 0.2) !important;
+  border-color: #38bdf8 !important;
+}
+
