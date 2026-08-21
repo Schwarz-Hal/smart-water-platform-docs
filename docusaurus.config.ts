@@ -43,7 +43,6 @@ const config: Config = {
       {
         docs: {
           sidebarPath: './sidebars.ts',
-          editUrl: 'https://github.com/Schwarz-Hal/smart-water-platform-docs/tree/main/',
           exclude: ['intro.mdx', 'tutorial-basics/**', 'tutorial-extras/**'],
           remarkPlugins: [remarkMath],
           rehypePlugins: [rehypeKatex],
@@ -84,11 +83,6 @@ const config: Config = {
         {to: '/docs/scenarios/scenario.s01-dma-leakage', label: '业务场景', position: 'left'},
         {to: '/docs/development/development.first-api-call', label: 'API 参考', position: 'left'},
         {to: '/search', label: '搜索', position: 'left'},
-        {
-          href: 'https://github.com/Schwarz-Hal/smart-water-platform-docs',
-          label: 'GitHub',
-          position: 'right',
-        },
       ],
     },
     footer: {
@@ -144,12 +138,12 @@ const config: Config = {
               to: '/docs/operations/operations.health-topology',
             },
             {
-              label: '平台源码 (GitHub)',
-              href: 'https://github.com/Schwarz-Hal/smart-water-platform-backend',
+              label: '系统验收与闭环',
+              to: '/docs/acceptance/acceptance.workflow-closure',
             },
             {
-              label: '文档仓库 (GitHub)',
-              href: 'https://github.com/Schwarz-Hal/smart-water-platform-docs',
+              label: '多通道数据治理',
+              to: '/docs/scenarios/scenario.timeseries-governance',
             },
           ],
         },
