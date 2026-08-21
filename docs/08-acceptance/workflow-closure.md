@@ -2,7 +2,7 @@
 id: acceptance.workflow-closure
 title: 系统全流程闭环验收与验证指南
 document_type: acceptance
-document_version: 1.0.0
+document_version: 1.0.1
 status: published
 locale: zh-CN
 audience: [project_stakeholder, operator, developer]
