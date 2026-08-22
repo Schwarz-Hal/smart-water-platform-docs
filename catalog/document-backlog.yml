@@ -281,7 +281,7 @@ areas:
         path: docs/03-user-guide/workflow-editor.md
         status: expand
         priority: P0
-        version: 1.1.0
+        version: 1.2.0
         modules:
           - M05
       - id: user.workflow-run
