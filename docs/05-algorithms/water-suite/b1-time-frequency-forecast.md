@@ -2,7 +2,7 @@
 id: algorithm.water-b1-time-frequency-forecast
 title: B1 非平稳时频协同多变量预测
 document_type: algorithm
-document_version: 0.1.0
+document_version: 0.2.0
 status: draft
 locale: zh-CN
 audience: [algorithm_user, operator]
@@ -23,6 +23,10 @@ B1 对每个设备的流量和压力联合建模，用过去 96 个采样点直�
 本文描述实验模型和评估口径，不把实验输出解释为生产可用性、漏损结论或业务准确率。
 
 ## 方法原理
+
+![B1 非平稳时频协同多变量预测架构图](../../../static/assets/water-suite/b1-time-frequency-architecture.svg)
+
+*图：B1 从流量、压力与时间特征，经 ReVIN、潜在工况上下文及时频分支协同，输出未来 12 点流量和压力预测的主要路径。*
 
 ### 归一化与潜在工况
 

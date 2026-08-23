@@ -6,3 +6,27 @@ assets:
     source: 基于 Chronos-2 论文方法重绘
     license: CC-BY-4.0 方法说明的衍生示意
     used_by: [algorithm.chronos2.overview]
+  - path: static/assets/water-suite/b1-time-frequency-architecture.svg
+    title: B1 非平稳时频协同预测架构图
+    alt: 流量与压力历史窗口经过非平稳归一化、时域和频域双分支编码及融合后，输出未来流量和压力预测。
+    source: 项目 B1 算法实现结构示意
+    license: CC-BY-4.0 项目文档原创图示
+    used_by: [algorithm.water-b1-time-frequency-forecast]
+  - path: static/assets/water-suite/b2-probabilistic-architecture.svg
+    title: B2 外生驱动概率预测架构图
+    alt: 流量压力历史与外生特征经过门控交互和时序编码后，生成有序分位数、校准区间与超阈风险。
+    source: 项目 B2 算法实现结构示意
+    license: CC-BY-4.0 项目文档原创图示
+    used_by: [algorithm.water-b2-probabilistic-forecast]
+  - path: static/assets/water-suite/c1-adaptive-anomaly-architecture.svg
+    title: C1 深度分布漂移自适应异常检测架构图
+    alt: 流量压力窗口经过深度编码和多类异常证据计算，并结合正常参考记忆生成自适应异常分数。
+    source: 项目 C1 算法实现结构示意
+    license: CC-BY-4.0 项目文档原创图示
+    used_by: [algorithm.water-c1-adaptive-anomaly]
+  - path: static/assets/water-suite/c2-morphology-relation-architecture.svg
+    title: C2 形态关系多证据异常检测架构图
+    alt: 流量压力窗口与训练相关性上下文分别形成形态、关系和历史证据，经自适应融合后输出异常分数和诊断候选。
+    source: 项目 C2 算法实现结构示意
+    license: CC-BY-4.0 项目文档原创图示
+    used_by: [algorithm.water-c2-morphology-relation-anomaly]

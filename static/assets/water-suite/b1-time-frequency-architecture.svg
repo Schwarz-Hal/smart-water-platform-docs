@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 500" role="img" aria-labelledby="title desc">
+  <title id="title">B1 非平稳时频协同多变量预测架构</title>
+  <desc id="desc">流量、压力与时间特征经过 ReVIN 和潜在工况识别后，分别进入 TCN 加 Transformer 时域分支和多尺度 RFFT 频域分支，再通过交叉注意力与门控融合输出未来十二步流量和压力预测。</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f6faff"/><stop offset="1" stop-color="#edf7f8"/></linearGradient>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 10 5 0 10z" fill="#3976a8"/></marker>
+    <style>
+      .t{font:700 22px Inter,Microsoft YaHei,sans-serif;fill:#17324d}.b{font:700 15px Inter,Microsoft YaHei,sans-serif;fill:#17324d}.s{font:13px Inter,Microsoft YaHei,sans-serif;fill:#536b82}.n{fill:#fff;stroke:#8fb7dc;stroke-width:1.5}.ar{stroke:#3976a8;stroke-width:3;fill:none;marker-end:url(#arrow)}.branch{fill:#eaf5f8;stroke:#7ea6cc;stroke-width:1.5}
+    </style>
+  </defs>
+  <rect width="1200" height="500" rx="24" fill="url(#bg)"/>
+  <text x="40" y="48" class="t">B1：非平稳时频协同多变量预测</text>
+  <g transform="translate(35 112)"><rect class="n" width="165" height="175" rx="16"/><text x="82" y="34" text-anchor="middle" class="b">历史窗口</text><text x="82" y="67" text-anchor="middle" class="s">96 点 · 流量</text><text x="82" y="90" text-anchor="middle" class="s">压力 · 时间特征</text><path d="M25 130c20-45 38 28 58-8s43-31 63 7" fill="none" stroke="#1886b3" stroke-width="4"/><path d="M25 151c19-20 39 25 58-1s40-18 63 6" fill="none" stroke="#55a89b" stroke-width="3"/></g>
+  <path class="ar" d="M208 200h28"/>
+  <g transform="translate(240 100)"><rect class="n" width="175" height="200" rx="16"/><text x="87" y="34" text-anchor="middle" class="b">稳定化与状态</text><rect x="20" y="55" width="135" height="38" rx="9" fill="#e9f8f5"/><text x="87" y="79" text-anchor="middle" class="s">ReVIN 归一化</text><rect x="20" y="108" width="135" height="58" rx="9" fill="#eef5ff"/><text x="87" y="130" text-anchor="middle" class="s">潜在工况识别</text><text x="87" y="151" text-anchor="middle" class="s">统计特征 → softmax</text><text x="87" y="185" text-anchor="middle" class="s">无工况标签监督</text></g>
+  <path class="ar" d="M425 200h36"/>
+  <g transform="translate(465 76)"><rect class="branch" width="270" height="248" rx="18"/><text x="135" y="32" text-anchor="middle" class="b">并行时频编码</text><rect class="n" x="15" y="50" width="240" height="86" rx="12"/><text x="135" y="76" text-anchor="middle" class="b">时域分支</text><text x="135" y="98" text-anchor="middle" class="s">多尺度趋势 → 因果空洞 TCN</text><text x="135" y="119" text-anchor="middle" class="s">→ Transformer</text><rect class="n" x="15" y="150" width="240" height="82" rx="12"/><text x="135" y="176" text-anchor="middle" class="b">频域分支</text><text x="135" y="198" text-anchor="middle" class="s">尺度 1/2/4 的 RFFT</text><text x="135" y="219" text-anchor="middle" class="s">→ 频率与低/高频注意力</text></g>
+  <path class="ar" d="M750 200h35"/>
+  <g transform="translate(785 115)"><rect class="n" width="155" height="170" rx="16"/><text x="77" y="34" text-anchor="middle" class="b">协同融合</text><rect x="18" y="57" width="119" height="38" rx="9" fill="#e9f8f5"/><text x="77" y="81" text-anchor="middle" class="s">交叉注意力</text><rect x="18" y="108" width="119" height="38" rx="9" fill="#eef5ff"/><text x="77" y="132" text-anchor="middle" class="s">sigmoid 门控</text><text x="77" y="160" text-anchor="middle" class="s">时域 + 频域 + 设备</text></g>
+  <path class="ar" d="M955 200h36"/>
+  <g transform="translate(995 112)"><rect class="n" width="170" height="175" rx="16"/><text x="85" y="34" text-anchor="middle" class="b">直接多步输出</text><rect x="24" y="62" width="122" height="34" rx="9" fill="#dff3ee"/><text x="85" y="84" text-anchor="middle" class="s">未来 12 点</text><text x="85" y="121" text-anchor="middle" class="s">流量预测</text><text x="85" y="143" text-anchor="middle" class="s">压力预测</text></g>
+  <g transform="translate(35 366)"><rect width="1130" height="82" rx="14" fill="#fff" stroke="#d7e1ec"/><text x="24" y="31" class="b">图中路径</text><text x="24" y="58" class="s">共享输入经 ReVIN 稳定化；潜在工况作为软状态上下文注入两条分支，时频状态经交叉注意力与门控后恢复到流量/压力物理尺度。</text></g>
+</svg>
