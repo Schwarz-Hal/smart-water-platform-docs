@@ -2,7 +2,7 @@
 id: algorithm.water-b2-probabilistic-forecast
 title: B2 外生驱动轻量概率预测
 document_type: algorithm
-document_version: 0.1.0
+document_version: 0.2.0
 status: draft
 locale: zh-CN
 audience: [algorithm_user, operator]
@@ -23,6 +23,10 @@ B2 对每个设备的流量和压力进行联合概率预测，在过去 96 个�
 本文描述实验模型和评估口径。超阈概率是由三个分位数近似得到的统计量，不是故障、漏损或控制动作结论。
 
 ## 方法原理
+
+![B2 外生驱动轻量概率预测架构图](../../../static/assets/water-suite/b2-probabilistic-architecture.svg)
+
+*图：B2 从流量、压力及时间/可选外生特征，经门控时序编码、单调分位数头、区间校准与风险解释的主要路径。*
 
 ### 外生交互与分位数头
 

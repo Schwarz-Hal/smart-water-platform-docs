@@ -2,7 +2,7 @@
 id: algorithm.water-c2-morphology-relation-anomaly
 title: C2 形态—关系一致性多证据异常检测
 document_type: algorithm
-document_version: 0.1.0
+document_version: 0.2.0
 status: draft
 locale: zh-CN
 audience: [algorithm_user, operator]
@@ -23,6 +23,10 @@ C2 对每个设备的流量和压力窗口融合三类证据：时序形态、�
 当前没有真实管网拓扑、设备类型、运行日志或人工异常类型标签。因此拓扑由训练集相关性推断，原因路径和类型都是诊断候选，不是已核验的根因或现场关系。与 C1 一样，模型训练不读取真实标签，但验证集 Best-F1 阈值使用传感器有效性标签。
 
 ## 方法原理
+
+![C2 形态—关系一致性异常检测架构：流量和压力窗口结合训练集相关性拓扑上下文，经多证据融合生成异常分数、类型候选和诊断路径。](../../../static/assets/water-suite/c2-morphology-relation-architecture.svg)
+
+图 1：C2 将形态、关系和历史证据与正常证据记忆融合，输出异常及其解释候选；相关性上下文不代表物理拓扑。
 
 ### 形态与关系特征
 

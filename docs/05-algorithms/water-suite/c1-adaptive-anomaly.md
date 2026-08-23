@@ -2,7 +2,7 @@
 id: algorithm.water-c1-adaptive-anomaly
 title: C1 深度分布漂移自适应异常检测
 document_type: algorithm
-document_version: 0.1.0
+document_version: 0.2.0
 status: draft
 locale: zh-CN
 audience: [algorithm_user, operator]
@@ -23,6 +23,10 @@ C1 为每个设备独立学习流量/压力的正常表征，并为时间窗口�
 模型训练阶段不读取异常标签，但当前完整流程在验证集上用传感器有效性标签搜索 Best-F1 阈值。因此不能把它称为完全无标签的端到端流程，也不能将输出直接解释为漏损检测或根因结论。
 
 ## 方法原理
+
+![C1 自适应异常检测架构：流量和压力窗口经过 GRU 表征，结合多类证据与正常记忆生成异常候选。](../../../static/assets/water-suite/c1-adaptive-anomaly-architecture.svg)
+
+图 1：C1 从流量/压力窗口、深度证据和设备专属正常参考记忆生成自适应异常分数与候选。
 
 ### 窗口表征与三类证据
 

@@ -608,7 +608,7 @@ areas:
         priority: P1
         scope_keys:
           - water_tf_joint_forecast
-        version: 0.1.0
+        version: 0.2.0
       - id: algorithm.water-b2-probabilistic-forecast
         title: B2 外生驱动轻量概率预测
         path: docs/05-algorithms/water-suite/b2-probabilistic-forecast.md
@@ -616,7 +616,7 @@ areas:
         priority: P1
         scope_keys:
           - water_probabilistic_forecast
-        version: 0.1.0
+        version: 0.2.0
       - id: algorithm.water-c1-adaptive-anomaly
         title: C1 深度分布漂移自适应异常检测
         path: docs/05-algorithms/water-suite/c1-adaptive-anomaly.md
@@ -624,7 +624,7 @@ areas:
         priority: P1
         scope_keys:
           - water_adaptive_anomaly
-        version: 0.1.0
+        version: 0.2.0
       - id: algorithm.water-c2-morphology-relation-anomaly
         title: C2 形态—关系一致性多证据异常检测
         path: docs/05-algorithms/water-suite/c2-morphology-relation-anomaly.md
@@ -632,7 +632,7 @@ areas:
         priority: P1
         scope_keys:
           - water_relation_anomaly
-        version: 0.1.0
+        version: 0.2.0
   - id: api_development
     name: API 与开发集成
     evidence_sources:
