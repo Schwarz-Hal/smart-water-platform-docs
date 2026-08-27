@@ -3,6 +3,7 @@ title: 智慧水务算法平台完整文档
 chapters:
   - docs/01-platform/overview.md
   - docs/02-quick-start/first-quality-workflow.md
+  - docs/03-user-guide/data-collections.md
   - docs/03-user-guide/workflow-editor.md
   - docs/04-scenarios/s01-dma-leakage.md
   - docs/05-algorithms/chronos2.md

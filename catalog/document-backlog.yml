@@ -28,9 +28,9 @@ collaboration:
   completion_rule: A document becomes ready only after content review, link and
     metadata validation, site build, and inclusion in an approved snapshot.
 summary:
-  total: 96
+  total: 97
   ready: 2
-  expand: 94
+  expand: 95
   missing: 0
   deferred: 0
   by_area:
@@ -219,6 +219,15 @@ areas:
         modules:
           - M02
         version: 1.1.0
+      - id: user.data-collections
+        title: 异构数据集、文件版本与数据视图
+        path: docs/03-user-guide/data-collections.md
+        status: expand
+        priority: P0
+        modules:
+          - M02
+          - M05
+        version: 0.1.0
       - id: user.dataset-lineage
         title: 数据版本血缘树与历史版本查看
         path: docs/03-user-guide/dataset-lineage.md
