@@ -28,15 +28,15 @@ collaboration:
   completion_rule: A document becomes ready only after content review, link and
     metadata validation, site build, and inclusion in an approved snapshot.
 summary:
-  total: 97
+  total: 98
   ready: 2
-  expand: 95
+  expand: 96
   missing: 0
   deferred: 0
   by_area:
     platform: 7
     quick_start: 5
-    user_guide: 20
+    user_guide: 21
     scenario: 4
     algorithm_operator: 31
     api_development: 10
