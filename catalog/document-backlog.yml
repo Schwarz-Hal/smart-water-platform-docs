@@ -1,5 +1,5 @@
 schema_version: 1
-inventory_version: 2026-08-21.1
+inventory_version: 2026-08-29.1
 reviewed_against:
   backend_commit: 7b2c7d15
   frontend_commit: b165fb3f
@@ -28,15 +28,15 @@ collaboration:
   completion_rule: A document becomes ready only after content review, link and
     metadata validation, site build, and inclusion in an approved snapshot.
 summary:
-  total: 96
+  total: 97
   ready: 2
-  expand: 94
+  expand: 95
   missing: 0
   deferred: 0
   by_area:
     platform: 7
     quick_start: 5
-    user_guide: 19
+    user_guide: 20
     scenario: 4
     algorithm_operator: 31
     api_development: 10
@@ -336,6 +336,14 @@ areas:
         priority: P1
         modules:
           - M08
+        version: 1.0.0
+      - id: user.data-file-explorer
+        title: 数据文件资源管理器
+        path: docs/03-user-guide/data-file-explorer.md
+        status: expand
+        priority: P0
+        modules:
+          - M02
         version: 1.0.0
   - id: scenario
     name: 业务场景方案
