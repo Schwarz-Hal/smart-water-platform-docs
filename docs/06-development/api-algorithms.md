@@ -50,10 +50,10 @@ summary: 记录算子精确版本解析、默认参数、训练模型和算法�
 
 ## 2. 训练与模型
 
-当前可训练入口为 `POST /api/v1/algorithms/{algorithm_code}/training-runs`，需要 `algorithm:train`。请求可显式提供 `algorithm_version`；省略时解析最高默认版本并在任务快照中保存精确版本。训练请求包含数据版本、指标、点位、值来源和训练参数；用 `GET /api/v1/training-runs/{training_run_id}` 查询。模型通过 `GET /api/v1/model-versions` 和 `/model-versions/{model_version_id}` 查询，发布者可用 `POST /api/v1/algorithms/{algorithm_code}/default-model` 绑定就绪模型。
+当前可训练入口为 `POST /api/v1/algorithms/{algorithm_code}/training-runs`，需要 `algorithm:train`。查询参数可显式提供 `algorithm_version`；省略时解析最高默认版本并在任务快照中保存精确版本。训练请求体包含数据版本、指标、点位、值来源和训练参数；用 `GET /api/v1/training-runs/{training_run_id}` 查询。模型通过 `GET /api/v1/model-versions` 和 `/model-versions/{model_version_id}` 查询，发布者可用 `POST /api/v1/algorithms/{algorithm_code}/default-model` 绑定就绪模型。
 
 ## 3. 发布生命周期
 
 创建草稿：`POST /api/v1/algorithms/{algorithm_code}/releases`；修改、验证、提交和审核分别使用 `/algorithm-releases/{release_id}` 下的 `PATCH`、`/validate`、`/submit` 和 `/approve`。版本以 `current`、`deprecated`、`blocked` 表示生命周期；deprecated 仍可显式/历史使用，blocked 不可运行。旧的 `/activate`、`/retire`、`/rollback` 兼容路径返回 HTTP 410 `VERSION_ACTIVATION_REMOVED`，并指向版本级生命周期接口。审核权限为 `algorithm:approve`，创建者/提交者不能自审。
 
-算法直跑 `POST /api/v1/algorithms/runs` 可显式提供 `algorithm_version` 和 `model_version_id`；省略算法版本时使用最高默认版本，任务创建后不再动态跟随默认值。
+算法直跑 `POST /api/v1/algorithms/runs` 保持原有请求体不变；需要显式选择版本时使用 `algorithm_version` 查询参数，`model_version_id` 仍位于请求体。省略算法版本时使用最高默认版本，任务创建后不再动态跟随默认值。
