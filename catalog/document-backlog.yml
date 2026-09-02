@@ -374,7 +374,7 @@ areas:
         path: docs/04-scenarios/fengtai-leakage-demo.md
         status: expand
         priority: P0
-        version: 1.0.0
+        version: 1.1.0
         modules:
           - M05
           - M06
