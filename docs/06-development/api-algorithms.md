@@ -41,9 +41,9 @@ summary: 记录算子精确版本解析、默认参数、训练模型和算法�
 | `GET /api/v1/operators` | `operator:read` | 分页查询可见算子；支持 `kind`、`status`、`runtime_type`、`executor_type`、`maturity`、`query` 等筛选；返回默认版本及版本可用性 |
 | `GET /api/v1/operators/{operator_code}` | `operator:read` | 查询端口、参数、可视化契约和版本历史 |
 | `GET /api/v1/operators/{operator_code}/versions/{version}` | `operator:read` | 查询不可变算子版本 |
-| `POST /api/v1/operators/resolve-versions` | `workflow:read` 或管理员 | 批量解析工作流引用的精确版本；请求 `{ "versions": [{"code":"...", "version":"..."}] }`，返回可解析 `items` 与缺失引用 |
+| `POST /api/v1/operators/resolve-versions` | `workflow:read` 或管理员 | 批量解析工作流引用的精确版本；请求 `{ "items": [{"code":"...", "version":"..."}] }`，响应包含可解析 `items` 与缺失引用 `missing` |
 | `PATCH /api/v1/operators/{operator_code}/versions/{version}/default-parameters` | `operator:manage` | 修改默认参数并执行契约校验 |
-| `PUT /api/v1/operators/{operator_code}/versions/{version}/default-release` | `operator:manage` | 为该算子版本绑定或清除默认审核发布包 |
+| `PUT /api/v1/operators/{operator_code}/versions/{version}/default-release` | `operator:manage` | 以 `{ "release_id": "..." }` 绑定或清除该算子版本的默认审核发布包 |
 | `PATCH /api/v1/operators/{operator_code}/versions/{version}/lifecycle` | `operator:manage` | 设置 `current`、`deprecated` 或 `blocked` 生命周期 |
 
 目录响应包含 `default_version`、`installed`、`lifecycle`、`runtime_ready`、`runnable_with_defaults`、`unavailable_reasons`、`default_parameters`、`default_release_id` 和 `default_model_version_id` 等字段；`active_version` 仅是兼容别名。默认参数请求只提交契约允许的字段。已发布工作流的参数快照不会因默认值变化而改变。
