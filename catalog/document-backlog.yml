@@ -28,16 +28,16 @@ collaboration:
   completion_rule: A document becomes ready only after content review, link and
     metadata validation, site build, and inclusion in an approved snapshot.
 summary:
-  total: 98
+  total: 99
   ready: 2
-  expand: 96
+  expand: 97
   missing: 0
   deferred: 0
   by_area:
     platform: 7
     quick_start: 5
     user_guide: 21
-    scenario: 4
+    scenario: 5
     algorithm_operator: 31
     api_development: 10
     operations: 10
@@ -368,6 +368,15 @@ areas:
         priority: P0
         version: 1.1.0
         modules:
+          - M06
+      - id: scenario.fengtai-leakage-demo
+        title: 丰泰风光苑漏损快速试用与结果解释
+        path: docs/04-scenarios/fengtai-leakage-demo.md
+        status: expand
+        priority: P0
+        version: 1.2.0
+        modules:
+          - M05
           - M06
       - id: scenario.timeseries-governance
         title: 多通道时序数据质量分析与治理
