@@ -370,11 +370,11 @@ areas:
         modules:
           - M06
       - id: scenario.fengtai-leakage-demo
-        title: 丰泰风光苑漏损快速试用与结果解释
+        title: 管网漏损闭环研判工作台
         path: docs/04-scenarios/fengtai-leakage-demo.md
         status: expand
         priority: P0
-        version: 1.2.0
+        version: 1.3.0
         modules:
           - M05
           - M06
