@@ -2,7 +2,7 @@
 id: scenario.fengtai-leakage-demo
 title: 管网漏损闭环研判工作台
 document_type: scenario
-document_version: 1.3.0
+document_version: 1.4.0
 status: published
 locale: zh-CN
 audience: [platform_user, operator]
@@ -32,6 +32,10 @@ summary: 以可追溯的数据解析、管网时空态势、八阶段证据和�
 本页描述通用的管网漏损闭环研判工作台，适合历史批量分析、方案讨论和巡检优先级排序，不替代现场核验。丰泰风光苑只是当前平台示例数据集，文中的具体数量不是通用固定容量。
 
 工作台首屏依次保留真实数据解析摘要、常驻三维管网与全局时间轴、八阶段分析导航和当前步骤证据。切换阶段不重建场景、不重置时间、资产选择或摄像机；待分析阶段只说明缺少的结果，不展示模拟进度。
+
+### 访问边界
+
+访客可以浏览脱敏的 `manifest`、`topology` 和参考资产详情，无需创建账户。`analyze`、分析后的 `frames`、分析态资产详情和 `simulate` 是受保护的工作流操作，需要登录并具备 `workflow:run`；访客不能创建或拥有分析结果。登录对话框只在用户明确触发受保护操作时出现，成功后恢复当前页面状态。
 
 ## 载入与解析摘要
 

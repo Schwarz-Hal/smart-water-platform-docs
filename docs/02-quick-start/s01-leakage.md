@@ -2,7 +2,7 @@
 id: quickstart.s01-leakage
 title: 使用内置结构完成一次 DMA 漏损评估
 document_type: quick_start
-document_version: 1.0.0
+document_version: 1.1.0
 status: published
 locale: zh-CN
 audience: [platform_user, operator]
@@ -22,6 +22,7 @@ S01 漏损评估是智慧水务算法平台针对供水管网分区计量（DMA�
 
 ## 前置准备
 
+- 访客可以打开快速试用页面并浏览平台内置演示；本页的上传、工作流配置、发布和运行步骤需要登录及相应权限。登录只会在触发受保护操作时按需出现，登录成功后可继续原操作；
 - 已准备包含入口流量（`inflow`）、合法夜间用水（`night_flow`）与授权用水量（`authorized_consumption`）的 CSV 监测数据；
 - 用户具备工作流执行与数据查看权限。
 
