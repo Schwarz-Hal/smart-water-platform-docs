@@ -243,8 +243,10 @@ areas:
         status: expand
         priority: P0
         modules:
+          - M02
           - M03
-        version: 1.3.0
+          - M07
+        version: 1.4.0
       - id: user.operator-center
         title: 算子搜索、筛选、详情和版本选择
         path: docs/03-user-guide/operator-center.md
