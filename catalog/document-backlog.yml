@@ -246,7 +246,7 @@ areas:
           - M02
           - M03
           - M07
-        version: 1.4.0
+        version: 1.5.0
       - id: user.operator-center
         title: 算子搜索、筛选、详情和版本选择
         path: docs/03-user-guide/operator-center.md
