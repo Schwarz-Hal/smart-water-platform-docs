@@ -28,9 +28,9 @@ collaboration:
   completion_rule: A document becomes ready only after content review, link and
     metadata validation, site build, and inclusion in an approved snapshot.
 summary:
-  total: 99
+  total: 100
   ready: 2
-  expand: 97
+  expand: 98
   missing: 0
   deferred: 0
   by_area:
@@ -460,7 +460,27 @@ areas:
         priority: P0
         scope_keys:
           - data_quality_profile_v1
-        version: 1.1.0
+        version: 1.2.0
+      - id: operator.data-governance-operations
+        title: 数据治理操作概览
+        path: docs/05-algorithms/data-governance-operations.md
+        status: expand
+        priority: P0
+        scope_keys:
+          - data_quality_profile_v1
+          - schema_expectation_profile_v1
+          - time_axis_integrity_v1
+          - water_sensor_rule_check_v1
+          - missing_marker_normalize_v1
+          - sort_dataset_v1
+          - deduplicate_dataset_v1
+          - missing_value_repair_dataset_v1
+          - outlier_repair_dataset_v1
+          - schema_cast_rename_v1
+          - semantic_resample_v1
+          - table_reshape_v1
+          - topology_quality_profile_v1
+        version: 0.1.0
       - id: operator.dataset-deduplicate
         title: 数据集去重算子
         path: docs/05-algorithms/dataset-deduplicate.md
