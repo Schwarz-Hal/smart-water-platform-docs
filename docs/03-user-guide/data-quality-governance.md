@@ -2,13 +2,13 @@
 id: user.data-quality-governance
 title: 质量报告、治理方案与派生版本
 document_type: user_guide
-document_version: 1.6.0
+document_version: 1.7.0
 status: published
 locale: zh-CN
 audience: [platform_user, operator]
 related_modules: [M02, M03, M07]
 related_operators: [timeseries_quality_profile, timeseries_governance_basic, timeseries_synthetic_extension]
-related_apis: ["/api/v1/dataset-versions/{version_id}/quality-profiles", "/api/v1/dataset-versions/{version_id}/quality-reports", "/api/v1/data-governance/catalog", "/api/v1/data-governance/runs", "/api/v1/data-files/{file_id}/governance-runs"]
+related_apis: ["/api/v1/dataset-versions/{version_id}/quality-profiles", "/api/v1/dataset-versions/{version_id}/quality-reports", "/api/v1/data-governance/catalog", "/api/v1/data-governance/runs", "/api/v1/data-files/{file_id}/governance-runs", "/api/v1/data-governance/runs/{run_id}/timeseries"]
 owners: [product-team]
 reviewed_at: 2026-09-07
 summary: 查看质量报告，并在数据文件资源管理器中用冻结配方生成可追溯的治理结果或派生版本。
@@ -94,6 +94,19 @@ summary: 查看质量报告，并在数据文件资源管理器中用冻结配�
 4. 只有完成、失败或已取消的运行可以【按原配置重跑】。重跑创建新的任务和治理运行，并保留与原运行的关联；它不会覆盖原结果。
 
 ## 结果与失败处理
+
+### 按测点比较处理前后的时序
+
+结果区的【处理前后时序对比】位于质量维度柱状图之前。它读取本次运行冻结的来源版本和实际结果版本，不使用当前版本，也不把前 50 行样本当作完整趋势。
+
+1. 展开【时间与测点字段】。时间字段仅在已有时间画像或字段类型可明确确定时预填；否则自行选择。选择测点字段，或明确确认【无测点分组（单测点）】，不要将不同测点混画。
+2. 多测点文件在左上方选择测点。可在字段设置中查找测点并翻页；切换测点重新读取对应数据。
+3. 在【指标】中选择最多 6 项。顶部色卡标明颜色与指标的对应关系；同一指标的处理前数据用虚线、处理后数据用实线。各指标使用独立纵轴，共享时间范围，不把未知或不同单位混入同一纵轴，也不自动换算单位。
+4. 按需要填写起止时间并【应用范围】，或使用图中缩放条；【重置范围】重新读取完整查询范围。时间控件和图轴按浏览器本地时区显示。
+5. 查看每条序列的返回点数与匹配记录数。超过图表点数上限时，服务端按时间桶保留实际极值和空值进行抽样；局部细节可能省略。缩小时间范围后重新读取可观察更细的变化。前后序列各自保留实际时间戳，重采样后的时间轴不会强行按行号对齐。
+6. 展开【图表数据】核对阶段、指标、时间和值。缺失值显示为 `—` 并在曲线上断开，不补零；已存时间画像确认的缺失时段也会断开。没有时间画像时不会凭空推断应有采样间隔。
+
+仅报告运行未生成结果文件时，只显示来源序列，不伪造“处理后”曲线。未确定时间字段或不支持表格时序的文件不强制绘图。图表请求失败可在本区重试，不改变治理结果。曲线用于解释处理效果，不能取代完整质量报告或业务核验。
 
 质量报告和派生版本状态以任务与文件版本实际显示为准。治理完成后，新版本或新文件可以作为后续分析输入，父版本仍可查看；仅生成报告不会创建新版本。
 
