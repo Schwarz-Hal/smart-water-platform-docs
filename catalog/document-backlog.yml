@@ -246,7 +246,7 @@ areas:
           - M02
           - M03
           - M07
-        version: 1.7.0
+        version: 1.8.0
       - id: user.network-datasets
         title: 管网数据集的构建、导入与读取
         path: docs/03-user-guide/network-datasets.md
