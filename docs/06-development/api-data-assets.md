@@ -54,8 +54,8 @@ CSV 使用 `POST /api/v1/data-sources/csv-uploads` 的 multipart 字段 `source_
 
 | 接口 | 用途 |
 | --- | --- |
-| `GET /api/v1/data-governance/runs` | 跨文件分页摘要；筛选参数含 `query`、`status`、`category`、`collection_id`、`file_id`、`file_role=source|result|either`、`source_version_id`、`created_by`、`from`、`to`、逗号分隔的 `run_ids` |
-| `GET /api/v1/data-governance/quality-overview` | 当前版本自动画像质量；支持 `query`、`collection_id`、`grade`、`evaluation=all|evaluated|unevaluated|issues` 与分页 |
+| `GET /api/v1/data-governance/runs` | 跨文件分页摘要；筛选参数含 `query`、`status`、`category`、`collection_id`、`file_id`、`file_role`（source / result / either）、`source_version_id`、`created_by`、`from`、`to`、逗号分隔的 `run_ids` |
+| `GET /api/v1/data-governance/quality-overview` | 当前版本自动画像质量；支持 `query`、`collection_id`、`grade`、`evaluation`（all / evaluated / unevaluated / issues）与分页 |
 | `POST /api/v1/data-governance/version-summaries` | 请求 `version_ids`，批量读取可见版本的治理摘要 |
 | `GET/POST /api/v1/data-governance/templates` | 查询可见模板或创建个人/共享模板 |
 | `GET /api/v1/data-governance/templates/{id}` | 模板详情；可指定 `revision` |
