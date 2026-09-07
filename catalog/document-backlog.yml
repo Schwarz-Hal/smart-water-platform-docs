@@ -246,7 +246,7 @@ areas:
           - M02
           - M03
           - M07
-        version: 1.5.0
+        version: 1.6.0
       - id: user.operator-center
         title: 算子搜索、筛选、详情和版本选择
         path: docs/03-user-guide/operator-center.md
@@ -320,7 +320,7 @@ areas:
         priority: P1
         modules:
           - M07
-        version: 1.0.0
+        version: 1.1.0
       - id: user.users-roles
         title: 用户、角色和批量权限管理
         path: docs/03-user-guide/users-and-roles.md
@@ -705,7 +705,7 @@ areas:
         path: docs/06-development/api-data-assets.md
         status: expand
         priority: P0
-        version: 1.1.0
+        version: 1.2.0
       - id: api.algorithms
         title: 算子目录、训练、模型、发布和文档 API
         path: docs/06-development/api-algorithms.md
