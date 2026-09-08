@@ -28,9 +28,9 @@ collaboration:
   completion_rule: A document becomes ready only after content review, link and
     metadata validation, site build, and inclusion in an approved snapshot.
 summary:
-  total: 101
+  total: 102
   ready: 2
-  expand: 99
+  expand: 100
   missing: 0
   deferred: 0
   by_area:
@@ -39,7 +39,7 @@ summary:
     user_guide: 22
     scenario: 5
     algorithm_operator: 31
-    api_development: 10
+    api_development: 11
     operations: 10
     acceptance: 10
 areas:
@@ -739,6 +739,12 @@ areas:
         status: expand
         priority: P1
         version: 1.1.0
+      - id: development.api-integration-design
+        title: API Key 与系统集成设计
+        path: docs/06-development/api-integration-design.md
+        status: expand
+        priority: P1
+        version: 0.1.0
       - id: api.external-runtime
         title: 外部算法包与 Runtime Profile API
         path: docs/06-development/api-external-runtime.md
