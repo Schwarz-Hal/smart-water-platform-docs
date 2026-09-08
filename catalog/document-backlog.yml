@@ -28,15 +28,15 @@ collaboration:
   completion_rule: A document becomes ready only after content review, link and
     metadata validation, site build, and inclusion in an approved snapshot.
 summary:
-  total: 100
+  total: 101
   ready: 2
-  expand: 98
+  expand: 99
   missing: 0
   deferred: 0
   by_area:
     platform: 7
     quick_start: 5
-    user_guide: 21
+    user_guide: 22
     scenario: 5
     algorithm_operator: 31
     api_development: 10
@@ -202,7 +202,7 @@ areas:
         priority: P0
         modules:
           - M02
-        version: 1.3.0
+        version: 1.3.1
       - id: user.mysql-source
         title: 接入和导入只读 MySQL 数据源
         path: docs/03-user-guide/mysql-source.md
@@ -210,7 +210,7 @@ areas:
         priority: P1
         modules:
           - M02
-        version: 1.3.0
+        version: 1.3.1
       - id: user.dataset-assets
         title: 数据资产详情、通道和当前版本
         path: docs/03-user-guide/dataset-assets.md
@@ -218,7 +218,7 @@ areas:
         priority: P0
         modules:
           - M02
-        version: 1.1.0
+        version: 1.1.1
       - id: user.data-collections
         title: 异构数据集、文件版本与数据视图
         path: docs/03-user-guide/data-collections.md
@@ -227,7 +227,7 @@ areas:
         modules:
           - M02
           - M05
-        version: 0.1.0
+        version: 0.1.1
       - id: user.dataset-lineage
         title: 数据版本血缘树与历史版本查看
         path: docs/03-user-guide/dataset-lineage.md
@@ -238,7 +238,7 @@ areas:
           - M03
         version: 1.0.0
       - id: user.data-quality-governance
-        title: 质量报告、治理方案与模拟扩展
+        title: 质量报告、治理方案与派生版本
         path: docs/03-user-guide/data-quality-governance.md
         status: expand
         priority: P0
@@ -246,7 +246,16 @@ areas:
           - M02
           - M03
           - M07
-        version: 1.6.0
+        version: 1.8.1
+      - id: user.network-datasets
+        title: 管网数据集的构建、导入与读取
+        path: docs/03-user-guide/network-datasets.md
+        status: expand
+        priority: P0
+        modules:
+          - M02
+          - M03
+        version: 0.1.0
       - id: user.operator-center
         title: 算子搜索、筛选、详情和版本选择
         path: docs/03-user-guide/operator-center.md
@@ -672,7 +681,7 @@ areas:
         priority: P1
         scope_keys:
           - water_adaptive_anomaly
-        version: 0.2.0
+        version: 0.3.0
       - id: algorithm.water-c2-morphology-relation-anomaly
         title: C2 形态—关系一致性多证据异常检测
         path: docs/05-algorithms/water-suite/c2-morphology-relation-anomaly.md

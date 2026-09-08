@@ -2,13 +2,13 @@
 id: user.data-quality-governance
 title: 质量报告、治理方案与派生版本
 document_type: user_guide
-document_version: 1.6.0
+document_version: 1.8.1
 status: published
 locale: zh-CN
 audience: [platform_user, operator]
 related_modules: [M02, M03, M07]
 related_operators: [timeseries_quality_profile, timeseries_governance_basic, timeseries_synthetic_extension]
-related_apis: ["/api/v1/dataset-versions/{version_id}/quality-profiles", "/api/v1/dataset-versions/{version_id}/quality-reports", "/api/v1/data-governance/catalog", "/api/v1/data-governance/runs", "/api/v1/data-files/{file_id}/governance-runs"]
+related_apis: ["/api/v1/dataset-versions/{version_id}/quality-profiles", "/api/v1/dataset-versions/{version_id}/quality-reports", "/api/v1/data-governance/catalog", "/api/v1/data-governance/runs", "/api/v1/data-files/{file_id}/governance-runs", "/api/v1/data-governance/runs/{run_id}/timeseries"]
 owners: [product-team]
 reviewed_at: 2026-09-07
 summary: 查看质量报告，并在数据文件资源管理器中用冻结配方生成可追溯的治理结果或派生版本。
@@ -42,7 +42,7 @@ summary: 查看质量报告，并在数据文件资源管理器中用冻结配�
 
 ### 1. 查看已有质量报告
 
-1. 在【数据源与导入】的【可用数据资产】中打开【详情与治理】，选择要查看的资产版本。
+1. 旧【数据源与导入】列表已暂时隐藏；已有资产详情地址仍可访问。以下为旧资产详情的操作说明，新文件请从【数据集管理】进入治理。
 2. 在旧数据资产详情查看当前版本、版本血缘树、指标通道和【质量报告】列表。此旧入口与数据文件的【质量概览】是不同界面。
 3. 需要使用旧数据资产治理流程时，点击【创建治理工作流】；入口会带入当前资产版本，并预选 `timeseries_governance_basic`，随后按工作流页面的实际配置继续。
 
@@ -94,6 +94,19 @@ summary: 查看质量报告，并在数据文件资源管理器中用冻结配�
 4. 只有完成、失败或已取消的运行可以【按原配置重跑】。重跑创建新的任务和治理运行，并保留与原运行的关联；它不会覆盖原结果。
 
 ## 结果与失败处理
+
+### 按测点比较处理前后的时序
+
+结果区的【处理前后时序对比】位于质量维度柱状图之前。它读取本次运行冻结的来源版本和实际结果版本，不使用当前版本，也不把前 50 行样本当作完整趋势。
+
+1. 打开结果后自动复用时间画像或明确的时间字段类型，识别常见点位字段并选择首个点位，默认展示数值指标。无法确定时间列时，在【字段设置】中选择；自动选择不符合业务含义时也可在此纠正。
+2. 多点位文件在左上方切换点位；单点位直接显示名称。大量点位可在字段设置中查找并翻页。
+3. 旁边的彩色圆点和指标名可点击隐藏或显示曲线，最多同时显示 6 项；窄屏图例位于曲线上方。同指标前后保持同色，以虚线和实线区分处理前后。不同指标分图，共享时间轴并保留原始单位。
+4. 自动确定完整时段，初始显示最早的一天；不足一天时显示全部。拖动下方缩略时间轴上的窗口左右浏览，窗口跨度保持不变。也可用【前一段】【后一段】按钮，或把【窗口跨度】切换为 6 小时、1 天、3 天、7 天。【回到起点】恢复首个一天窗口。
+5. 缩略轴使用全时段有界抽样；窗口移动后自动补读当前时段细节。超过点数上限时显示抽样状态，可缩小跨度查看细节。前后序列保留各自时间戳，重采样结果不会按行号强制对齐。
+6. 【查看窗口数据】展开阶段、指标、时间和值，时间以浏览器本地时区显示。缺失值用 `—` 表示并在曲线上断开；已存时间画像确认的缺口也保留断点。质量维度与原始表格样本在次级区域展开查看。
+
+仅报告运行未生成结果文件时，只显示来源序列，不伪造“处理后”曲线。未确定时间字段或不支持表格时序的文件不强制绘图。图表请求失败可在本区重试，不改变治理结果。曲线用于解释处理效果，不能取代完整质量报告或业务核验。
 
 质量报告和派生版本状态以任务与文件版本实际显示为准。治理完成后，新版本或新文件可以作为后续分析输入，父版本仍可查看；仅生成报告不会创建新版本。
 
