@@ -2,7 +2,7 @@
 id: user.dataset-assets
 title: 数据资产详情、通道和版本管理
 document_type: user_guide
-document_version: 1.1.0
+document_version: 1.1.1
 status: published
 locale: zh-CN
 audience: [platform_user, operator, developer]
@@ -15,6 +15,8 @@ summary: 从数据源与导入页面进入资产详情，查看当前版本、�
 ---
 
 # 数据资产详情、通道和版本管理
+
+> 入口调整（2026-09-08）：【数据源与导入】列表暂时隐藏。以下从该列表进入详情的步骤暂停适用；已有资产详情地址、历史版本与工作流引用保留，返回按钮转到【数据集管理】。
 
 ## 用途
 

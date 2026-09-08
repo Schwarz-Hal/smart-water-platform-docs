@@ -2,7 +2,7 @@
 id: user.data-quality-governance
 title: 质量报告、治理方案与派生版本
 document_type: user_guide
-document_version: 1.8.0
+document_version: 1.8.1
 status: published
 locale: zh-CN
 audience: [platform_user, operator]
@@ -42,7 +42,7 @@ summary: 查看质量报告，并在数据文件资源管理器中用冻结配�
 
 ### 1. 查看已有质量报告
 
-1. 在【数据源与导入】的【可用数据资产】中打开【详情与治理】，选择要查看的资产版本。
+1. 旧【数据源与导入】列表已暂时隐藏；已有资产详情地址仍可访问。以下为旧资产详情的操作说明，新文件请从【数据集管理】进入治理。
 2. 在旧数据资产详情查看当前版本、版本血缘树、指标通道和【质量报告】列表。此旧入口与数据文件的【质量概览】是不同界面。
 3. 需要使用旧数据资产治理流程时，点击【创建治理工作流】；入口会带入当前资产版本，并预选 `timeseries_governance_basic`，随后按工作流页面的实际配置继续。
 

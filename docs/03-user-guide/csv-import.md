@@ -2,7 +2,7 @@
 id: user.csv-import
 title: CSV 上传、预览、字段映射与导入
 document_type: user_guide
-document_version: 1.3.0
+document_version: 1.3.1
 status: published
 locale: zh-CN
 audience: [platform_user, operator]
@@ -15,6 +15,8 @@ summary: 通过页面向导上传 CSV、确认字段并等待数据资产生成�
 ---
 
 # CSV 上传、预览、字段映射与导入
+
+> 入口暂时隐藏（2026-09-08）：【数据源与导入】页面暂停开放，旧地址转到【数据集管理】。文件上传请使用数据集管理入口。以下旧导入步骤保留作历史参考，待数据源整理后再调整；现有数据与接口未删除。
 
 ## 用途
 

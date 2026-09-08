@@ -2,7 +2,7 @@
 id: user.mysql-source
 title: 接入和导入只读 MySQL 数据源
 document_type: user_guide
-document_version: 1.3.0
+document_version: 1.3.1
 status: published
 locale: zh-CN
 audience: [platform_user, operator, developer]
@@ -15,6 +15,8 @@ summary: 通过数据源页面连接只读 MySQL 并启动导入。
 ---
 
 # 接入和导入只读 MySQL 数据源
+
+> 入口暂时隐藏（2026-09-08）：【数据源与导入】页面暂停开放，旧地址转到【数据集管理】。以下页面接入步骤暂不适用，待数据源整理后再调整；现有连接配置、数据和后端接口保留，本次未清理外部数据源。
 
 ## 用途
 
