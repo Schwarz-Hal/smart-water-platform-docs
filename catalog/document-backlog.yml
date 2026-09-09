@@ -28,15 +28,15 @@ collaboration:
   completion_rule: A document becomes ready only after content review, link and
     metadata validation, site build, and inclusion in an approved snapshot.
 summary:
-  total: 102
+  total: 103
   ready: 2
-  expand: 100
+  expand: 101
   missing: 0
   deferred: 0
   by_area:
     platform: 7
     quick_start: 5
-    user_guide: 22
+    user_guide: 23
     scenario: 5
     algorithm_operator: 31
     api_development: 11
@@ -264,6 +264,16 @@ areas:
         modules:
           - M04
         version: 1.2.0
+      - id: user.training-model-workbench
+        title: 训练与模型工作台
+        path: docs/03-user-guide/training-model-workbench.md
+        status: expand
+        priority: P1
+        modules:
+          - M04
+          - M05
+          - M07
+        version: 0.1.0
       - id: user.algorithm-training-models
         title: 算法训练任务与私有模型管理
         path: docs/03-user-guide/algorithm-training-models.md
