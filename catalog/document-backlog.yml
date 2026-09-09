@@ -28,9 +28,9 @@ collaboration:
   completion_rule: A document becomes ready only after content review, link and
     metadata validation, site build, and inclusion in an approved snapshot.
 summary:
-  total: 103
+  total: 104
   ready: 2
-  expand: 101
+  expand: 102
   missing: 0
   deferred: 0
   by_area:
@@ -773,6 +773,12 @@ areas:
         status: expand
         priority: P1
         version: 1.1.0
+      - id: development.developer-offline-mode
+        title: 开发者离线调试模式
+        path: docs/06-development/developer-offline-mode.md
+        status: expand
+        priority: P0
+        version: 0.1.0
   - id: operations
     name: 部署运维
     evidence_sources:
