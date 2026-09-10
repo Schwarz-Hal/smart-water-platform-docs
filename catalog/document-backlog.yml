@@ -754,7 +754,7 @@ areas:
         path: docs/06-development/api-integration-design.md
         status: expand
         priority: P1
-        version: 0.1.0
+        version: 0.1.1
       - id: api.external-runtime
         title: 外部算法包与 Runtime Profile API
         path: docs/06-development/api-external-runtime.md
