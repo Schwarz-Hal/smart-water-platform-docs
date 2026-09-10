@@ -2,7 +2,7 @@
 id: development.api-integration-design
 title: API Key 与系统集成设计
 document_type: development
-document_version: 0.1.0
+document_version: 0.1.1
 status: draft
 locale: zh-CN
 audience: [developer, operator]
@@ -10,7 +10,7 @@ related_modules: [M01, M02, M05, M07]
 related_operators: []
 related_apis: []
 owners: [product-team, backend-team]
-reviewed_at: 2026-09-08
+reviewed_at: 2026-09-10
 summary: API Key 管理和五类接口集成的交互原型、后续实施范围与验收路径。
 ---
 
@@ -93,3 +93,7 @@ OPC UA、MQTT 等协议经网关转换后进入平台；平台 HTTP API 不直�
 ## 实现依据
 
 前端原型代码位于 `src/app/features/developer-center/`，路由与导航采用既有统一策略。业务路径参考 Neo 的 `app/interfaces/http/data_files.py`、`algorithms.py`、`tasks.py` 及 v1 契约中结果接口；样例单独存于 `developer-center.data.ts`，没有调用凭证或集成后端的服务类。
+
+## 高德天气存储（数据库层）
+
+仅存储层，与 API Key 原型无关；未实现采集、调度或新 HTTP 接口，不保存 Key。三表共用前缀 `sw_amap_weather_`，后缀为 `response`、`live`、`forecast_daily`；去重键依次为 `request_id`、`adcode+report_time`、`adcode+report_time+forecast_date`。预报保留各发布批次。采集时间用 UTC；`report_time` 保留当地时间，`report_timezone=Asia/Shanghai` 是项目约定，接入时须确认。空值不补零，风力保留文本。字段依据[高德天气文档](https://lbs.amap.com/api/webservice/guide/api-advanced/weatherinfo)。
