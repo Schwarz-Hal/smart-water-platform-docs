@@ -784,7 +784,7 @@ areas:
         path: docs/06-development/frontend-page-structure.md
         status: expand
         priority: P1
-        version: 0.1.0
+        version: 0.1.1
   - id: operations
     name: 部署运维
     evidence_sources:

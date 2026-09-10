@@ -2,7 +2,7 @@
 id: development.frontend-page-structure
 title: 数据资产、算子中心与快速试用的前端维护边界
 document_type: development
-document_version: 0.1.0
+document_version: 0.1.1
 status: draft
 locale: zh-CN
 audience: [frontend_developer]
@@ -10,7 +10,7 @@ related_modules: [M02, M04, M05]
 related_operators: []
 related_apis: []
 owners: [frontend-team]
-reviewed_at: 2026-09-09
+reviewed_at: 2026-09-10
 summary: 说明三类页面的组件、页面状态和异步职责，以及保持现有行为的重构验证边界。
 ---
 
@@ -62,6 +62,8 @@ summary: 说明三类页面的组件、页面状态和异步职责，以及保�
 页面在异步预览读取前固定本次任务、算法、版本、列、输入区间和预测步长。后续界面选择变化不能改写已经提交的请求；重复运行在运行中被拦截。运行后的清理使用本次上传文件的 ID 与集合信息，不能清理用户后来选择的其他文件。
 
 示例元数据、完整源文件读取以及执行前补取预览的订阅随页面销毁释放；新的完整源文件读取取消前一次读取。已经开始的执行订阅保持原有完成与临时文件清理链路，不因为展示组件销毁而提前回收正在运行的输入文件。
+
+原始 CSV 的无时区时间与服务端标准化 UTC 时间需要区分。快速试用保留文件画像的 `selected_column` 和 `timezone_assumption`：当前画像明确声明 `Asia/Shanghai` 时，对该列的 ISO 风格无时区日期时间按 UTC+08:00 解释；已带时区的值不重复偏移。该规则用于图表和提交的输入窗口，不能将源数据的本地时间直接标记成 UTC。其他日期格式与时区不在本次补丁扩展范围内。资源创建、更新时间属于另一类元数据，其无时区值按 API 的 UTC 约定计算相对时间，不复用源文件时区。
 
 访客仍可浏览公开示例，上传和运行通过原登录入口处理。输入面板继续复用 `DataFilePreviewPanelComponent` 的版本/视图选择，不新增私有文件预览协议。CSV 字段与时间对齐逻辑位于 `quick-trial-export.ts`；下载动作和工作流跳转留在页面。
 
