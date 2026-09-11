@@ -28,9 +28,9 @@ collaboration:
   completion_rule: A document becomes ready only after content review, link and
     metadata validation, site build, and inclusion in an approved snapshot.
 summary:
-  total: 104
+  total: 117
   ready: 2
-  expand: 102
+  expand: 115
   missing: 0
   deferred: 0
   by_area:
@@ -38,8 +38,8 @@ summary:
     quick_start: 5
     user_guide: 23
     scenario: 5
-    algorithm_operator: 31
-    api_development: 11
+    algorithm_operator: 42
+    api_development: 13
     operations: 10
     acceptance: 10
 areas:
@@ -700,6 +700,83 @@ areas:
         scope_keys:
           - water_relation_anomaly
         version: 0.2.0
+      - id: operator.pchip-repair
+        title: PCHIP 保形缺失修复
+        path: docs/05-algorithms/pchip-repair.md
+        status: expand
+        priority: P1
+        scope_keys: [pchip_repair_dataset_v1]
+        version: 0.1.0
+      - id: operator.kalman-repair
+        title: Kalman 状态空间缺失修复
+        path: docs/05-algorithms/kalman-repair.md
+        status: expand
+        priority: P1
+        scope_keys: [kalman_repair_dataset_v1]
+        version: 0.1.0
+      - id: operator.saits-repair
+        title: SAITS 单通道缺失修复
+        path: docs/05-algorithms/saits-repair.md
+        status: expand
+        priority: P1
+        scope_keys: [saits_imputation]
+        version: 0.1.0
+      - id: operator.isolation-forest-ts
+        title: Isolation Forest 时序异常检测
+        path: docs/05-algorithms/isolation-forest-ts.md
+        status: expand
+        priority: P1
+        scope_keys: [isolation_forest_ts]
+        version: 0.1.0
+      - id: operator.matrix-profile-anomaly
+        title: Matrix Profile 形态异常检测
+        path: docs/05-algorithms/matrix-profile-anomaly.md
+        status: expand
+        priority: P1
+        scope_keys: [matrix_profile_anomaly]
+        version: 0.1.0
+      - id: operator.beatgan
+        title: BeatGAN 对抗重构异常检测
+        path: docs/05-algorithms/beatgan.md
+        status: expand
+        priority: P1
+        scope_keys: [beatgan]
+        version: 0.1.0
+      - id: operator.tranad
+        title: TranAD 自条件异常检测
+        path: docs/05-algorithms/tranad.md
+        status: expand
+        priority: P1
+        scope_keys: [tranad]
+        version: 0.1.0
+      - id: operator.dlinear
+        title: DLinear 分解线性预测
+        path: docs/05-algorithms/dlinear.md
+        status: expand
+        priority: P1
+        scope_keys: [dlinear]
+        version: 0.1.0
+      - id: operator.patchtsmixer
+        title: PatchTSMixer 时序预测
+        path: docs/05-algorithms/patchtsmixer.md
+        status: expand
+        priority: P1
+        scope_keys: [patchtsmixer]
+        version: 0.1.0
+      - id: operator.patchtst
+        title: PatchTST 时序预测
+        path: docs/05-algorithms/patchtst.md
+        status: expand
+        priority: P1
+        scope_keys: [patchtst]
+        version: 0.1.0
+      - id: operator.chronos-bolt
+        title: Chronos-Bolt Small 预训练预测
+        path: docs/05-algorithms/chronos-bolt.md
+        status: expand
+        priority: P1
+        scope_keys: [chronos_bolt]
+        version: 0.1.0
   - id: api_development
     name: API 与开发集成
     evidence_sources:
@@ -707,6 +784,12 @@ areas:
       - backend/app/api/routers
       - backend/app/operators/sdk.py
     documents:
+      - id: development.algorithm-reserve
+        title: 治理、异常检测与预测算法扩充
+        path: docs/06-development/algorithm-reserve.md
+        status: expand
+        priority: P1
+        version: 0.1.0
       - id: development.first-api-call
         title: 登录认证与调用第一个 API
         path: docs/06-development/first-api-call.md
@@ -779,6 +862,12 @@ areas:
         status: expand
         priority: P0
         version: 0.1.0
+      - id: development.frontend-page-structure
+        title: 数据资产、算子中心与快速试用的前端维护边界
+        path: docs/06-development/frontend-page-structure.md
+        status: expand
+        priority: P1
+        version: 0.1.1
   - id: operations
     name: 部署运维
     evidence_sources:
