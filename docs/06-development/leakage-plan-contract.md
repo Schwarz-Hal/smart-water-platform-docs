@@ -2,7 +2,7 @@
 id: development.leakage-plan-contract
 title: 漏损闭环执行方案契约
 document_type: development
-document_version: 1.0.0
+document_version: 1.1.0
 status: draft
 locale: zh-CN
 audience: [developer]
@@ -23,6 +23,8 @@ summary: 说明可选LeakagePlan、执行快照、缓存隔离与前端资产显
 - `GET /plan-catalog` 无需登录，返回 `schema_version`、`default_plan`、`preset_plans` 和 `stages`。每个阶段包含稳定 `code`、标题、必需标记、依赖、参数Schema及默认值。
 - `POST /analyze` 保持原鉴权：登录且具有 `workflow:run` 权限。原 `start_date`、`end_date`、`preset` 不变，新增可选 `plan`。
 - 省略 `plan` 时继续使用旧分析实现，不替换旧结果或默认计算。提交方案时使用独立配置计算分支。
+
+学习型方案必须通过新增后台 `/runs` 路径执行，不在同步 `/analyze` 请求中训练。旧统计方案序列化在没有learning时不增加该字段，旧统计方案与分析ID保持兼容。
 
 示例为设置上周期基线，其他字段由Schema默认值补齐：
 
@@ -52,9 +54,9 @@ summary: 说明可选LeakagePlan、执行快照、缓存隔离与前端资产显
 | --- | --- |
 | `data_intake` | `enabled=true`且不可关闭 |
 | `quality_score` | `minimum_score=80`，范围0—100 |
-| `data_governance` | `method=linear`，可选none／linear／pchip／kalman；`max_gap_points=4`（1—96）；`outlier_policy=flag_only`或none；`hampel_threshold=3.5` |
-| `seasonal_96_slot_forecast` | `method=historical_slot_median`或seasonal_lag；`season_length=96`（4—672）；`band_mad=3` |
-| `persistent_residual_ewma_cusum` | `method=ewma_cusum`或robust_residual；EWMA alpha 0.2、阈值2.2；CUSUM allowance 0.5、阈值8、decay 0.95；残差阈值3；持续4点 |
+| `data_governance` | `method=linear`，可选none／linear／pchip／kalman／saits_imputation；`max_gap_points=4`（1—96）；`outlier_policy=flag_only`或none；`hampel_threshold=3.5` |
+| `seasonal_96_slot_forecast` | `method=historical_slot_median`，另可选seasonal_lag／dlinear／patchtsmixer／patchtst；`season_length=96`（4—672）；`band_mad=3` |
+| `persistent_residual_ewma_cusum` | `method=ewma_cusum`，另可选robust_residual／seasonal_robust_anomaly／isolation_forest_ts／beatgan／tranad；EWMA alpha 0.2、阈值2.2；CUSUM allowance 0.5、阈值8、decay 0.95；残差阈值3；持续4点 |
 | `night_flow_water_balance` | `start_hour=2`、`end_hour=4`；起止小时分别允许0—23、1—24，且前者小于后者 |
 | `network_candidates` | `limit=8`（1—100）、`min_confidence=0`（0—1） |
 | `response_advice` | 仅执行开关 |
@@ -70,6 +72,36 @@ summary: 说明可选LeakagePlan、执行快照、缓存隔离与前端资产显
 历史同刻中位数使用整个选定时段，是回顾基线。季节滞后取此前周期值，并仅使用此前残差估计尺度。缺测或尺度尚未建立时保留无效分数。EWMA／CUSUM使用有符号残差；CUSUM包含衰减项，并在无效位置清空状态。MAD带不是校准后的概率预测区间。
 
 这些配置针对入口总表15分钟序列。节点日级与管段拓扑代理的计算仍保持已有语义，不能宣称配置参数已传播成逐节点高频模型。新方案关闭某些阶段时相应图层不可用；图层显示开关与阶段执行开关不是同一状态。
+
+## 学习型方案与时间隔离
+
+`plan.learning`可选；选中学习型方法后，后台按默认 `mode=auto_pretrain` 补全。学习配置包括 `device=auto`（也可cpu／cuda）、`epochs=10`（通常1—30）、`window_length=96`（16—384）、`horizon=16`（1—96）、`training_fraction=0.5`、`calibration_fraction=0.2`、`threshold_quantile=0.99`、`seed=42`。BeatGAN和TranAD至少训练2轮，其余方法保持1—30轮配置范围；训练与校准比例之和不得超过0.9，BeatGAN窗口必须为32的倍数。`execution_id`由服务端写入运行标识，调用方不应以它选择历史运行。
+
+支持精确算法版本0.1.0的DLinear、PatchTSMixer、PatchTST；季节稳健、Isolation Forest、BeatGAN、TranAD；以及SAITS。季节稳健、Isolation Forest及SAITS0.1.0训练实现始终使用CPU。支持CUDA的提供者在auto模式下以GPU健康状态选择设备：健康但忙仍排队，不可用才回退CPU并返回 `device_reason=GPU_UNAVAILABLE`；CUDA执行失败不自动重新路由CPU。混合任务可以进入GPU Worker，但CPU方法不因此切换设备，各模型的 `training_device`记录实际训练设备。
+
+训练段、校准段、评测段按时间顺序分开。训练从原始流量训练段选择最长的合格连续观测，当前最小长度为 `5 * (window_length + horizon)`；不压缩缺失间隔。预测使用此前完整原始窗口，缺失上下文直接跳过，评测只对独立评测段中可对齐的原始观测计算MAE、RMSE和有效／期望点数。SAITS修复可使用后续上下文，但这些修复值不进入预测训练或误差对照；压力保持原值。
+
+检测使用独立校准段确定阈值，并将原始分数除以阈值得到比值r。评测段展示 `100 * max(r,0) / (1 + max(r,0))`，阈值为50，保留未截断的 `anomaly_ratio`；该值非概率。训练／校准及无效位置保留缺失，不显示为正常零分。旧统计方案的分数含义不改写。
+
+评测段没有有效对照或检测分数时，执行报错，不以空数组或NaN生成100分、高风险或评测成功结论。
+
+## 后台接口、进度与模型复用
+
+| 接口（通用及旧前缀均支持） | 权限与结果 |
+| --- | --- |
+| `POST /runs` | HTTP 202；要求 `workflow:run`和`algorithm:train`；必须提交plan且至少选中一种学习型方法；返回run_id、task_id、device、device_reason |
+| `GET /runs/{run_id}` | 仅创建者或管理员；返回MySQL状态、progress、state_revision、取消标记、安全错误、阶段detail和成功后的result |
+| `GET /runs/{run_id}/frames` | 仅创建者或管理员，成功后返回时间轴快照 |
+| `GET /runs/{run_id}/assets/{asset_id}` | 仅创建者或管理员，使用冻结证据恢复资产分析 |
+| `POST /api/v1/tasks/{task_id}/cancel` | 复用已有任务取消能力与权限，不新增另一套取消状态 |
+
+MySQL任务是最终状态来源，`run_id`与`task_id`一致；本地快照只补充阶段输出和结果。前端2秒串行检查状态，短暂读取失败不结束追踪，终态停止轮询；URL参数 `leakage_run`用于刷新恢复。进度是阶段进度，不把单轮训练比例当成整个分析完成比例。取消在检查点确认；frames、result与evidence写入后，任务才转success。
+
+训练通过现有算法生命周期和模型存储执行。复用键包含创建者、训练帧摘要、精确算法版本和实际训练参数；仅复用成功训练及就绪模型／权重，不跨用户复用。模型、权重、训练记录使用已有持久化机制，结果中的learning_report记录算法版本、模型ID、训练ID、数据摘要及是否复用，不将临时内存模型当作已保存模型。
+
+学习运行快照位于场景数据包父目录 `leakage-learning-runs`。API和Worker必须访问同一目录，并与场景数据及原 `leakage-plan-snapshots`一起备份。该目录保存阶段进度、结果、时间轴和分析证据；不能作为可任意清理的缓存。无新增数据库迁移。
+
+不存在、无权或已删除的运行返回404 `LEAKAGE_RUN_NOT_FOUND`；结果未完成返回409 `LEAKAGE_RESULT_NOT_READY`；快照缺失返回404 `LEAKAGE_RESULT_UNAVAILABLE`。无后台服务返回503 `LEAKAGE_ASYNC_UNAVAILABLE`；显式CUDA不可用返回409 `CUDA_TRAINING_UNAVAILABLE`。训练、校准或评测历史不足及执行错误进入失败终态，CUDA错误不隐式转CPU重试。提交后数据摘要变化会以 `LEAKAGE_SOURCE_CHANGED`失败，需重新提交。
 
 ## 快照、标识与缓存
 
@@ -98,4 +130,4 @@ summary: 说明可选LeakagePlan、执行快照、缓存隔离与前端资产显
 
 行为依据为 `LeakagePlan`、`configured_analytics`、`plan_store`、场景服务及HTTP路由；前端依据为阶段配置组件、方案校验和资产样式／场景实现。已有针对性测试覆盖短缺口修复保留峰值、长缺口保留、检测状态恢复、季节滞后预热及类型边界／隐藏拾取。测试通过记录与部署记录由维护计划分别登记。
 
-不包含闭环训练权重接入、水力仿真、真实泵阀控制或逐管流量压力测量补全。实际业务效果需要独立对照验证。
+不包含水力仿真、真实泵阀控制或逐管流量压力测量补全。Chronos-Bolt因没有就绪本地权重未加入闭环。部署进度及GPU实机验收以维护与发布记录为准；实际业务效果需要独立对照验证，本节不将功能说明作为验收通过记录。

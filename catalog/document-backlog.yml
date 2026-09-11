@@ -183,7 +183,7 @@ areas:
         path: docs/03-user-guide/leakage-plan-layers.md
         status: expand
         priority: P1
-        version: 1.0.0
+        version: 1.1.0
         modules: [M03, M04]
       - id: user.account-access
         title: 注册、登录、退出与账户注销
@@ -820,7 +820,7 @@ areas:
         path: docs/06-development/leakage-plan-contract.md
         status: expand
         priority: P1
-        version: 1.0.0
+        version: 1.1.0
         modules: [M03, M04]
       - id: development.standard-results
         title: 标准结果契约与可视化接入
