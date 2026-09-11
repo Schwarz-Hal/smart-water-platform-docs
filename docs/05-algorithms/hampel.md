@@ -2,7 +2,7 @@
 id: algorithm.hampel
 title: Hampel 滑动窗口异常检测
 document_type: algorithm
-document_version: 1.1.0
+document_version: 1.1.1
 status: published
 locale: zh-CN
 audience: [algorithm_user, developer]
@@ -10,11 +10,15 @@ related_modules: [M04]
 related_operators: [hampel]
 related_apis: []
 owners: [algorithm-team]
-reviewed_at: 2026-08-21
+reviewed_at: 2026-09-11
 summary: 区分独立 hampel 检测算子与治理流程中的 outlier_repair_dataset_v1。
 ---
 
 # Hampel 滑动窗口异常检测
+
+## 标准结果版本
+
+算子1.1.0新增标准结果输出，算法Provider及旧算子版本保持原状。result端口使用sw.result1.0协议。字段、缺失值及显示规则见[标准结果契约](../06-development/standard-results.md)。历史运行仍按原版本读取，不重算或覆盖。
 
 ## 用途与适用范围
 

@@ -2,7 +2,7 @@
 id: operator.patchtst
 title: PatchTST 时序预测
 document_type: algorithm
-document_version: 0.1.0
+document_version: 0.1.1
 status: draft
 locale: zh-CN
 audience: [algorithm_user, platform_user, developer]
@@ -10,11 +10,15 @@ related_modules: [M03, M04]
 related_operators: [patchtst]
 related_apis: []
 owners: [algorithm-team]
-reviewed_at: 2026-09-10
+reviewed_at: 2026-09-11
 summary: 说明PatchTST 时序预测新增版本的输入、模型、参数、适用范围与验证边界。
 ---
 
 # PatchTST 时序预测
+
+## 标准结果版本
+
+算子1.1.0新增标准结果输出，算法Provider及旧算子版本保持原状。result端口使用sw.result1.0协议。字段、缺失值及显示规则见[标准结果契约](../06-development/standard-results.md)。历史运行仍按原版本读取，不重算或覆盖。
 
 本文说明新增版本的实现约束，不代表真实管网业务效果验收。
 

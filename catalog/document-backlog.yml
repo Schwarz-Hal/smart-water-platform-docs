@@ -28,9 +28,9 @@ collaboration:
   completion_rule: A document becomes ready only after content review, link and
     metadata validation, site build, and inclusion in an approved snapshot.
 summary:
-  total: 117
+  total: 122
   ready: 2
-  expand: 115
+  expand: 120
   missing: 0
   deferred: 0
   by_area:
@@ -264,6 +264,12 @@ areas:
         modules:
           - M04
         version: 1.2.0
+      - id: user.result-visualization
+        title: 查看算法结果与评测
+        path: docs/03-user-guide/result-visualization.md
+        status: expand
+        priority: P1
+        version: 1.0.0
       - id: user.training-model-workbench
         title: 训练与模型工作台
         path: docs/03-user-guide/training-model-workbench.md
@@ -447,13 +453,13 @@ areas:
         priority: P1
         scope_keys:
           - seasonal_naive
-        version: 1.1.0
+        version: 1.1.1
       - id: algorithm.chronos2.overview
         title: Chronos-2 时序预测
         path: docs/05-algorithms/chronos2.md
         status: ready
         priority: P0
-        version: 1.2.0
+        version: 1.2.1
         scope_keys:
           - chronos2_flow_forecast
       - id: algorithm.hampel
@@ -463,7 +469,7 @@ areas:
         priority: P0
         scope_keys:
           - hampel
-        version: 1.1.0
+        version: 1.1.1
       - id: algorithm.seasonal-robust-anomaly
         title: 季节稳健基线异常检测
         path: docs/05-algorithms/seasonal-robust-anomaly.md
@@ -727,56 +733,74 @@ areas:
         status: expand
         priority: P1
         scope_keys: [isolation_forest_ts]
-        version: 0.1.0
+        version: 0.1.1
       - id: operator.matrix-profile-anomaly
         title: Matrix Profile 形态异常检测
         path: docs/05-algorithms/matrix-profile-anomaly.md
         status: expand
         priority: P1
         scope_keys: [matrix_profile_anomaly]
-        version: 0.1.0
+        version: 0.1.1
       - id: operator.beatgan
         title: BeatGAN 对抗重构异常检测
         path: docs/05-algorithms/beatgan.md
         status: expand
         priority: P1
         scope_keys: [beatgan]
-        version: 0.1.0
+        version: 0.1.1
       - id: operator.tranad
         title: TranAD 自条件异常检测
         path: docs/05-algorithms/tranad.md
         status: expand
         priority: P1
         scope_keys: [tranad]
-        version: 0.1.0
+        version: 0.1.1
+      - id: operator.regression-evaluation
+        title: 回归误差评测
+        path: docs/05-algorithms/regression-evaluation.md
+        status: expand
+        priority: P1
+        version: 1.0.0
+      - id: operator.forecast-evaluation
+        title: 预测结果评测
+        path: docs/05-algorithms/forecast-evaluation.md
+        status: expand
+        priority: P1
+        version: 1.0.0
+      - id: operator.anomaly-evaluation
+        title: 异常检测评测
+        path: docs/05-algorithms/anomaly-evaluation.md
+        status: expand
+        priority: P1
+        version: 1.0.0
       - id: operator.dlinear
         title: DLinear 分解线性预测
         path: docs/05-algorithms/dlinear.md
         status: expand
         priority: P1
         scope_keys: [dlinear]
-        version: 0.1.0
+        version: 0.1.1
       - id: operator.patchtsmixer
         title: PatchTSMixer 时序预测
         path: docs/05-algorithms/patchtsmixer.md
         status: expand
         priority: P1
         scope_keys: [patchtsmixer]
-        version: 0.1.0
+        version: 0.1.1
       - id: operator.patchtst
         title: PatchTST 时序预测
         path: docs/05-algorithms/patchtst.md
         status: expand
         priority: P1
         scope_keys: [patchtst]
-        version: 0.1.0
+        version: 0.1.1
       - id: operator.chronos-bolt
         title: Chronos-Bolt Small 预训练预测
         path: docs/05-algorithms/chronos-bolt.md
         status: expand
         priority: P1
         scope_keys: [chronos_bolt]
-        version: 0.1.0
+        version: 0.1.1
   - id: api_development
     name: API 与开发集成
     evidence_sources:
@@ -784,6 +808,12 @@ areas:
       - backend/app/api/routers
       - backend/app/operators/sdk.py
     documents:
+      - id: development.standard-results
+        title: 标准结果契约与可视化接入
+        path: docs/06-development/standard-results.md
+        status: expand
+        priority: P1
+        version: 1.0.0
       - id: development.algorithm-reserve
         title: 治理、异常检测与预测算法扩充
         path: docs/06-development/algorithm-reserve.md
