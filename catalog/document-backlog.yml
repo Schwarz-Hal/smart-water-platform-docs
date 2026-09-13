@@ -28,9 +28,9 @@ collaboration:
   completion_rule: A document becomes ready only after content review, link and
     metadata validation, site build, and inclusion in an approved snapshot.
 summary:
-  total: 124
+  total: 125
   ready: 2
-  expand: 122
+  expand: 123
   missing: 0
   deferred: 0
   by_area:
@@ -39,7 +39,7 @@ summary:
     user_guide: 24
     scenario: 5
     algorithm_operator: 42
-    api_development: 14
+    api_development: 15
     operations: 10
     acceptance: 10
 areas:
@@ -906,12 +906,18 @@ areas:
         status: expand
         priority: P0
         version: 0.1.0
+      - id: development.industrial-design-language
+        title: 青色工业设计语言 v1 与旧页面迁移
+        path: docs/06-development/industrial-design-language.md
+        status: expand
+        priority: P1
+        version: 1.1.4
       - id: development.frontend-page-structure
         title: 数据资产、算子中心与快速试用的前端维护边界
         path: docs/06-development/frontend-page-structure.md
         status: expand
         priority: P1
-        version: 0.1.1
+        version: 0.1.7
   - id: operations
     name: 部署运维
     evidence_sources:
