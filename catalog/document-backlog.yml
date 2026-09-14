@@ -329,7 +329,7 @@ areas:
         modules:
           - M04
           - M05
-        version: 0.1.0
+        version: 0.1.1
       - id: user.workflow-library
         title: 新建、克隆、派生、归档和删除工作流
         path: docs/03-user-guide/workflow-library.md
