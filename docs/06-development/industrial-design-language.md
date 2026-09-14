@@ -2,7 +2,7 @@
 id: development.industrial-design-language
 title: 青色工业设计语言 v1 与旧页面迁移
 document_type: development
-document_version: 1.1.4
+document_version: 1.5.0
 status: draft
 locale: zh-CN
 audience: [frontend_developer, designer]
@@ -10,8 +10,8 @@ related_modules: []
 related_operators: []
 related_apis: []
 owners: [frontend-team]
-reviewed_at: 2026-09-12
-summary: 定义青色工业界面的视觉令牌、面板、控件、响应式内容预算和动效边界，并提供旧页面迁移步骤。
+reviewed_at: 2026-09-14
+summary: 定义主线青蓝工业界面的视觉令牌、智能体执行约定、复用层级与页面迁移验收要求。
 ---
 
 # 青色工业设计语言 v1 与旧页面迁移
@@ -20,7 +20,31 @@ summary: 定义青色工业界面的视觉令牌、面板、控件、响应式�
 
 本文面向前端开发者与设计者。v1 取代旧版大圆角卡片语言，以深墨色标题条、青色操作强调、小圆角、工程边框和可读内容建立层级。不改变 API、业务权限、任务状态或算法语义，页面继续执行原有鉴权与校验。
 
-当前依据是 `feature/cyan-industrial-ui` 本地实现，主要覆盖快速试用。全局令牌和公共 Material 外观接入不等于所有页面的布局、控件状态与响应式已经迁移。本稿不代表像素级复刻通过、服务器验收或部署完成。“迁移要求”是后续改造约束，不是存量页面已全部达到的声明。
+青蓝工业风已确认为前端主线的默认设计方向。2026-09-13 的历史核对记录中，前端 main 为 `16bff9b64d524c575927a046e34f257da648b260`，参考界面已随 PR #58 合入，当时部署版本为 `8f19280169ad6e6bee4e960507d7ed10e8a44426`。这些是历史基线，不代表当前服务器版本；当前部署必须读取共享协调板确认。合并主线与部署版本分别记录，不要求两者提交号相同。配套文档 PR #32 仍待合并，不能将本文作者态内容当作已经同步到平台的文档版本。
+
+参考界面主要覆盖快速试用及已接入的公共控件。全局令牌和 Material 外观接入不等于所有页面的布局、控件状态与响应式已经迁移。“迁移要求”约束后续新增与改造，不是存量页面已全部达到或所有算法路径已验收的声明。
+
+本文另记录 `feature/industrial-motion-details` 基于上述 main 的新增动效：该分支当前未提交、未合并、未部署；方框开关、选中上下线、映射展开和菜单退场等新增效果不属于历史部署 `8f19280`。上一轮 1.2.0 的设计指导继续保留，不将其独立前端 guidance 分支与本动效分支视为已集成。
+
+## 智能体执行约定与约束层级
+
+需要运行控件示例、比较状态或查看用法时，参见[青色工业组件实验场](./industrial-playground.md)。该工具使用独立开发构建入口，不是生产业务路由；展示状态和本地交互不代表真实任务执行，新增共享控件的非 CVA API 与接入边界在其开发说明中列出。
+
+实验场当前目录为 `src/playground/playground-catalog.ts` 的 25 项示例，支持 `?example=ID` 独立打开。新增筛选栏、本地排序分页表格、局部 start／end 详情抽屉、任务反馈、文件元信息选择器以及时间范围、时序工具栏、资源层级与属性检查器可作组合参考；多步向导仍是实验场专属 Material Stepper 示例。它们不是 HTTP 或执行引擎：取消只发意图，断线不等于失败，文件选择不读取内容或上传，表格不做服务器分页。这些新增组件仍处于未合并开发分支，源码接入不等于上线。
+
+`ANALYSIS-COMPONENTS-ADOPTION` 已在该分支将快速试用算法／模型版本、任务卡、只读输入时间范围、预览工具栏与训练参数接到相应共享组件，详见[当前接入核查表](./industrial-playground.md#当前快速试用接入核查)。视窗意图仍经过原 applyWindow 点数校验，属性搜索和收起保留完整 Formly；真实上传、跟踪、映射、结果组件不被实验场替代。资源层级是原生 details 导航而非 ARIA tree；UTC+8 时间边界与跨度校验不替代训练最小点数规则。不由此次局部接入宣称全平台已改造或全部分析计划完成。
+
+开始界面任务时，依次阅读前端 `AGENTS.md`、`design-system/smart-water-platform/MASTER.md`、本文完整规范、目标组件及其 Schema／接口／测试，再列出本任务的状态清单。按仓库规则核对共享板、分支与权限后，选择满足目标的最小复用方案。MASTER 仅作入口与摘要，不复制本文形成第二份规范；文档 PR 未合并时，应读取协调记录指定的作者分支，不能把“主线暂时没有文件”当作自行重建规范的理由。若仍无法读取完整规范，说明缺口并依据 MASTER 与已合入代码处理有证据的范围，不声称已完成规范核对。
+
+| 层级 | 执行要求 | 适配边界 |
+| --- | --- | --- |
+| 必须 | 使用现有语义 tokens 和 Material/CDK；保留真实请求、权限、Schema 校验、状态与数据语义；新改参数区评估并适配 compact 网格；验证键盘、错误和窄容器 | 不全局改变参数表单默认 stacked；简单字段紧凑排列，复杂字段与窄宽可全跨；无法采用时说明原因 |
+| 推荐 | 职责清楚的工程面板优先复用 `IndustrialPanelComponent`；必要的轻量进入反馈复用 `PanelMotionDirective` 和动效令牌 | 普通列表或已有清楚结构不必再套面板；无需动效可保持静态，采用时必须可中断并支持减少动态效果 |
+| 按需 | 水纹、管线图、工程码、任务索引和定位装饰 | 只有内容预算与任务结构适合时使用；不得为像参考截图而给每页加侧栏、照抄 188px 索引或固定卡片高 |
+
+共享能力与页面组合分开：`shared/components/` 中的面板、参数表单和指令可按现有输入复用；`features/quick-trial/components/` 的模型、输入、运行状态组件依赖快速试用上下文，不是全局任务服务。其他页面应复用底层能力和交互原则，不搬走 `QuickTrialInputState` 或复制任务执行链。改变共享接口前检查全部调用方。
+
+偏离上述要求时，在任务交接或 PR 中记录具体页面、偏离项、内容／可访问性／既有契约原因、替代实现与验证结果。既有例外不自动成为新页面默认；不以“沿用旧代码”或“截图看起来一致”代替理由。
 
 ## 请求：迁移输入与边界
 
@@ -75,16 +99,16 @@ IndustrialPanel 与工作台总标题共享 `--sw-industrial-hatch` 斜纹令牌
 
 `scripts/render-water-texture.py` 仅依赖 Python 标准库，通过周期场生成装饰，不是光学、水力或其他物理仿真。CLI 支持 `--seed`、`--density`、`--size`、`--warp`、`--line-width`、`--output` 与 `--preview`；分别控制随机布局、每边特征密度、输出像素边长、弯曲程度、亮线宽度、输出路径及可选 2×2 平铺预览。输出 PNG 及记录生成器版本、参数、SHA256 的旁车 JSON，同参数与运行环境可复现。每次生成检查 291 项周期场边界/平移关系；采样不重复端点，周期性不要求首尾两列像素逐值相同。使用示例与参数范围维护在上述资源来源文件中。
 
-`swViewportTexture` 以宿主 `getBoundingClientRect()` 的负偏移写入 `--sw-water-x/y`，将纹理原点锚定到视口，内容保持正常滚动。指令在 Angular 区域外监听捕获阶段 `scroll`、窗口 `resize` 和宿主 `ResizeObserver`，通过单个待执行 `requestAnimationFrame` 合并更新，不运行常驻动画；销毁时移除监听、断开观察器并取消待执行帧。本轮交接报告前端 200 项测试通过，周期检查和 2×2 预览已检查；尚未进行人工滚动前后对比，不能将单元测试等同于全部滚动场景的视觉验收。
+`swViewportTexture` 以宿主 `getBoundingClientRect()` 的负偏移写入 `--sw-water-x/y`，将纹理原点锚定到视口，内容保持正常滚动。指令在 Angular 区域外监听捕获阶段 `scroll`、窗口 `resize` 和宿主 `ResizeObserver`，通过单个待执行 `requestAnimationFrame` 合并更新，不运行常驻动画；销毁时移除监听、断开观察器并取消待执行帧。该功能的 2026-09-12 交接记录包含前端 200 项测试、周期检查和 2×2 预览检查；当时人工滚动前后对比未完成。后续迁移需核验实际滚动容器，不能将历史单元测试等同于所有页面的视觉验收。
 
-迁移要求：装饰限于标题、索引、专门空白区或页面内容底层，禁止在曲线绘图区叠加点阵、斜纹、定位十字、管线或水纹。坐标网格、预测区间与选区属于数据编码，不是装饰。管线图片和水纹均不承担无障碍内容，不是实际管网拓扑、水位、水力状态或运行结果。状态不能只靠颜色或纹理表达。当前资源接入仅描述本地快速试用页面，不代表全平台采用、合并或部署。
+迁移要求：装饰限于标题、索引、专门空白区或页面内容底层，禁止在曲线绘图区叠加点阵、斜纹、定位十字、管线或水纹。坐标网格、预测区间与选区属于数据编码，不是装饰。管线图片和水纹均不承担无障碍内容，不是实际管网拓扑、水位、水力状态或运行结果。状态不能只靠颜色或纹理表达。当前资源已随快速试用参考界面合入并部署，但不是每页必须采用的背景或装饰。
 
 ## Material／CDK 组件与状态
 
 | 需求 | 当前组件／机制 | 迁移规则 |
 | --- | --- | --- |
 | 主次操作 | Material flat、stroked、text 按钮 | 每个操作区一个主动作，状态变化不改变尺寸 |
-| 算法／时间范围 | `mat-form-field`、`mat-select`、`mat-option` | 保留标签、键盘导航、禁用；浮层使用 `industrial-select` |
+| 算法／时间范围 | Material `mat-select`、`mat-option`；已部署算法入口使用 `mat-form-field`，新增分支改用框外标签 | 保留标签、键盘导航、禁用；浮层使用 `industrial-select`，新增分支局部外观见下文 |
 | 输入数据菜单 | `cdkConnectedOverlay`、`cdkTrapFocus`、Material 列表 | 跟随触发器宽度，Escape／背景关闭并恢复焦点 |
 | 步长 | `matInput`、`mat-button-toggle-group` | 保留业务边界，快捷值不能绕过校验 |
 | 面板／字段展开 | IndustrialPanel、按钮、`aria-expanded` | 不用可点击 div 模仿按钮 |
@@ -110,7 +134,7 @@ IndustrialPanel 与工作台总标题共享 `--sw-industrial-hatch` 斜纹令牌
 
 选择过短预设或结束图表拖动后，若先前选区仍有效，则恢复先前选区并警告；若先前选区已被参数变化变为无效，则在此次用户操作时尽量保留请求位置、扩展到最小范围。已加载全量仍不足时不能运行，应加载更长时序或由用户调整参数。拖动中不连续弹出警告；图表松手后提交选区并校验。参数变化本身只更新内联的当前点数、最少点数和原因，提供“扩大到有效范围”按钮，不悄悄修改训练参数或自动移动选区。
 
-这些约束是本地前端预检查，不替代后端验证或训练验收；本轮不宣称在线拖动已经验收，也不表示已有模型推理的全部最小输入要求已经实现。
+这些约束是前端预检查，不替代后端验证或训练验收；参考界面合入部署不证明在线拖动的所有路径已验收，也不表示已有模型推理的全部最小输入要求已经实现。
 
 ### 嵌入式内容与真实状态
 
@@ -118,7 +142,7 @@ IndustrialPanel 与工作台总标题共享 `--sw-industrial-hatch` 斜纹令牌
 
 `TrialRunStatusComponent` 使用工业面板呈现传入的真实状态与消息；排队、训练、失败、取消等标签不能由动效推断。仅在 `running` 时显示不确定进度条，不生成百分比。运行 ID、任务 ID 和工作流入口按实际存在的信息显示；“继续查看同一次运行”发出恢复查看事件，不表示重新训练。登录弹窗沿用原校验、请求与焦点恢复，仅统一标题和按钮外观。
 
-以上为本地分支实现约束，不表示已经合并或部署。此次界面覆盖未运行训练，也未逐项在线验证所有终态；训练成功、真实模型保存与端到端状态恢复需独立执行验收。
+以上组件已随参考界面合入并部署；视觉迁移本身不证明训练成功、真实模型保存或所有在线终态通过。涉及这些行为的任务仍需独立执行端到端验收，不能以截图或样式验证替代。
 
 ### 工作台与预览宽度
 
@@ -132,6 +156,8 @@ IndustrialPanel 与工作台总标题共享 `--sw-industrial-hatch` 斜纹令牌
 
 ## 动效触发与时序矩阵
 
+### 已合入的基础动效
+
 JavaScript 时长以 `shared/components/motion.tokens.ts` 的 `UI_MOTION` 为唯一来源，单位 ms；普通 CSS 反馈保留 `--sw-motion-fast: 120ms` 和 `--sw-motion-base: 180ms`。遗留 `--sw-motion-panel: 220ms` 不是 `swPanelMotion` 时长，视觉令牌不得调度业务工作。
 
 | 触发 | 时长与行为 | 重复／中断边界 |
@@ -142,6 +168,35 @@ JavaScript 时长以 `shared/components/motion.tokens.ts` 的 `UI_MOTION` 为唯
 | 提交后的输入快照 | `inputFocus=400`，聚焦本次输入窗口 | 异步展示，不等待聚焦结束再执行 |
 | 新快速试用预测结果 | `forecastReveal=600`、线性 | 历史观测静态，预测相关系列展开，完整数据已取得 |
 | 历史结果查看 | 默认无展开 | 不提供 ForecastRevealSession，不能伪装新计算 |
+
+### 新增细节动效：未合并分支
+
+以下仅适用于 `feature/industrial-motion-details`，不是已部署基线的时序。CSS 新增 `--sw-motion-disclosure: 260ms`、`--sw-motion-menu-enter: 180ms`、`--sw-motion-menu-exit: 140ms`、`--sw-motion-selection-rails: 420ms`；数据菜单退场的 JavaScript 定时使用 `UI_MOTION.menuExit=140`，只延迟浮层卸载，不延迟选择事件或业务请求。
+
+| 触发 | 新分支时长与表现 | 状态与中断边界 |
+| --- | --- | --- |
+| 任务索引选中 | `button::before` 背景在 260ms 内变为 `skewX(-5deg)`；文字保持正向 | 只变装饰层，不倾斜按钮文本或重排任务位置 |
+| 选中上下线 | `button::after` 在 420ms 内从左上／右下反向展开；时间到 40% 时长度为 66%，保持至 68%，再加速至完整 | 线条不是任务进度；减少动态效果时直接显示完整选中线 |
+| 方框开关状态变化 | `SquareToggleIconComponent` 箭头正反旋转 260ms；展开光环向外扩散，收起光环向内回缩 | 初次挂载不播放光环；图标 `aria-hidden`，真实展开语义归触发按钮／Material 控件 |
+| 字段映射展开／收起 | `.mapping-disclosure` 网格行在 `0fr` 与 `1fr` 间过渡 260ms，配合透明度与可见性 | 展开切换保留映射 DOM；关闭即设 `inert` 与 `aria-hidden`，不能因仍在退场而继续接受输入 |
+| 输入数据菜单 | 进入 180ms；关闭时保留浮层退场 140ms 后 detach | `dataMenuClosing` 期间 inert；再次打开取消旧定时器，销毁清理定时器，焦点继续由 CDK 机制约束和恢复 |
+| Material 算法菜单 | 带 `industrial-motion-select` 的面板自定义进入 180ms；退出沿用 Material 原生退出动画，仅调整为 140ms | 保留原生退出完成与卸载机制，不用第二个手动卸载计时器；全局样式仅命中显式工业动效类 |
+
+同分支的管线图版增加四角 5px 方块、上下边框和两侧断线，角标 `aria-hidden` 且不接收点击。这是快速试用页面装饰，不是 `IndustrialPanelComponent` 全局结构变化，也不是新增拓扑组件。
+
+同一未合并分支的选择器调整将算法与输入数据入口统一为 `selector-control` 外观：44px 高、13px 字体、青蓝描边，标签置于框外上方。`PLAYGROUND-CONTROL-POLISH` 后默认背景为白色 `#fff`，菜单打开时才使用浅青 `--sw-color-primary-soft`；共享 `IndustrialSelectComponent` 也按内部 open 状态区分白底与浅青底。算法入口从 `mat-form-field` 悬浮标签改为独立 `MatSelect`，通过 `aria-labelledby` 关联上方 label；数据入口仍是按钮加 CDK Connected Overlay。统一的是显示规格，不是底层业务组件、值绑定或键盘机制。
+
+早期选择器统一将算法的 `SquareToggleIconComponent` 移到 MatSelect 旁的独立兄弟层，避开 select value 的 overflow 裁切光环；后续分析组件接入改由共享 IndustrialSelect 包装此结构。输入数据入口仍复用同一图标组件并绑定数据菜单状态。菜单使用深青底、浅色文字，数据菜单上传 footer 为青色强调；深色选项主题仅命中显式工业菜单类，不改变其他下拉。这些变化不包含在历史部署 `8f19280` 中；当前部署情况以共享协调板为准。
+
+当前文件选中项与 Material Select 当前选项使用浅青底、深色文字，与未选中菜单项区分；共享选择器的显式 `industrial-cyan-options` 与快速试用 `trial-cyan-options` 使用同类局部状态规则。共享 `IndustrialChoiceComponent` 的 `SELECTED →` 则是按钮外的兄弟 small 元素，绝对定位于宿主右下角，不进入按钮 label；它为 aria-hidden、pointer-events none，按钮仍以 aria-pressed 表达状态。按钮最小高度 82px、底部 padding 30px 预留角标空间，不将此尺寸替换成全平台任务索引规格。
+
+实验场 `checks` 示例将 Material checkbox／radio／slider 组合成可换行的 `control-lab`：显示选项和设备分段单选占两个 cell，强度 slider 独占整行并显示当前值与 0–100 刻度。这是保留原数据绑定的示例组合样式，不是新增共享基础控件；CPU／GPU 仅改变本地示例值，不选择真实执行设备。
+
+`SquareToggleIconComponent` 位于 `shared/components/square-toggle-icon.component.ts`，模板和样式内联，唯一公开状态输入为 `expanded`。它不拥有菜单、表单或任务状态；当前由算法菜单、数据菜单和映射开关组合使用。映射内容仍受原文件／版本条件控制，“保留 DOM”只指展开切换不销毁内容，不表示跨文件永远保留旧映射。
+
+减少动态效果时，新增选中线、图标光环和数据菜单动画关闭，映射与箭头不做过渡；数据菜单直接关闭，不等待退场计时。Material 算法菜单动画缩短至 1ms，以保留原生动画完成路径。应检查关闭、立即重开、Escape、背景点击、键盘焦点和卸载，不能通过覆盖全站 Material 退出动画修补单一菜单。
+
+本轮协调者报告新增 3 项定向测试、前端共 203 项测试通过；这是本地自动检查，不等于所有浏览器时序、真实算法状态或部署验收。文档检查与前端人工交互证据分别记录，未执行的视觉路径仍需补验。
 
 配置、预览、执行状态和结果在实际出现时进入，不编排固定总长的流程动画。快照复制本次输入与选区，以异步帧聚焦；请求不依赖动画完成。真实结果出现后替换快照，不靠倒计时推断完成。
 
@@ -159,9 +214,32 @@ JavaScript 时长以 `shared/components/motion.tokens.ts` 的 `UI_MOTION` 为唯
 
 ## 迁移操作步骤
 
+### 按页面职责迁移
+
+| 页面类型 | 建议迁移方式 | 不应照搬的部分 |
+| --- | --- | --- |
+| 工作台 | 按输入、执行、结果组织区域，保留真实主动作；多任务确有切换需要时才加索引 | 不给所有页面复制快速试用侧栏、188px 列宽、水管或水纹 |
+| 列表／数据资产 | 保留工具栏、筛选、排序、分页、行操作和选择语义；紧凑行高与清晰表头，嵌套资源保留层级 | 不为了统一外观把所有列表改成卡片或强制转换为 MatTable |
+| 表单／配置 | 复用 Material 与 Schema 参数表单，短字段按内容成网格，复杂字段全跨；错误和说明靠近字段 | 不把一个小数字字段拉满整行，也不为多列强挤 JSON／长说明 |
+| 结果 | 优先复用 `shared/results/components/result-viewer/`，保留警告、明细与运行依据；外层有标题时使用 embedded | 不新增第二套结果解析／图表所有者，不把专用结果组件冒充通用服务 |
+| 弹窗 | 沿用 Material Dialog／CDK 的焦点与关闭语义；标题、内容、动作分区，按需组合工业面板 | 不叠加双标题、双外框或第二层进入动画，不让装饰遮住按钮 |
+
+### 常见反例与修正
+
+| 反例 | 修正与核查 |
+| --- | --- |
+| 简单参数默认整行铺满，配置区大量空白 | 按字段长度使用 compact 响应式网格；复杂字段、说明和窄屏仍可全跨，不能取消校验提示 |
+| 下拉、开关或按钮回到 Material 默认紫色 | 检查主题与浮层样式入口，复用青蓝语义令牌，不用每页硬编码颜色补丁 |
+| 为模仿工业标题画纯黑底且遗漏斜纹 | 工程标题使用 `--sw-industrial-ink` 与 `--sw-industrial-hatch`；不要据此把普通表头或正文都刷成深色 |
+| 外层面板和内层结果／预览重复标题 | 使用已有 embedded 输入或保留单一标题所有者，不复制内容组件 |
+| 在自制下拉层上叠原生 select，触发器与菜单互相遮挡 | 使用 Material select 或 CDK overlay，检查宽度、滚动、焦点返回和真实浮层层级；不靠任意增大 z-index |
+| 滚动行中的按钮穿到吸顶表头上方 | 表头需有不透明表面并在本表格滚动上下文覆盖行内容与行按钮；真正的菜单／弹窗仍由 overlay 层展示，不能被表头盖住 |
+
+### 执行与验收
+
 1. 列出原页面状态、事件与权限，保留测试回归基线。
 2. 使用工业主题和语义令牌，移除重复色板与大圆角，保留警告、危险和图表语义。
-3. 按职责拆成少量 IndustrialPanel，保留原业务内容，将标题动作投影至 `panel-actions`。
+3. 按职责组织区域，需要工程面板时复用 IndustrialPanel，保留原业务内容，将标题动作投影至 `panel-actions`。
 4. 根据最长标签与最窄容器设置网格和换行，先保证正文，再安排装饰。
 5. 将动效绑定稳定任务 ID、结果对象或内容键，不绑定连续变化的进度值。
 6. 复用 Material/CDK，检查焦点返回与键盘路径，错误、加载、禁用独立于动画。
@@ -193,13 +271,21 @@ import { PanelMotionDirective } from '../../../shared/components/panel-motion.di
 
 ## 错误与重试、验证与交接
 
+每个改造任务应维护以下验收清单；不适用项写出原因，未执行项写为待验收，不能统一标通过：
+
+- 状态：默认、悬停、按下、选中、键盘焦点、禁用、加载、空态、字段校验错误、请求失败；执行类页面另查等待、运行、成功、失败、取消、状态未知及恢复查看。
+- 内容：最长名称、完整时间与单位、无权限／未登录、无兼容资源、大量行或长 JSON；只覆盖本页真实存在的业务路径，不创造假响应充当端到端结果。
+- 响应式：1440、1024、768、390px 视口及局部分屏窄容器；核对字段换行、表头与行按钮层级、菜单定位、图表轴与操作区，关键状态和动作不能被裁掉。
+- 交互与生命周期：Tab／Enter／Escape、关闭后焦点返回、鼠标与触控滚动、减少动态效果、快速切换和卸载清理；图表缩放与固定纹理另查所在滚动容器。
+- 证据：定向测试、构建、同状态视觉对照及实际执行过的人工检查分别记录；主线提交、部署版本、文档 PR 状态与未迁移范围分别交接。
+
 缺少可解析时间列或数值列时显示选择提示；请求失败依原业务重试路径处理，不用动画表示重试成功。没有动画能力或用户减少动态效果时直接显示最终界面，不阻塞执行。
 
 文档运行 `npm run validate`、`npm run lint`；前端改造按既有 `npm test`、`npm run build` 检查，再进行真实交互和窄容器检查。自动检查不代替视觉和键盘验收。交接记录范围、实现版本、验证结果、未解决问题和独立审阅意见，分支、合并主线与部署状态分开。
 
 ## 实现依据与维护入口
 
-以下均为前端仓库路径，审核时与同一改造分支阅读：
+以下均为前端仓库路径，审核时对照已核定主线及本任务改动阅读：
 
 - `src/styles.scss`、`src/styles/_industrial.scss`：主题、空间、状态、焦点与 CSS 动效。
 - `src/app/shared/components/operator-parameter-form.component.ts` 及同名测试：紧凑模式、字段跨列和原参数校验保留。
@@ -209,6 +295,7 @@ import { PanelMotionDirective } from '../../../shared/components/panel-motion.di
 - `public/assets/industrial/`、`design-system/smart-water-platform/decoration-assets.md`：透明管线 PNG、周期光纹及资源来源；旧水纹 WebP、等高线 SVG 保留未使用，旧管线 HTML 不再是运行时模板。
 - `scripts/render-water-texture.py`、`src/app/shared/components/viewport-texture.directive.ts` 及同名测试：离线生成、周期检查、视口定位与销毁清理。
 - `src/app/shared/components/panel-motion.directive.ts`、`motion.tokens.ts`：进入、取消与时长。
+- 新动效分支 `src/app/shared/components/square-toggle-icon.component.ts`、`features/quick-trial/components/trial-task-selector.component.*`、`trial-input-panel.component.*`：方框状态反馈、可取消菜单退场与保留 DOM 的映射展开；不属于当前部署基线。
 - `src/app/features/quick-trial/quick-trial.page.html/scss/ts`：索引、容器断点、执行与快照。
 - `src/app/features/quick-trial/components/trial-task-selector.component.ts/html/scss`、`trial-input-panel.component.ts/html/scss`：控件、焦点、字段与预览。
 - `src/app/features/quick-trial/components/trial-execution-chart.component.ts`、`charts/trial-chart.component.ts`、`charts/trial-preview-chart-options.ts`：快照、图表生命周期与更新。
