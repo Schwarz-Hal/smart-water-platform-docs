@@ -2,13 +2,13 @@
 id: development.data-resource-extension-foundation
 title: 统一数据资源与声明式扩展基础
 document_type: development
-document_version: 0.1.0
+document_version: 0.2.0
 status: draft
 locale: zh-CN
 audience: [developer, operator]
 related_modules: [M02, M03, M04, M05, M06]
 related_operators: []
-related_apis: ["/api/v1/data-resources", "/api/v1/extensions", "/api/v1/scene-instances", "/api/v1/workflow-versions/{version_id}/runs"]
+related_apis: ["/api/v1/data-resources", "/api/v1/data-resources/recognize", "/api/v1/extensions", "/api/v1/scene-instances", "/api/v1/workflow-versions/{version_id}/runs"]
 owners: [backend-team]
 reviewed_at: 2026-09-14
 summary: 统一数据资源、声明式扩展和场景实例的实现边界、输入契约与运行安全。
@@ -46,6 +46,20 @@ summary: 统一数据资源、声明式扩展和场景实例的实现边界、�
 
 追加对同一 `point_id + metric + channel + timestamp` 的不同数值拒绝发布；完全重复观测保持可追溯。当前版本采用 CAS，过期基准版本的并发追加拒绝。冲突拒绝是本批确定的安全策略，不阻断其余资源基础能力。
 
+### 自动识别、微调与复用
+
+`POST /api/v1/data-resources/recognize` 接收 `{version_id, reuse_from_version_id?}`，要求 `data_file:read`。服务只使用目标 `DataFileVersion` 已保存的 `schema`、`time_profile` 和最多 50 行预览，返回 `inference_scope: stored_schema_and_preview`、宽/长表建议、列候选、指标证据、时间摘要、警告和 `full_validation: false`。识别是建议接口，不执行全量构建验证。
+
+识别器只在证据足够时选定时间/点位/指标；已有时区假设或时间格式歧义转为警告/待确认，不默认单位或时区，未知本地时区仍可留空以创建预览用途资源，Excel 日期序号则必须指定时区。宽表的多个指标在一次投影中共享来源扫描，但不同单位保持独立指标，不自动转换或合轴。客户端将微调后的映射直接提交 `builds`（或追加接口），由后台任务执行完整验证。
+
+`reuse_from_version_id` 仅复用时序资源的既有创建规则。API 对任意单一来源且字段类型兼容、来源列存在的规则返回复用建议；是否可由简化表单完整往返由前端 `canRestoreAutomaticSources` 守卫判断。守卫拒绝后客户端应提示使用资源页的“高级追加”按钮。长表通道列可由自动表单表达；宽表按行质量、通道或时区列等复杂映射不能自动还原，不得静默丢弃。复用结果显式引用新来源版本，并保留既有常量/时间格式；旧资源版本若无创建任务中的来源引用，不能自动复用。该接口不改变旧的 `preflight`、`builds` 请求语义。
+
+源映射 `SourceRequest` 可选 `time_format`；允许 `auto`、Unix 秒/毫秒、Excel 日期序号和受支持的明确日期格式。未传该字段的历史请求继续兼容。构建记录 `raw_value` 与原始行来源；空白数值转为 `null`，不填零、不静默去重，原始时间和值仍可追溯。
+
+### 接口增量
+
+新增 `POST /api/v1/data-resources/recognize`，请求体仅含必需的正整数 `version_id`，以及可选正整数 `reuse_from_version_id`；响应沿用成功包络，`data` 为识别建议对象。权限不足、来源不可读或非结构化文件分别沿用现有错误包络和资源错误码。新资源创建仍调用 `POST /api/v1/data-resources/builds` 并返回 `202` 任务摘要；追加仍调用 `POST /api/v1/data-resources/{file_id}/append`。因此旧客户端不发送 `time_format` 时无需迁移，新增字段只影响需要明确时间解释的源映射。
+
 ### Reader 和适用性
 
 工作流使用 `read_frame(actor, version_id, selection)` 或有界 partition reader，选择可包含 point、metric、channel、start、end 和 max_rows。默认单次执行上限为 1,000,000 行和 256 MB 序列化输出，超限失败，不静默截断。
@@ -80,6 +94,8 @@ Reader 按分区读取，不先 read-all 再截取；预览限制不改变执行
 
 旧 SWNet 读取和旧 workflow/algorithm-package 入口保持兼容，资源 reader 不重写 legacy manifest。停用阻止新选择/运行但保留运行中任务和历史；逻辑 archive 受引用保护，不物理 GC 破坏历史。
 
+自动识别失败、来源版本不可访问或客户端刷新只影响建议/未提交微调，不会发布半成品资源。客户端可重新读取文件版本并重发识别；创建/追加使用既有任务幂等键和任务中心状态恢复。完整构建失败或取消不切换 current，未保存的微调需重新确认。
+
 ## 验证范围
 
-已完成的实现验证包括：SQLite 资源构建与读取、扩展解析/安装/启用、普通无 publish 权限用户创建场景、真实 `series_arithmetic` workflow 运行及 HTML 报告下载；后端 459 passed，另有 15 项可选算法依赖缺失而 skip；前端 211 tests 和 production build 通过。1440/1024/768/390 四尺寸浏览器验收当前 blocked，不能写成已通过；本功能尚未部署。静态解析或页面展示不代表代码扩展环境已就绪，也不代表完整漏损业务准确率验收完成。
+基础资源/扩展能力已随 `20260914T092131Z-extension-ui-recovery` 部署（backend `e9faa40`、frontend `3d1d082`、docs `f57c18e`）。本次自动识别与简化追加复用仍为本地工作分支内容，尚未推送、合并或部署。当前验证证据为 Neo 后端 462 passed、15 项可选算法依赖缺失而 skip，前端完整套件 234 passed，追加生命周期回归定向测试 10 passed；production build 通过。浏览器本地目标受 `ERR_BLOCKED_BY_CLIENT` 阻断，未形成四尺寸验收结论。静态解析或页面展示不代表代码扩展环境已就绪，也不代表完整漏损业务准确率验收完成。

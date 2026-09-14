@@ -244,7 +244,7 @@ areas:
           - M02
           - M03
           - M05
-        version: 0.1.0
+        version: 0.2.0
       - id: user.dataset-lineage
         title: 数据版本血缘树与历史版本查看
         path: docs/03-user-guide/dataset-lineage.md
@@ -929,7 +929,7 @@ areas:
           - M04
           - M05
           - M06
-        version: 0.1.0
+        version: 0.2.0
       - id: development.operator-sdk
         title: 内置算法接入与 Operator SDK 开发指南
         path: docs/06-development/operator-sdk.md
