@@ -2,7 +2,7 @@
 id: development.industrial-page-rollout
 title: 工业风页面迁移与维护边界
 document_type: development
-document_version: 0.1.0
+document_version: 0.2.0
 status: draft
 locale: zh-CN
 audience: [frontend_developer, designer]
@@ -10,17 +10,40 @@ related_modules: []
 related_operators: []
 related_apis: []
 owners: [frontend-team]
-reviewed_at: 2026-09-23
-summary: 说明数据中心、统一数据资源与任务页面的工业风接入、展示职责拆分及本地验证边界。
+reviewed_at: 2026-09-24
+summary: 说明工业风页面接入、平台导航收敛、展示职责拆分及本地验证边界。
 ---
 
 # 工业风页面迁移与维护边界
 
 ## 用途与当前状态
 
-本文供维护者定位已接入的真实页面和保留的业务职责，配合[组件实验场](./industrial-playground.md)及[设计语言](./industrial-design-language.md)使用。2026-09-23这批改动位于前端 `feature/playground-foundation`，仍为本地未提交、未合并、未部署内容；不能由本文推断服务器界面已更新。
+本文供维护者定位已接入的真实页面和保留的业务职责，配合[组件实验场](./industrial-playground.md)及[设计语言](./industrial-design-language.md)使用。此前2026-09-23页面迁移的已提交基线为前端 `80d9d68`、文档 `3b7bdbe`、Neo 维护记录 `14325e2`。本次导航整理位于当前前端与文档工作分支，尚未合并或部署；不能据此推断服务器界面已更新。
 
-统一采用用户选定的B工程折角，复用 Angular Material、CDK、现有主题令牌和共享面板。本批不新增后端API、权限、算法、任务执行引擎或数据库迁移；公共接口契约不变。另一工作区的未提交漏损UI不属于本批合并成果。
+统一采用用户选定的B工程折角，复用 Angular Material、CDK、现有主题令牌和共享面板。本地导航整理围绕既有路由与访问策略重新分组，不新增后端API、权限、算法、任务执行引擎或数据库迁移；公共接口契约不变。本文记录当前工作分支状态，不代表已合并或部署。另一工作区的未提交漏损UI不属于本批成果。
+
+## 导航整理：入口与既有路由
+
+主导航由路由策略与权限筛选共同决定；菜单项只是入口，不会授予路由或数据访问权限。已登录用户看到的工作空间入口为：
+
+| 主入口 | 现有页面与职责 | 可见性依据 |
+| --- | --- | --- |
+| 工作台 | `/dashboard`，平台摘要与继续工作入口 | 认证路由 |
+| 数据集管理 | `/data-collections` 或 `/data-resources`；依据 `data_source:read` 与 `data_file:read` 选择入口 | 对应路由权限；内部各子页仍按自身策略筛选 |
+| 场景中心 | `/workflows`，既有工作流列表与 DAG 编辑 | `workflow:read` |
+| 算子中心 | `/operators` | `operator:read` |
+| 扩展中心 | `/extensions` | `workflow:read` |
+| 运行中心 | `/workflow-runs` 或 `/tasks`，依据 `workflow:read` 选择默认页 | 工作流运行与后台任务仍分别使用各自权限 |
+
+数据集管理的区域导航将已有功能归在一个入口下：文件与数据集（数据中心 `tab=assets`）、拓扑与时序（数据资源页）、质量概览（`tab=quality`）、治理任务（`tab=runs`）、规则与模板（`tab=templates`）。这只是入口和页面分组，tab 查询参数、数据源服务、资源接口及状态所有者未被替换。
+
+场景中心以原有工作流 ID、草稿／发布版本和 `/api/v1/workflows` 系列接口为基础，当前节点图就是已有工作流的 DAG 编辑器，不是新增执行引擎。编辑器中的“封装为子流程节点”是既有发布版本复合算子注册界面的新称呼；它读取不可变的已发布工作流版本并注册为可复用算子，不修改当前图，也不意味着新建子流程运行时。页面“历史入口”仍链接 `/scenes`（历史场景库）与 `/scene-instances`（历史场景配置），继续保留各自页面和数据绑定。
+
+运行中心是导航汇总，不是统一状态库：场景运行链接仍为 `/workflow-runs`，后台任务仍为 `/tasks`；详情分别保留原路由、权限检查与请求。任务重新运行仍可导航到原场景运行记录。扩展内的“API 与集成”是扩展区域子导航，预览既有接口目录和集成说明；不改变扩展运行时能力。用户管理、资源回收站及无工作流读取权限时显示的开发者中心入口仍位于“管理与设置”。
+
+访客可进入公开的 `/quick-trial`；已登录用户可从工作台进入快速试用。访客不能因此访问工作台。快速试用之外，标记为登录后访问的路由继续显示锁定登录入口或按原路由守卫处理。隐藏项不会因重新分组而变成访客可访问。原 URL 保持可用，不添加重定向，也不删除历史地址。
+
+本次整理不代表扩展执行能力升级：没有新增 SDK、可执行代码、自运行或流式执行实现。导航标签、页面入口与实际能力必须分开描述。
 
 ## 已接入的页面范围
 
@@ -50,6 +73,10 @@ summary: 说明数据中心、统一数据资源与任务页面的工业风接�
 
 `data-collections.page.ts` 仍约1200行，文件操作编排等职责尚未继续拆解。后续应按操作协调、选择状态、视图组合逐块处理，不为降低行数而增加跨组件状态耦合。
 
+导航来源现集中在 `src/app/core/routing/platform-navigation.ts`、`route-access-policy.ts` 与 `src/app/layout/area-navigation.component.ts`；应用外壳 `layout/app-shell.component.*` 负责展示分组和访客锁定入口。维护时先核对策略注册、真实 route 配置和各页面的 `routerLink`，不要因导航标题调整就改路由 ID、守卫权限或页面服务绑定。用户侧入口说明见[平台导航与模块入口](../03-user-guide/platform-navigation.md)。
+
+本次有界页面整理还将 AppShell、dashboard、workflow-library 与 workflow-runs 的内联模板／样式拆到相邻文件；这不等于工作流编辑器整体重构。生产构建通过，初始包约671kB，仍有既知500kB预算与Rete依赖警告；57个测试文件、247项测试以 `maxWorkers=2` 通过，未跳过测试。开发预览中检查了数据资源页、质量页刷新与场景运行页签；历史场景配置仅确认旧路由仍在，离线样例源没有覆盖该页面的操作数据，因此不作完整交互或服务器验收声明。上述均为本地分支证据，不代表部署验收。
+
 ## 控件与样式约束
 
 - `IndustrialPanelComponent` 只保留工程折角；不再传 `cornerStyle`，不保留生产端A／C切换。旧 `corner-variants` 示例链接继续有效，但仅展示B方案。
@@ -63,7 +90,7 @@ summary: 说明数据中心、统一数据资源与任务页面的工业风接�
 
 独立实验场与离线业务预览的用途不同：前者查看共享组件的固定样例；后者运行真实业务页面，但响应来自开发专用样例。普通生产构建仍保留真实服务请求，不能把离线保存或运行反馈视作服务器执行证据。
 
-本批开发专用 `src/app/developer-offline/handlers/data-resources.handlers.ts` 在离线 providers 中注册，复用既有时序样例，提供资源列表、元数据、点位、时序读取及固定识别建议。识别响应并未解析真实文件；预检、构建与追加明确返回501“不支持此离线操作”，不生成任务。此补充不新增真实API或更改业务DTO。
+此前页面迁移记录中的开发专用 `src/app/developer-offline/handlers/data-resources.handlers.ts` 在离线 providers 中注册，复用既有时序样例，提供资源列表、元数据、点位、时序读取及固定识别建议。识别响应并未解析真实文件；预检、构建与追加明确返回501“不支持此离线操作”，不生成任务。此补充不新增真实API或更改业务DTO。该段是2026-09-23页面迁移验收记录，不是本次导航改动新增的离线能力。
 
 2026-09-23本地最终回归为57个测试文件、244项通过。默认并发下，QuickGovernance动态导入测试曾发生一次5秒超时；未修改测试超时、未跳过测试，临时将 `maxWorkers` 限为2后全量通过。生产与Playground构建均通过，生产初始包673.84kB的既有预算警告及Rete依赖警告仍保留，不将成功构建表述为无警告。
 
