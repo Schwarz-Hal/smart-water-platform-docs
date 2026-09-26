@@ -2,16 +2,16 @@
 id: development.extension-lifecycle-sdk
 title: 扩展生命周期与 Python SDK 首段
 document_type: development
-document_version: 0.3.0
+document_version: 0.6.0
 status: draft
 locale: zh-CN
 audience: [developer, operator]
-related_modules: [M04, M05]
+related_modules: [M02, M03, M04, M05]
 related_operators: []
-related_apis: ["/api/v1/extensions/upload", "/api/v1/extensions/catalog", "/api/v1/extensions/{package_id}", "/api/v1/extensions/{package_id}/{operation}", "/api/v1/extensions/{package_id}/visualizer", "/api/v1/tasks/{task_id}"]
+related_apis: ["/api/v1/extensions/upload", "/api/v1/extensions/catalog", "/api/v1/extensions/{package_id}", "/api/v1/extensions/{package_id}/{operation}", "/api/v1/extensions/{package_id}/visualizer", "/api/v1/tasks/{task_id}", "/api/v1/workflow-templates", "/api/v1/workflows/from-template"]
 owners: [backend-team]
-reviewed_at: 2026-09-26
-summary: 说明 Python 扩展 SDK、schema 2 生命周期、受限结果视图运行时及当前未完成的产品接入边界。
+reviewed_at: 2026-09-27
+summary: 说明 Python 扩展 SDK、资源绑定样例、受限结果视图与画布接口及待验收边界。
 ---
 
 # 扩展生命周期与 Python SDK 首段
@@ -20,7 +20,7 @@ summary: 说明 Python 扩展 SDK、schema 2 生命周期、受限结果视图�
 
 本文面向扩展作者和平台维护者，说明如何用 SDK 生成、检查和打包扩展，以及平台如何区分私有上传、环境准备、试运行、安装、个人启用、公开审核和安全撤销。
 
-截至 2026-09-26，`feature/extension-lifecycle` 开发分支已加入 schema 2 上传和静态检查、个人生命周期接口、Python SDK／运行适配器、后端既有 DAG 执行首段及受限结果视图入口。迁移为 `0027_extension_lifecycle`，尚未部署；当前部署的平台仍只接受 schema 1 包。分支中的扩展页面现有目录筛选／分页和生命周期操作按钮，并依据 `available_operations` 展示当前可申请操作；完整浏览器交互验收仍未完成。下文的 DAG 验证是 SQLite 上使用可信测试适配器执行的窄路径；浏览器 QuickJS 示例使用合成数据。两者均不是上传包真实容器端到端或生产验收。
+截至 2026-09-27，`feature/extension-lifecycle` 开发分支已加入 schema 2 上传和静态检查、个人生命周期接口、Python SDK／运行适配器、后端既有 DAG 执行首段及受限结果视图入口。迁移为 `0027_extension_lifecycle`，尚未部署；当前部署的平台仍只接受 schema 1 包。分支中的扩展页面现有目录筛选／分页和生命周期操作按钮，并依据 `available_operations` 展示当前可申请操作；完整浏览器交互验收仍未完成。下文的 DAG 验证是 SQLite 上使用可信测试适配器执行的窄路径；浏览器 QuickJS 示例使用合成数据。两者均不是上传包真实容器端到端或生产验收。
 
 ## 前置条件与角色
 
@@ -101,7 +101,11 @@ Worker 把进度、指标和日志写入既有任务日志；执行结束后还�
 
 `sdk/frontend/index.d.ts` 声明作者侧类型，`sdk/frontend/README.md` 给出对应脚本接口。作者包中的 `visualizers` 声明指向 `web/` 下的自包含 JavaScript 源码，并关联精确类型引用；当前包类型 SDK 是仓库内私有源码，不是已经发布的 npm 插件 API。结果展示请求使用 `GET /api/v1/extensions/{package_id}/visualizer?namespace=…&code=…&version=…`；此只读接口沿用 `workflow:read` 与包可见性检查，并只读取 schema 2 且处于已安装／已归档、未撤销状态的匹配声明。后端返回 JSON 中的源码文本、`quickjs-view-v1` 协议标识和 SHA-256；这不是给页面注入可执行 `<script>`。
 
-前端验证协议与源码摘要后，把输入 `payload`、上次返回的 `state` 和可选 `{id}` 事件传给独立 Web Worker 中的 QuickJS WASM runtime。作者提供全局 `render(input, state, event)` 函数并返回 `protocol_version: '1.0'` 的 `ExtensionView`。宿主允许的展示块只有 `text`、`metrics`、`table`、`chart` 和 `network`；例如网络块可表达节点、管段和按资产／指标／时间标注的 observations，宿主再用固定 Angular 视图渲染，不接受 HTML、CSS、ECharts 原始配置或 Formly 表达式。
+前端验证协议与源码摘要后，把输入 `payload`、上次返回的 `state` 和可选 `{id}` 事件传给独立 Web Worker 中的 QuickJS WASM runtime。作者提供全局 `render(input, state, event)` 函数并返回 `protocol_version: '1.0'` 的 `ExtensionView`。宿主允许的展示块为 `text`、`metrics`、`table`、`chart`、`network`，以及受限的 `canvas`；例如网络块可表达节点、管段和按资产／指标／时间标注的 observations，宿主再用固定 Angular 视图渲染。
+
+`canvas` 让 renderer 用数据计算几何、语义颜色和动作状态，但不把绘图代码或标记交给主站执行。作者只能返回 `rect`、`circle`、`polyline`、`text` 四种原语及坐标／颜色／文字等数据；颜色只能用平台语义色或 `#RRGGBB` 六位十六进制色。每个画布必须有非空 `label` 和 `description`，并声明宽高；主站重新校验后，以自有 SVG 模板重建白名单元素，不接收任意 SVG 标记、路径、HTML、CSS、远端资源或脚本。单画布最多 4096 个原语、32768 个折线顶点及 128 个唯一 action；超限或未知图元会被拒绝。图元上的 action 仅是 `{id,label}` 描述，交互由宿主提供按钮，触发后把 `{id}` 作为下一次 `render` 的 `event`，作者据此返回更新后的 `state` 和绘图数据。它不是任意 React／Angular 插件，也不是扩展直接操作 DOM。
+
+前端 SDK 的 `ViewCanvas`、`DrawingPrimitive` 和 `DrawingColor` 类型位于 `sdk/frontend/index.d.ts`。画布及 action 都只是 renderer 的序列化输出描述；运行时校验器和宿主组件才是最终能力边界，TypeScript 声明本身不授予额外权限。
 
 按钮只传递 action `id`，主机以新 event 调用 renderer，renderer 返回更新后的 `state` 和数据视图。宿主每 30 秒重新读取可视化授权与源码摘要；如果权限仍有效且摘要不变，不会因检查而重跑脚本或重置当前视图。读取失败或摘要变化时会终止当前 Worker 并清除旧扩展视图；结果页可回退到平台标准结果查看器及原始类型化数据。
 
@@ -111,24 +115,72 @@ renderer 只在 WASM QuickJS 引擎的专用 Worker 中执行；本项目通过 
 
 浏览器样例由 `src/playground/foundation/extension-host-demo.component.ts` 提供固定合成数据：4 个节点、3 条管段和 4 个小时的压力观察，按钮在纯拓扑与含时序观察之间切换；既有网络组件提供搜索、选择、时间轴及选中资产曲线。它是 Playground 第31个注册示例。扩展网络视图默认折叠图例是此宿主的 opt-in 设置，不改变原漏损闭环页面的默认展开。这证明该脚本协议在本地浏览器可驱动受限视图，不代表真实上传包经容器执行后端到前端 E2E，也不包含敏感真实管网或生产数据。
 
+## 资源绑定与 network-inspection 两节点样例
+
+Neo 仓库中的 `sdk/examples/network-inspection/` 是尚未发布的 schema 2 样例包：SDK 仍为 0.1，清单声明的示例包版本为 1.0.0，不表示已有正式公共版本。先安装已有 Python SDK，并从仓库根目录静态检查、打包和复查归档：
+
+```console
+python -m pip install ./sdk/python
+swext check sdk/examples/network-inspection/extension.json
+swext pack sdk/examples/network-inspection ./network-inspection.zip
+swext check ./network-inspection.zip
+```
+
+样例只有两个职责分离的可执行节点：
+
+| 节点 | 输入与输出 | 边界 |
+| --- | --- | --- |
+| `topology-input`（拓扑数据输入） | 从必需的 `topology` 资源版本读取节点与边，输出精确类型 `network-tools/topology@1.0.0`，包含 `nodes`、`edges` 和连通性／坐标等 `quality` 摘要 | 只输出拓扑摘要／质量，不生成 `network-view`、`renderable` 标记或三维坐标 |
+| `network-output`（管网可视化输出） | 接收拓扑及可选的规范 `observations` 表、`timeseries` 资源版本和 `mapping` 资源版本，输出 `network-tools/network-view@1.0.0` | 负责判断是否可空间显示并组织网络视图、摘要和警告；拓扑本身就能生成不带观察值的纯拓扑结果，它不是漏损诊断或水力分析算子 |
+
+包内 `network-overview` 是普通 `workflow_template`，由精确 `node_ref` 串接两个既有扩展节点；`network-scene` 是引用该工作流模板的 `scene_template` 起始方案。启用后，这类模板进入既有 workflow starter 流程，通过 `/api/v1/workflow-templates` 和 `/api/v1/workflows/from-template` 创建普通 DAG 草稿；它不调用旧 `/api/v1/scene-instances` 场景实例执行器，也没有独立场景引擎。资源输入参数未配置时允许先建草稿；发布前仍须在既有 DAG 编辑／校验流程填齐必要参数并通过完整校验。
+
+### 选择并固定数据资源版本
+
+上传样例后，按扩展生命周期完成静态解析、环境准备、试运行、安装和为当前用户启用。每个可执行贡献至少需要一个完整覆盖其精确 code/version 的 smoke 用例；此包为两个节点分别声明 smoke case。样例 smoke 使用内嵌合成拓扑来验证节点接口，其版本参数值只是 fixture 占位，不是用户文件版本 ID，也不证明真实资源读取已经执行。
+
+创建 DAG 草稿后：
+
+1. `topology-input` 的必需 `source_version_id` 通过平台自有资源版本下拉框选择 topology。控件只保存所选版本 ID，不会随着资源“当前版本”变化自动追随新版本；提交工作流运行时由服务端重新授权、检查类型并读取该版本 SHA 来冻结运行绑定。
+2. `network-output` 可不接入时序，输出纯拓扑；也可直接接收规范化 `observations` 表，或绑定可选的 `timeseries_version_id`。二者不能同时提供，否则样例明确失败。
+3. 如果有拓扑与点位编码不同的情况，可选择可选 `mapping_version_id`。没有映射时只接受 `point_id` 与唯一拓扑节点 ID 的精确匹配，不按名称、距离或管段相似度猜测。未能唯一匹配的行会被计入未映射警告并不绘制；显式映射中同一键指向不同目标会失败。
+4. 资源下拉只列出当前用户可读且类型匹配的资源；提交及 Worker 运行时再次检查 `data_file:read`、资源状态、种类和版本 SHA。Worker 只把有界、规范化的资源明细交给 SDK，不传递对象存储键或任意文件路径。
+5. 绑定资源按节点快照固定。每个可执行贡献最多声明 8 个 `resource_inputs`；一次节点执行合计最多读取 100,000 行和 8 MiB。超过任何限制时明确返回资源输入错误，整个节点失败，不截断并伪装为完整输入。
+
+显式映射不做单位转换。值为 `0` 会保留为零；原始缺测 `null` 继续为缺测，不填零。非数值值无法绘制时作为缺失并给出警告；不修改或覆盖原始数据资源。拓扑缺少平面坐标时不伪造位置，质量摘要令空间展示不可用；高程未知时按平面高度显示并明确警告，不推断实测高程。
+
+对于同一节点／管段、指标、单位和时间戳，若存在不同数值则拒绝该输出，提示先治理冲突。完全相同的重复行可以在视图中合并，源数据保持不变。没有显式 mapping 且点 ID 同时存在于节点和管段集合时，不猜目标，作为未映射行跳过并告警。样例视图另限制最多 5,000 个节点、10,000 条管段和 50,000 条观察；这仅是该可视化定义的处理界限。
+
+创建来自模板的草稿不代表可以发布或运行。正式工作流仍遵循现有 `workflow:publish`、`workflow:run` 及每个数据源的 `data_file:read` 校验；完成发布后通过已有任务和结果接口执行。此功能只提供一个带拓扑摘要和可选时序叠层的双节点验收样例，不代表完整跨包依赖闭包、任意格式映射、正式拓扑产品包、模型运行或已部署服务。
+
+## 跨包类型、版本兼容与提交保护
+
+schema 2 的 `publisher.<namespace>` 是同一发布者下的 namespace 别名。平台在包解析时将它映射到当前所有者的实际 namespace；作者不应把某个用户数字 ID 写进类型引用。跨包使用仍逐项解析精确 kind／namespace／code／version，并检查依赖对当前用户可见、已安装且未撤销，并由该用户逐一启用。公开批准只决定依赖的可见性，不替用户启用。公开 consumer 不能只因其依赖类型“存在”就通过公开审核：依赖包需要先达到当前公开资格。
+
+本地跨包测试使用类型包声明 `shared-types/reading@1.0.0`，consumer 以 `publisher.shared-types/reading@1.0.0` 引用它。依赖尚未公开时，consumer 的公开申请拒绝；依赖公开后，用户2仍须自行启用 consumer 才能运行。结果按既有工作流产物权限隔离，用户1不能读取用户2运行的私有结果。该场景验证一个跨包精确 Schema 与授权路径，不等于所有多级依赖图或任意发布者组合都已验收。
+
+同一包的 schema 2 扩展版本可以并存。版本目录保留被停用版本的历史元数据，并以 `available=false` 标明该用户当前不能执行；用户1停用较新的版本后，仍启用的旧版本可继续作为该用户的可用版本，用户2对 schema 2 版本的个人启用不因此被关闭。历史查询不是新的执行授权。
+
+发布工作流时，服务端在图节点 `extension_snapshot` 冻结精确包摘要、贡献声明摘要和环境快照，并记录包的 workflow-version / workflow-run 使用引用。运行前及扩展节点提交结果前会重新检查权限、版本／环境摘要和安全状态；若执行期间发生撤销，提交会失败且不会发布节点产物。Worker 丢失后的 attempt 1 与 attempt 2 是分开记录的；测试中 attempt 1 失败、attempt 2 成功，仅保留一组最终节点产物。归档也会因活动启用、引用或依赖而拒绝，不能用覆盖同版本或删除行清理历史。
+
 ## 已实现边界与待接入能力
 
 本次 SDK／生命周期单元没有完成完整扩展产品：
 
 - schema 2 包上传、静态解析、所有者私有身份、个人启用、公开申请／审核以及容器准备／试运行流程已有开发分支实现；现有部署未升级到 migration 0027。
 - 后端现有 DAG 首段已把当前用户启用且通过运行门禁的 `operators`／`algorithms` 投影为既有算子目录的 `NodeDefinition`，含精确版本、输入／输出端口和参数 Schema；发布工作流时冻结扩展包摘要、声明摘要和环境快照，运行时复用既有 workflow/task 协调器。仅安装尚不足以使用节点，用户还须启用包并满足运行环境和验证状态。
-- 扩展节点目录投影当前没有自定义 `ui_schema` 或 `visualization_schema`（两者为空）。受限 `ExtensionView` renderer 已接入结果页，只支持前述数据块并由平台 Angular 组件显示；这不是任意 React／Angular 插件、扩展参数 UI 或工作流节点定制宿主。
-- 当前节点运行已按精确类型引用检查输入和输出，并对有用版本记录冻结快照和使用引用；`tests/extensions/test_personal_lifecycle.py` 中的首个图由同一包的两个来源节点（3、5）连接到汇总节点（8）。这证明该可信测试运行时上的最小既有 DAG 路径，不代表拓扑业务样例或完整跨包 namespace 依赖闭包、所有者边界及全图类型策略已验收。
+- 扩展节点目录只从 `resource_inputs` 生成平台拥有的 `resource_version` 参数选择控件；作者自带的任意 JS 参数组件不受支持，`visualization_schema` 仍为空。受限 `ExtensionView` renderer 已接入结果页，只支持前述数据块并由平台 Angular 组件显示；这不是任意 React／Angular 插件或工作流节点定制宿主。
+- 当前节点运行已按精确类型引用检查输入和输出，并对有用版本记录冻结快照和使用引用；一个已验证的跨包类型路径不能代表完整多级依赖闭包、全部发布者组合或所有兼容回退情形。
 - 通用二进制 Artifact 通道、宿主签发并回收 Artifact、模型注册／下载／生命周期接入尚未实现。不要用普通 JSON `payload` 宣称这些能力已覆盖。
 - Python 3.12 CPU 档是当前首个实现目标；其他 SDK、运行档、依赖审批机制、部署迁移、既有 schema 1 运行兼容及服务器运行验收仍需独立验证。
 
-因此，SDK 和后端最小 DAG 路径及受限结果 renderer 均不表示通用二进制 Artifact 通道、宿主签发并回收 Artifact、模型注册／下载／生命周期、拓扑业务样例、完整跨包依赖、自定义扩展节点／参数 UI 或完整生命周期产品已经完成。
+因此，SDK 和后端最小 DAG 路径及受限结果 renderer 均不表示通用二进制 Artifact 通道、宿主签发并回收 Artifact、模型注册／下载／生命周期、正式拓扑产品／服务器验收、完整多级跨包依赖、自定义扩展节点／参数 UI 或完整生命周期产品已经完成。
 
 ## 本地检查证据与交接
 
-截至 2026-09-26，后端回归为480项通过、15项因可选依赖缺失跳过、4项真实基础设施用例排除；迁移检查4项通过。SDK 与扩展定向检查29项通过。前端局部检查包括2项沙箱、8项扩展页和1项服务测试；前端共59个测试文件、252项测试通过，Production／Playground构建通过（仅保留既有包体预算与Rete警告）。SQLite DAG 集成测试使用同一扩展包中的两个来源节点和一个汇总节点，验证值3与5经 DAG 汇总为8；发布版本冻结精确类型／包／环境并记录使用引用，停用阻止新运行，有引用的包拒绝归档。后端测试还核对私有可视化源码读取、SHA 校验及撤销后拒绝读取。DAG 测试使用仅执行测试内生成算术代码的 `TrustedAuthorTestRuntime`；它不在生产装配中，也没有启动 Docker，不能作为容器隔离或服务器执行证据。
+截至 2026-09-27，完整后端回归483项通过、15项因可选依赖缺失跳过、4项真实基础设施用例排除；迁移检查4项通过。网络资源绑定和跨包测试包含两节点示例与类型／所有者兼容场景。`test_two_node_package_runs_static_and_timeseries_against_versioned_resources` 在 SQLite 工作流库中以真实构建的版本资源验证静态与含时序流程、scene-template 起始草稿、绑定版本和结果观察；`test_shared_type_public_execution_version_rollback_and_result_ownership` 覆盖依赖公开审批、逐用户启用、V1/V2回退、版本引用、租约重试单产物及撤销后不提交产物。两项均使用可信测试 SDK 代码，不启动 Docker，不能作为容器隔离、线上资源或生产执行证据；本轮未部署。
 
-本地浏览器检查了合成视图在1440／1024／768／390宽度下无横向溢出、纯拓扑切换保留4个节点和3条管段、键盘时间轴推进、节点搜索与选中资产曲线，以及无控制台错误。该脚本只消费固定合成数据，不是用户上传→容器运行→授权可视化的端到端验收。QuickJS Worker/预算及同源摘要重验也不是独立安全审计。本地未验证真实 Linux Docker 引擎下的镜像就绪、隔离、输出、取消、OOM 与恢复。
+前端全量63个测试文件、257项测试通过。旧版 network 示例页面在1440／1024／768／390宽度检查无横向溢出，并检查了纯拓扑切换、键盘时间轴推进、节点搜索、曲线和控制台。新扩展画布目前单独检查了390与1440宽度的溢出，以及按键选择节点；尚未完成其余宽度和鼠标操作验收。两类浏览器检查均消费固定合成数据，不是用户上传→容器运行→授权可视化的端到端验收。QuickJS Worker／预算及同源摘要重验也不是独立安全审计。本地未验证真实 Linux Docker 引擎下的镜像就绪、隔离、输出、取消、OOM 与恢复。
 
 合并 `feature/extension-lifecycle` 前，至少应确认：迁移 `0027` 在备份和校验流程后按预期运行；未配置或未就绪镜像时无宿主回退；私有包跨用户不可见；公开申请必须审批且逐用户启用；安全撤销和引用保护有效；真实容器下输入授权、事件限制、结果校验和清理通过。任何未执行项应记录为待验收，而不是由 SDK 单测或虚拟运行时替代。
 
@@ -140,4 +192,6 @@ renderer 只在 WASM QuickJS 引擎的专用 Worker 中执行；本项目通过 
 - Docker 与资源回收：`app/infrastructure/extensions/{container_policy,container_runner,execution_resources}.py`；授权只读源码见 `app/infrastructure/extensions/visualizations.py` 与 `app/interfaces/http/extensions.py`。数据库迁移见契约仓库 `migrations/versions/0027_extension_lifecycle.py`，字段和路径见 `docs/API_CONTRACT_V1.md` 的“扩展生命周期 schema 2”节。
 - DAG 执行与工作流接线：`app/infrastructure/extensions/node_execution.py`、`app/platform/workflows/application.py`、`app/infrastructure/runtime/workflow_execution.py`、`app/bootstrap/foundation.py`、`app/bootstrap/production_worker.py`。
 - 前端生命周期目录／分页及 `available_operations` 动作入口见 `src/app/features/extensions/extensions.page.*`、`extension-lifecycle.component.*`；受限结果视图位于 `src/app/shared/extensions/{runtime,view}/`，授权结果入口为 `extension-result.component.ts`，本地合成示例为 `src/playground/foundation/extension-host-demo.component.ts`。
-- 测试：`tests/extension_sdk/`、`tests/extensions/test_personal_lifecycle.py`。DAG 最小路径由 `test_installed_extension_runs_in_existing_dag_with_frozen_types_and_usage` 验证；测试意图和可信适配器限制见测试文件说明，不得包装成生产隔离证据。
+- 数据绑定／模板及样例：`app/infrastructure/extensions/{resource_inputs,workflow_templates}.py`、`sdk/python/src/smart_water_extensions/manifest.py`、`sdk/examples/network-inspection/`；对应本地构建和绑定证据在 `tests/extensions/{test_network_package,test_resource_inputs}.py`。跨包版本、安全回退和租约证据见 `tests/extensions/test_cross_package.py`。
+- 前端资源选择集成见 `src/app/shared/extensions/extension-resource-field.component.ts`、`src/app/shared/components/operator-parameter-form.component.ts` 与 `src/app/features/workflows/workflow-starter.page.ts`。
+- 测试：`tests/extension_sdk/`、`tests/extensions/test_personal_lifecycle.py`。基础 DAG 路径由 `test_installed_extension_runs_in_existing_dag_with_frozen_types_and_usage` 验证，资源绑定样例由 `test_two_node_package_runs_static_and_timeseries_against_versioned_resources` 验证；可信适配器限制见测试文件说明，不得包装成 Docker 隔离或生产验收。
