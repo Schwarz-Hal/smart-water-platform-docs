@@ -2,7 +2,7 @@
 id: development.data-resource-extension-foundation
 title: 统一数据资源与声明式扩展基础
 document_type: development
-document_version: 0.2.0
+document_version: 0.2.1
 status: draft
 locale: zh-CN
 audience: [developer, operator]
@@ -10,7 +10,7 @@ related_modules: [M02, M03, M04, M05, M06]
 related_operators: []
 related_apis: ["/api/v1/data-resources", "/api/v1/data-resources/recognize", "/api/v1/extensions", "/api/v1/scene-instances", "/api/v1/workflow-versions/{version_id}/runs"]
 owners: [backend-team]
-reviewed_at: 2026-09-14
+reviewed_at: 2026-09-26
 summary: 统一数据资源、声明式扩展和场景实例的实现边界、输入契约与运行安全。
 ---
 
@@ -98,4 +98,6 @@ Reader 按分区读取，不先 read-all 再截取；预览限制不改变执行
 
 ## 验证范围
 
-基础资源/扩展能力已随 `20260914T092131Z-extension-ui-recovery` 部署（backend `e9faa40`、frontend `3d1d082`、docs `f57c18e`）。本次自动识别与简化追加复用仍为本地工作分支内容，尚未推送、合并或部署。当前验证证据为 Neo 后端 462 passed、15 项可选算法依赖缺失而 skip，前端完整套件 234 passed，追加生命周期回归定向测试 10 passed；production build 通过。浏览器本地目标受 `ERR_BLOCKED_BY_CLIENT` 阻断，未形成四尺寸验收结论。静态解析或页面展示不代表代码扩展环境已就绪，也不代表完整漏损业务准确率验收完成。
+基础资源/扩展能力先随 `20260914T092131Z-extension-ui-recovery` 部署；自动识别与简化追加复用随后已随 `20260914T125220Z-auto-resource` 部署（backend `652f8aa`、frontend `ef59c1b`、docs `4db7660`、contract `63c071d`）。该发布时分支已推送但尚未合并，部署记录不能作为主线合并证明，也不代表当前服务器已重新检查。
+
+当时本地验证证据为 Neo 后端 462 passed、15 项可选算法依赖缺失而 skip，前端完整套件 234 passed，追加生命周期回归定向测试 10 passed；production build 通过。发布记录另包含服务器相关回归与服务冒烟；四尺寸交互及真实文件创建／追加的用户验收仍待完成。静态解析或页面展示不代表代码扩展环境已就绪，也不代表完整漏损业务准确率验收完成。

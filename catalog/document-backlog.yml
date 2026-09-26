@@ -936,7 +936,7 @@ areas:
           - M04
           - M05
           - M06
-        version: 0.2.0
+        version: 0.2.1
       - id: development.operator-sdk
         title: 内置算法接入与 Operator SDK 开发指南
         path: docs/06-development/operator-sdk.md
