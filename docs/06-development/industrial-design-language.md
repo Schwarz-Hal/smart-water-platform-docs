@@ -2,7 +2,7 @@
 id: development.industrial-design-language
 title: 青色工业设计语言 v1 与旧页面迁移
 document_type: development
-document_version: 1.5.0
+document_version: 1.6.0
 status: draft
 locale: zh-CN
 audience: [frontend_developer, designer]
@@ -10,7 +10,7 @@ related_modules: []
 related_operators: []
 related_apis: []
 owners: [frontend-team]
-reviewed_at: 2026-09-14
+reviewed_at: 2026-09-16
 summary: 定义主线青蓝工业界面的视觉令牌、智能体执行约定、复用层级与页面迁移验收要求。
 ---
 
@@ -20,11 +20,13 @@ summary: 定义主线青蓝工业界面的视觉令牌、智能体执行约定�
 
 本文面向前端开发者与设计者。v1 取代旧版大圆角卡片语言，以深墨色标题条、青色操作强调、小圆角、工程边框和可读内容建立层级。不改变 API、业务权限、任务状态或算法语义，页面继续执行原有鉴权与校验。
 
-青蓝工业风已确认为前端主线的默认设计方向。2026-09-13 的历史核对记录中，前端 main 为 `16bff9b64d524c575927a046e34f257da648b260`，参考界面已随 PR #58 合入，当时部署版本为 `8f19280169ad6e6bee4e960507d7ed10e8a44426`。这些是历史基线，不代表当前服务器版本；当前部署必须读取共享协调板确认。合并主线与部署版本分别记录，不要求两者提交号相同。配套文档 PR #32 仍待合并，不能将本文作者态内容当作已经同步到平台的文档版本。
+青蓝工业风已确认为前端主线的默认设计方向。2026-09-13 的历史核对记录中，前端 main 为 `16bff9b64d524c575927a046e34f257da648b260`，参考界面已随 PR #58 合入，当时部署版本为 `8f19280169ad6e6bee4e960507d7ed10e8a44426`。这些是历史基线，不代表当前服务器版本；当前部署必须读取共享协调板确认。合并主线与部署版本分别记录，不要求两者提交号相同。
+
+2026-09-16 本次迁移核对时，配套文档 PR #32 已合并，文档主线为 `1250d0a`；前端资源扩展 PR #60 已合入主线 `f3daea5`。旧交接中关于文档 PR #32、前端 PR #59 及相关工业控件分支“未合并”的表述属于当时的历史状态，不作为当前事实。本次漏损页面改动位于 `feature/leakage-industrial-privacy`，仍在本地修改，尚未提交、合并或部署；资源扩展的合并不表示本次 UI 已上线。
 
 参考界面主要覆盖快速试用及已接入的公共控件。全局令牌和 Material 外观接入不等于所有页面的布局、控件状态与响应式已经迁移。“迁移要求”约束后续新增与改造，不是存量页面已全部达到或所有算法路径已验收的声明。
 
-本文另记录 `feature/industrial-motion-details` 基于上述 main 的新增动效：该分支当前未提交、未合并、未部署；方框开关、选中上下线、映射展开和菜单退场等新增效果不属于历史部署 `8f19280`。上一轮 1.2.0 的设计指导继续保留，不将其独立前端 guidance 分支与本动效分支视为已集成。
+本文另保留 `feature/industrial-motion-details` 基于上述历史 main 的新增动效记录：当时该分支未提交、未合并、未部署；方框开关、选中上下线、映射展开和菜单退场等新增效果不属于历史部署 `8f19280`。后文“新增分支”“未合并分支”及对应测试数量均指该次交接，不代表 2026-09-16 的现状；当前合并与部署应分别核查。上一轮 1.2.0 的设计指导继续保留，不以历史说明推断独立 guidance 分支与动效分支的集成状态。
 
 ## 智能体执行约定与约束层级
 
@@ -214,6 +216,25 @@ JavaScript 时长以 `shared/components/motion.tokens.ts` 的 `UI_MOTION` 为唯
 
 ## 迁移操作步骤
 
+### 漏损工作台迁移与展示脱敏
+
+本节记录 `LEAKAGE-INDUSTRIAL-PRIVACY` 的迁移范围和验收要求，不声明整页已验收。工作台按“分析窗口与执行、数据场景与解析摘要、管网运行总览、闭环过程、当前步骤”复用 `IndustrialPanelComponent`，资产检查器采用同一面板；策略、图层、训练设备及当前步骤的枚举选项复用 `IndustrialSelectComponent`。步骤枚举用选项索引承接选择器值，再映射回 Schema 中原始枚举值及其类型，不改变业务参数。训练参数显式接入 `layout="compact"`，仍使用原 Schema、参数事件与禁用状态，不新增训练引擎或改变设备调度。窄容器应将执行字段和资产详情重排，不能为了工业外观裁掉错误、图例、结果或操作。
+
+展示脱敏由页面范围的 `LeakagePresentation` 组织。它只改变用户可见的名称与标签，不改写拓扑对象、计算输入、候选对象、选择事件或 API 使用的真实 ID。不得用展示编号发起原本要求真实 ID 的资产请求，也不能把名称替换视为权限控制。
+
+| 展示位置 | 本次处理与迁移约束 |
+| --- | --- |
+| 场景与来源 | 场景名称显示为“示例小区 · ****”，来源使用通用数据类别；已知场景、来源和资产名称在接入替换的文本中隐藏 |
+| 资产标题、悬浮提示、搜索列表、候选及邻接关系 | 节点、管段使用同一份展示别名；三维搜索匹配展示编号，而非真实名称或真实 ID |
+| 资产基础属性 | 采用白名单，仅展示资产类型、节点类型、材质、管径、长度与状态；真实资产编号、绝对坐标和高程不按原值展示，不能恢复为遍历所有属性 |
+| 候选原因、处置建议与错误 | 替换已知名称及长度不少于 4 个字符的已知资产 ID；仍需逐入口核查，未知自由文本、尚未登记的名称或其他嵌入标识不能保证全部隐藏 |
+
+展示编号如“节点 0001”“管段 0001”只用于当前拓扑的界面定位，不是真实资产编号。编号按当前拓扑 ID 集合生成，拓扑集合变化可能改变对应编号；它不是跨版本、跨数据集的稳定外部标识。未找到映射时显示占位别名，不回退暴露真实 ID。
+
+**这不是后端匿名化，也不是公开敏感管网的安全边界。** 原始数据仍可能存在于网络响应、浏览器内存及授权接口中；三维渲染保留相对形态，管网结构仍可能被识别。隐藏坐标文本不等于移除几何信息，不适合据此直接公开敏感拓扑、分享接口响应或录制未经检查的界面。需要公开发布时，应另行确定数据授权、服务端字段最小化和拓扑匿名化方案，不由本次 UI 工作推定已完成。
+
+验收分别记录：场景与来源、悬浮提示、资产详情各页签、候选与建议、错误文本、搜索及结果切换是否仍暴露名称或定位信息；展示编号搜索与候选定位是否继续传递正确的真实 ID；关闭图例类别后的搜索与选择是否保持原行为。对照改造前后请求、Schema 和真实运行状态，另查键盘、减少动态效果、1440／1024／768／390px 与局部窄容器。现阶段实现仍在修正，自动测试、人工视觉检查与真实执行验收应分别交接，不能用本节范围清单代替通过证据。
+
 ### 按页面职责迁移
 
 | 页面类型 | 建议迁移方式 | 不应照搬的部分 |
@@ -301,5 +322,6 @@ import { PanelMotionDirective } from '../../../shared/components/panel-motion.di
 - `src/app/features/quick-trial/components/trial-execution-chart.component.ts`、`charts/trial-chart.component.ts`、`charts/trial-preview-chart-options.ts`：快照、图表生命周期与更新。
 - `src/app/features/quick-trial/components/trial-result-panel.component.ts`、`src/app/shared/results/components/forecast-result/forecast-result.component.ts`：展开注入范围。
 - `src/app/shared/results/charts/forecast-chart-options.ts`、`forecast-reveal-session.ts`、`result-chart.component.ts`：预测编码、一次性展开与中断。
+- 漏损迁移分支 `src/app/features/quick-trial/fengtai-leakage/` 下的 `leakage-presentation.ts`、`fengtai-leakage.page.*`、`leakage-industrial.scss`、`fengtai-asset-detail.component.ts`、`leakage-network-3d.component.ts`、`leakage-network-3d.scene.ts`、`fengtai-candidates.component.ts`、`fengtai-recommendation.component.ts` 及 `plan/leakage-learning-config.component.ts`：本次面板、选择、紧凑参数、显示别名、属性白名单与展示编号搜索；核查时读取当前改动，不将本地分支当作部署证据。
 
 前端 `design-system/smart-water-platform/MASTER.md` 只保留入口与核心约束，完整规范在本文维护，避免双份事实来源。
