@@ -2,7 +2,7 @@
 id: development.industrial-playground
 title: 青色工业组件实验场
 document_type: development
-document_version: 0.3.0
+document_version: 0.4.2
 status: draft
 locale: zh-CN
 audience: [frontend_developer, designer]
@@ -10,7 +10,7 @@ related_modules: []
 related_operators: []
 related_apis: []
 owners: [frontend-team]
-reviewed_at: 2026-09-14
+reviewed_at: 2026-09-23
 summary: 说明独立开发入口的组件示例、共享控件 API、隔离边界与新增示例验证方法。
 ---
 
@@ -20,7 +20,7 @@ summary: 说明独立开发入口的组件示例、共享控件 API、隔离边�
 
 组件实验场（Playground）用于在本机运行真实 Angular／Material／Formly 控件，检查青蓝工业外观、交互和组合方式。它不是普通生产业务路由，也不是训练、治理或工作流引擎。状态、点位、配置和结果数字为明确的本地示例；选择“运行中快照”不会创建任务，确认弹窗只记录本地操作。
 
-首版位于 `feature/industrial-motion-details` 的未合并开发改动中，不属于 2026-09-13 核对的历史部署 `8f19280`；当前部署应读取共享协调板，不能由此历史版本推断。设计依据见[青色工业设计语言](./industrial-design-language.md)。本文不表示真实生产任务或全部控件状态已验收。
+基础实验场 `feature/industrial-motion-details` 已于 2026-09-14 通过前端 PR #59 合入主线。本次第一批基础组合位于 `feature/playground-foundation`，截至 2026-09-22 为本地开发改动，尚未提交、合并或部署；不要把历史实验场已合并理解为本批已经发布。当前部署应读取共享协调板。设计依据见[青色工业设计语言](./industrial-design-language.md)。本文不表示真实生产任务或全部控件状态已验收。
 
 ## 前置条件与启动
 
@@ -42,7 +42,7 @@ npm run build:playground
 
 ## 使用流程与首版控制范围
 
-1. 按“基础、控件、反馈、动效、组合”分类或按示例 ID／名称搜索。通过“独立打开此示例”或 `/dev/playground?example=data-table` 聚焦注册 ID；这是同一开发应用的查询参数，不是新业务路由。选择分类或搜索会清除 example 参数。搜索和分类组合过滤；基础与工作台示例主要通过 hidden 保留，分析四例采用条件模板可卸载控件，不将过滤统一视为保留或销毁测试。
+1. 按“基础、控件、反馈、动效、组合、页面组合”分类或按示例 ID／名称搜索。通过“独立打开此示例”或 `/dev/playground?example=data-table` 聚焦注册 ID；这是同一开发应用的查询参数，不是新业务路由。选择分类或搜索会清除 example 参数。搜索和分类组合过滤；基础与工作台示例主要通过 hidden 保留，分析与本批基础组合采用条件模板可卸载控件，不将过滤统一视为保留或销毁测试。
 2. 设置内容宽度（280–1600px），检查长名称、字段与布局。该值限制预览主区域宽度，不模拟设备视口或浏览器缩放。
 3. 切换“禁用示例控件”和“减少动态效果”。禁用只影响已绑定该状态的示例：按钮、部分选择器、输入、复选／单选／滑块、参数区域、选择块和折叠示例的触发按钮等；它不是整页禁用锁，独立反向切换、状态选择和配置组合仍有可交互入口。
 4. “方框／展开时长”范围为 0–2000ms，默认 260ms，修改实验场局部 `--sw-motion-disclosure`。消费同一令牌的过渡也会受到影响；它不是所有动画的统一调速器。选择标记线仍使用默认 420ms，菜单和面板等保留各自默认令牌／设置。减少动态效果另行覆盖 CSS，并关闭示例面板动画、缩短弹窗动画。
@@ -50,9 +50,9 @@ npm run build:playground
 6. 展开“用法与复用入口”查看源码路径和复制片段。片段是集成起点，使用前核对组件输入输出、standalone imports 和所需 providers，不能将片段视为完整业务实现。
 7. 通过“恢复默认”清除独立示例参数、重置页面状态，并重建新增工作台示例子组件以清理其局部状态；没有跨会话持久化，刷新不会恢复本次修改。装饰区可切换三张预生成纹理并调整 120–1200px 显示尺寸，不会实时生成图像。
 
-## 25 个注册示例
+## 30 个注册示例
 
-真实清单为 `src/playground/playground-catalog.ts` 的 `PLAYGROUND_EXAMPLES`，页面读取该目录；下面是当前 25 个注册项，不表示 25 套业务功能。工作台六例在 `workbench-examples.component.ts/html` 组合，分析四例在 `analysis-examples.component.ts` 组合，均使用局部示例状态，不连接业务服务。
+真实清单为 `src/playground/playground-catalog.ts` 的 `PLAYGROUND_EXAMPLES`，页面读取该目录；下面是当前30个注册项，不表示30套业务功能。工作台六例在 `workbench-examples.component.ts/html` 组合，分析四例在 `analysis-examples.component.ts` 组合，第一批四例及新增角标对比由 `foundation/foundation-examples.component.ts` 组织，均使用局部示例状态，不连接业务服务。
 
 | ID | 分类 | 名称与可检查内容 |
 | --- | --- | --- |
@@ -81,14 +81,29 @@ npm run build:playground
 | `time-range` | 组合 | 时间范围与边界校验，显式应用 UTC+8 编辑草稿 |
 | `resource-tree` | 组合 | 资源层级选择，原生 details 导航和保留祖先的搜索 |
 | `property-inspector` | 组合 | 参数属性检查器，参数索引与完整 Formly 表单 |
+| `asset-workspace` | 页面组合 | 数据资产管理工作台，搜索、多选筛选、受控分页、质量与版本单元格、详情弹窗 |
+| `foundation-form` | 页面组合 | 搜索选择与表单校验，单值 CVA、Material 多选、单位输入和错误定位 |
+| `async-states` | 页面组合 | 就绪、加载、无数据、无匹配、失败、无权限六种内容状态 |
+| `page-frame` | 页面组合 | 页面标题、紧凑摘要和主操作插槽，窄容器自动换行 |
+| `corner-variants` | 控件 | 工程折角面板；单一B方案和内容展开，使用实验场通用内容宽度控制，保留旧示例链接 |
+
+### 工程折角面板（2026-09-23，已选定样式）
+
+用户已选定B工程折角。`IndustrialPanelComponent` 统一使用左上、右下L形短线，取消十字和角点刻度候选及 `cornerStyle` 输入；调用方保留 `heading`、`code` 与内容／操作投影即可。该改变覆盖使用这一共享面板的页面，不代表所有业务页面已经完成工业风迁移。
+
+原十字的12px画布、1px居中细线与边框内侧定位曾产生0.5个CSS像素的几何偏差。最终方案不再绘制十字：15px装饰框在两个相对角以-1px定位，使用2px上／左或下／右边线贴合面板。缩放光栅化和祖先裁切仍需在实际容器检查，不宣称所有设备像素下完全一致。
+
+旧链接 `?example=corner-variants` 保留，目录名称改为“工程折角面板”，只显示选定方案；不再提供A／C、旧定位开关或角标专属宽度滑块。可用“展开面板内容”与实验场左侧通用“内容宽度”控制检查容器变化。装饰为不含文本的伪元素，`pointer-events: none`，不新增焦点、不表达业务状态。
+
+本次增量仍在 `feature/playground-foundation` 本地工作区，未部署。真实页面的接入范围和职责拆分见[工业风页面迁移与维护边界](./industrial-page-rollout.md)。
 
 ## 新增共享控件 API
 
-控件外观的小修仍属于未合并开发分支：共享选择框默认白色 `#fff`，菜单打开后 field 才变为浅青；当前选项为浅青底深字。共享选择块的 `SELECTED →` 独立为按钮外的兄弟 small，位于宿主右下角，aria-hidden 且不捕获点击，不进入按钮 label。按钮最小高 82px、底部 padding 30px 给角标留位；真实选中语义仍是按钮 aria-pressed，API 不变。
+基础分支合并的控件外观包括：共享选择框默认白色 `#fff`，菜单打开后 field 才变为浅青；当前选项为浅青底深字。共享选择块的 `SELECTED →` 独立为按钮外的兄弟 small，位于宿主右下角，aria-hidden 且不捕获点击，不进入按钮 label。按钮最小高 82px、底部 padding 30px 给角标留位；真实选中语义仍是按钮 aria-pressed，API 不变。
 
 `checks` 的 `control-lab` 使用 flex 换行，两个 control-cell 分别容纳显示复选项和 CPU／GPU 分段单选，range-cell 整行显示强度值、Material slider 与 0–100 刻度。它只是 `playground.page.html/scss` 的示例组合，仍使用 Material checkbox／radio／slider 和原本地绑定，不新增基础控件。CPU／GPU 标签只演示单选样式，不查询硬件或启动任何设备上的计算。
 
-以下文件位于前端 `src/app/shared/components/`。这些组件是实际可运行的展示／交互组件，不是 `ControlValueAccessor`（CVA）适配器；不要直接假定它们支持 `formControl`、`formControlName` 或组件级 `ngModel`。选择与展开等受控输入由调用方回写，业务请求由调用方处理。
+以下四个基础组件位于前端 `src/app/shared/components/`。它们是实际可运行的展示／交互组件，不是 `ControlValueAccessor`（CVA）适配器；不要直接假定它们支持 `formControl`、`formControlName` 或组件级 `ngModel`。本批新增的 `IndustrialSearchSelectComponent` 则提供单值 CVA，见下文。选择与展开等受控输入由调用方回写，业务请求由调用方处理。
 
 | 组件／选择器 | 输入 | 输出与边界 |
 | --- | --- | --- |
@@ -113,7 +128,43 @@ npm run build:playground
 | `IndustrialTaskFeedbackComponent` / `app-industrial-task-feedback` | `state='queued'`，可取 queued／running／success／failed／cancelled／disconnected；`stage='等待处理'`、`message=''`、`elapsedSeconds=0`、`progress: number \| null=null`、`cancelPending=false` | `cancel`、`retry`、`refresh`、`viewResult` 均为 void |
 | `IndustrialFilePickerComponent` / `app-industrial-file-picker` | `maxBytes=10*1048576`、`extensions=['.csv','.xlsx','.json']`、`disabled=false` | `changed: readonly IndustrialFileChoice[]`，每项仅含 `id/name/size/error` |
 
-筛选栏只发出输入与重置意图，过滤和 resultCount 由调用方计算。表格的 `IndustrialTableRow` 要求 string ID，其余字段值为 string 或 number；排序、分页与选择在组件内进行，默认每页 5 条，可选 5／10／20。表头全选仅针对当前页，可保留其他页已选 ID；输入 rows 因筛选变化时回到第一页，剔除已不在 rows 中的选中 ID，并在选择确有变化时发出 selectionChange。它不是服务器分页控件，批量操作和重试只发事件，不读写资源或重新请求数据。
+筛选栏只发出输入与重置意图，过滤和 resultCount 由调用方计算。表格的 `IndustrialTableRow` 要求 string ID，其余字段值为 string 或 number。默认 `mode='local'` 保留原本地排序、分页与选择行为，默认每页 5 条，可选 5／10／20。表头全选仅针对当前页，可保留其他页已选 ID；本地模式的 rows 变化会回到第一页，剔除已不在 rows 中的选中 ID，并在选择变化时发出 selectionChange。新增 `server` 模式和模板 API 见下节；两种模式的批量操作和重试均只发事件，不读写资源。
+
+### 第一批基础组件与页面组合
+
+本批共享能力放在 `src/app/shared/components/industrial-foundation/`，本地示例和固定数据放在 `src/playground/foundation/`。它们复用 Material 控件和现有主题令牌，不新增业务请求、权限判断或任务服务，也尚未迁移全平台业务页面。
+
+| 文件／组件 | 主要 API | 复用边界 |
+| --- | --- | --- |
+| `page-header.component.ts` / `IndustrialPageHeaderComponent` | 必填 `title`，可选 `eyebrow/description`；`level: 1 \| 2=2`；`[page-actions]`、`[page-summary]` 投影插槽 | 只组织标题、操作和摘要；独立页面可用level=1，内嵌区域默认h2，不提供导航路由或指标计算 |
+| `async-state.component.ts` / `IndustrialAsyncStateComponent` | `state` 为 ready／loading／empty／no-results／error／forbidden；`title/description/actionLabel/disabled`；输出 `action` | ready 展示投影内容；其余状态显示骨架或提示。调用方区分无数据与筛选无匹配，并处理恢复动作；组件不请求数据 |
+| `search-select.component.ts` / `IndustrialSearchSelectComponent` | 必填 `label`；`items` 为 `{id,name,description?,disabled?}[]`；`fieldId/placeholder/hint/error/loading/loadError`、`required=false`；输出 `queryChange/retry` | 单值 `string \| null` CVA，可接 Reactive Forms。required 仅提供必填标记，校验由外部 FormControl 负责。输入任意搜索文字会清空有效选中值；必须从可用选项中选择。异步选项及重试由调用方加载，不内置请求 |
+| `error-summary.component.ts` / `IndustrialErrorSummaryComponent` | `issues: {fieldId,message}[]`；输出 `fieldRequested`；实例方法 `focus()` | 显示错误清单。调用方提交校验后聚焦摘要，点击条目时由调用方定位真实字段；不扫描或接管表单校验 |
+
+搜索选择不是多选控件：`foundation-form` 的多指标选择直接复用 Material Select 的 multiple 模式，单位输入复用 Material Input 与后缀。示例必填字段包括名称、数据集和至少一个指标，采样间隔为 1–60 分钟。未选择有效数据集时，任意输入的文字不能通过必填校验；提交无效表单聚焦顶部摘要，点击条目可跳到字段。有效提交只显示本地配置反馈，不创建数据资源。
+
+表格新增能力保留原选择器和默认本地行为：
+
+| 输入／输出 | 含义 |
+| --- | --- |
+| `mode: 'local' \| 'server'` | 默认 local；server 原样显示调用方提供的当前页 rows，不重复排序或切片 |
+| `query: {pageIndex,pageSize,sort}`、`total`、`queryChange` | server 模式由调用方持有查询与总数；分页发出新查询，排序发出页码归零的新查询。调用方处理请求、旧响应和页码边界 |
+| `columns[].sortable` | 可禁用特定列的排序 |
+| `cellTemplates`、`actionTemplate` | 按列键定制单元格和行操作模板；模板通过 `$implicit` 接收当前行 |
+| `selectionResetKey` | 筛选条件或资源范围变化时，由调用方改变此值清空选择。server 切页不因当前页 rows 变化而清除其他页已选项 |
+| `emptyState`、`emptyAction` | 区分 empty 与 no-results，向外发送添加数据或清除筛选等意图 |
+| `label/disabled/batchLabel` | 可访问名称、内建操作禁用、批量操作文案；自定义模板内的按钮仍由调用方绑定禁用状态 |
+
+`asset-workspace` 使用 server 模式演示受控查询接口，但数据排序和分页均由示例容器对固定数组完成，**没有后端分页请求**。它支持名称搜索、类型多选、问题／待评估视图、跨页选择和详情弹窗；筛选变化重置页码与选择，质量按钮展示所选版本的固定评分。未评估使用独立状态，不以零分替代。添加与批量操作只给出示例反馈，不上传文件或生成治理任务。
+
+建议首次查看顺序：
+
+1. 用 `/dev/playground?example=asset-workspace` 查看完整组合，切换六种内容状态，再检查搜索、多选、排序、分页和详情。
+2. 用 `?example=foundation-form` 直接提交空表单，检查摘要与字段定位；再选择合法项并提交，切换选项加载／失败状态。
+3. 用 `?example=async-states` 单独比较恢复入口与骨架；用 `?example=page-frame` 检查标题、操作和摘要的换行。
+4. 调整预览容器宽度，并另行使用真实浏览器窄视口检查浮层和操作区；容器宽度调节不等于手机验收。
+
+四个基础组合使用条件模板，过滤隐藏时会卸载相应示例，局部表单和筛选不作为持久草稿保存。恢复动作只切回固定示例状态，不代表服务器已经恢复连接。
 
 详情抽屉基于 Material Drawer 的局部容器与 over 模式，默认从 end 展开，支持 start。它不是全平台页面级抽屉或全屏导航；调用方持有 open 与详情，Material 负责原焦点与关闭交互。长内容、遮罩、Escape 和焦点恢复仍须在实际容器验收。
 
@@ -144,7 +195,7 @@ npm run build:playground
 
 ### 当前快速试用接入核查
 
-以下是 `feature/industrial-motion-details` 中的源码接入，不是已上线或全部计划完成的声明。实验场样本不替代快速试用业务组件。
+以下是已随 `feature/industrial-motion-details` 合并的源码接入记录，不是当前服务器已部署或全部计划完成的声明。实验场样本不替代快速试用业务组件。
 
 | 接入点 | 当前共享组件与原绑定 | 保留的业务边界 |
 | --- | --- | --- |
@@ -193,7 +244,9 @@ rg -n "CYAN_COMPONENT_PLAYGROUND|pg-example" dist/smart-water-platform-frontend/
 
 无匹配示例时调整搜索／分类或恢复默认；复制未成功时可手动选择展开区中的片段，不把“点击复制”日志当作剪贴板成功证明。构建或测试失败应定位实际组件／配置，不通过删除校验或隐藏错误完成演示。
 
-当前已有局部详情抽屉、多步配置、多文件元信息和四种分析控件交互；仍无服务器分页、真实上传／网络重试、持续运行／后台任务、时序图示例、实时纹理生成、全套属性编辑器或跨会话存储。属性检查器只是现有 Schema 表单的索引与展开包装，不代表全套属性编辑计划完成。它提供可操作的组件参考，不替代真实生产流程、自动化可访问性审计或全状态验收。
+本批验收还应覆盖：server 模式不二次切片、排序请求回到第一页、跨页选择与筛选重置、定制行按钮禁用、错误摘要聚焦与定位、搜索文字不能冒充有效选项，以及六种状态的恢复入口。前端测试和浏览器检查由实现任务记录；本文不以示例代码存在替代验收通过。
+
+当前已有局部详情抽屉、多步配置、多文件元信息、四种分析控件交互及本批基础组合；表格增加了服务器分页接入接口，但实验场仍无真实分页请求、真实上传／网络重试、持续运行／后台任务、时序图示例、实时纹理生成、全套属性编辑器或跨会话存储。属性检查器只是现有 Schema 表单的索引与展开包装，不代表全套属性编辑计划完成。它提供可操作的组件参考，不替代真实生产流程、自动化可访问性审计或全状态验收。
 
 ## 维护依据
 

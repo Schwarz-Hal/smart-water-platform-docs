@@ -28,18 +28,18 @@ collaboration:
   completion_rule: A document becomes ready only after content review, link and
     metadata validation, site build, and inclusion in an approved snapshot.
 summary:
-  total: 130
+  total: 133
   ready: 2
-  expand: 128
+  expand: 131
   missing: 0
   deferred: 0
   by_area:
     platform: 7
     quick_start: 5
-    user_guide: 24
+    user_guide: 25
     scenario: 5
     algorithm_operator: 42
-    api_development: 15
+    api_development: 16
     operations: 10
     acceptance: 10
 areas:
@@ -202,6 +202,13 @@ areas:
           - M01
           - M07
         version: 1.0.0
+      - id: user.platform-navigation
+        title: 平台导航与模块入口
+        path: docs/03-user-guide/platform-navigation.md
+        status: expand
+        priority: P1
+        modules: [M01, M02, M04, M05, M07]
+        version: 0.1.1
       - id: user.csv-import
         title: CSV 上传、预览、字段映射与导入
         path: docs/03-user-guide/csv-import.md
@@ -959,7 +966,13 @@ areas:
         path: docs/06-development/industrial-playground.md
         status: expand
         priority: P1
-        version: 0.3.0
+        version: 0.4.2
+      - id: development.industrial-page-rollout
+        title: 工业风页面迁移与维护边界
+        path: docs/06-development/industrial-page-rollout.md
+        status: expand
+        priority: P1
+        version: 0.2.1
       - id: development.frontend-page-structure
         title: 数据资产、算子中心与快速试用的前端维护边界
         path: docs/06-development/frontend-page-structure.md
