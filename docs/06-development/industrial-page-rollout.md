@@ -2,7 +2,7 @@
 id: development.industrial-page-rollout
 title: 工业风页面迁移与维护边界
 document_type: development
-document_version: 0.2.0
+document_version: 0.2.1
 status: draft
 locale: zh-CN
 audience: [frontend_developer, designer]
@@ -10,7 +10,7 @@ related_modules: []
 related_operators: []
 related_apis: []
 owners: [frontend-team]
-reviewed_at: 2026-09-24
+reviewed_at: 2026-09-25
 summary: 说明工业风页面接入、平台导航收敛、展示职责拆分及本地验证边界。
 ---
 
@@ -28,6 +28,7 @@ summary: 说明工业风页面接入、平台导航收敛、展示职责拆分�
 
 | 主入口 | 现有页面与职责 | 可见性依据 |
 | --- | --- | --- |
+| 快速试用 | `/quick-trial`，保留原有三个试用页签；使用独立选中态，不选中工作台 | 登录用户与访客均显示；执行仍按原权限要求 |
 | 工作台 | `/dashboard`，平台摘要与继续工作入口 | 认证路由 |
 | 数据集管理 | `/data-collections` 或 `/data-resources`；依据 `data_source:read` 与 `data_file:read` 选择入口 | 对应路由权限；内部各子页仍按自身策略筛选 |
 | 场景中心 | `/workflows`，既有工作流列表与 DAG 编辑 | `workflow:read` |

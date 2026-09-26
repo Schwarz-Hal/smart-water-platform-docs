@@ -2,7 +2,7 @@
 id: user.platform-navigation
 title: 平台导航与模块入口
 document_type: user_guide
-document_version: 0.1.0
+document_version: 0.1.1
 status: draft
 locale: zh-CN
 audience: [platform_user]
@@ -10,7 +10,7 @@ related_modules: [M01, M02, M04, M05, M07]
 related_operators: []
 related_apis: []
 owners: [product-team]
-reviewed_at: 2026-09-24
+reviewed_at: 2026-09-25
 summary: 说明平台主导航、数据集管理子入口、场景与运行页面的对应关系，以及访客和权限限制。
 ---
 
@@ -30,6 +30,7 @@ summary: 说明平台主导航、数据集管理子入口、场景与运行页�
 
 | 入口 | 用途 | 页面路径 |
 | --- | --- | --- |
+| 快速试用 | 直接进入单算法试用、管网漏损闭环及数据治理入口 | `/quick-trial` |
 | 工作台 | 查看平台摘要、最近任务，并继续常用工作 | `/dashboard` |
 | 数据集管理 | 管理文件与数据集、查看质量和治理内容，并访问拓扑与时序资源 | `/data-collections` 或 `/data-resources` |
 | 场景中心 | 浏览场景、打开 DAG 节点图、管理草稿和已发布版本 | `/workflows` |
@@ -79,7 +80,7 @@ summary: 说明平台主导航、数据集管理子入口、场景与运行页�
 
 ## 访客与快速试用
 
-访客可直接进入公开的 `/quick-trial` 快速试用页面；已登录用户也可从工作台进入快速试用。其他要求登录的路由会按页面策略显示登录入口或要求先登录。访客状态下能看见的入口不代表可以访问受保护数据或提交需要登录的操作。
+快速试用固定保留在左侧主导航，登录用户与访客均可直接进入 `/quick-trial`；工作台中的快捷入口也继续保留。其他要求登录的路由会按页面策略显示登录入口或要求先登录。访客状态下能看见的入口不代表可以访问受保护数据或提交需要登录的操作。
 
 ## 结果与失败处理
 
