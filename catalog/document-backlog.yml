@@ -28,9 +28,9 @@ collaboration:
   completion_rule: A document becomes ready only after content review, link and
     metadata validation, site build, and inclusion in an approved snapshot.
 summary:
-  total: 132
+  total: 133
   ready: 2
-  expand: 130
+  expand: 131
   missing: 0
   deferred: 0
   by_area:
@@ -39,7 +39,7 @@ summary:
     user_guide: 29
     scenario: 5
     algorithm_operator: 46
-    api_development: 20
+    api_development: 21
     operations: 10
     acceptance: 10
 areas:
@@ -937,6 +937,13 @@ areas:
           - M05
           - M06
         version: 0.2.1
+      - id: development.extension-lifecycle-sdk
+        title: 扩展生命周期与 Python SDK 首段
+        path: docs/06-development/extension-lifecycle-sdk.md
+        status: expand
+        priority: P0
+        modules: [M04, M05]
+        version: 0.2.0
       - id: development.operator-sdk
         title: 内置算法接入与 Operator SDK 开发指南
         path: docs/06-development/operator-sdk.md
