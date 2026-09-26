@@ -2,16 +2,16 @@
 id: development.extension-lifecycle-sdk
 title: 扩展生命周期与 Python SDK 首段
 document_type: development
-document_version: 0.6.0
+document_version: 0.7.0
 status: draft
 locale: zh-CN
 audience: [developer, operator]
 related_modules: [M02, M03, M04, M05]
 related_operators: []
-related_apis: ["/api/v1/extensions/upload", "/api/v1/extensions/catalog", "/api/v1/extensions/{package_id}", "/api/v1/extensions/{package_id}/{operation}", "/api/v1/extensions/{package_id}/visualizer", "/api/v1/tasks/{task_id}", "/api/v1/workflow-templates", "/api/v1/workflows/from-template"]
+related_apis: ["/api/v1/extensions/upload", "/api/v1/extensions/catalog", "/api/v1/extensions/{package_id}", "/api/v1/extensions/{package_id}/{operation}", "/api/v1/extensions/{package_id}/visualizer", "/api/v1/tasks/{task_id}", "/api/v1/workflow-templates", "/api/v1/workflows/from-template", "/api/v1/workflow-runs/{run_id}/artifacts", "/api/v1/workflow-artifacts/{artifact_id}", "/api/v1/workflow-artifacts/{artifact_id}/content"]
 owners: [backend-team]
 reviewed_at: 2026-09-27
-summary: 说明 Python 扩展 SDK、资源绑定样例、受限结果视图与画布接口及待验收边界。
+summary: 说明 Python 扩展 SDK、不透明二进制制品、资源绑定样例、受限结果视图及待验收边界。
 ---
 
 # 扩展生命周期与 Python SDK 首段
@@ -97,6 +97,16 @@ SDK 为事件附上协议版本、运行 ID、attempt 和递增序号。事件�
 
 Worker 把进度、指标和日志写入既有任务日志；执行结束后还要检查分块顺序、大小、摘要、运行标识和输出类型，完成提交后才把任务标为成功。扩展生成的 `result.json` 只是类型化结果载荷，不是权威任务状态。错误任务可从任务详情和日志检查错误码；状态轮询或连接失败时重新读取同一任务，不要因已收到 `202` 重复创建上传或将其判为成功。
 
+### 不透明二进制 Artifact
+
+SDK 提供内置类型 `builtin/artifact@1.0.0`，用于在既有 DAG 节点间传递文件字节，不替代普通 JSON `payload`。作者可在已声明的输出端口返回 `context.artifact(raw_bytes, name="result.bin", content_type="application/octet-stream")`，并在消费者中调用 `context.read_artifact(inputs["file"])` 读取已绑定的输入句柄。读取方法只接受平台放入本次调用的精确 Artifact 输入元数据，检查长度和 SHA-256 后返回 `bytes`；SDK 不提供宿主文件路径、对象存储键或平台凭据。
+
+每次节点调用的输入集合与输出集合分别限制为最多 16 个非空文件、合计不超过 32 MiB；超过数量或总大小会明确失败。Artifact 的不透明字节不塞入 JSON 结果体：SDK 通过 `artifact_start`、按序号递增的 `artifact_chunk`、`artifact_end` 事件传输文件元数据和分块；分块在线路上是 Base64 数据。Worker 检查事件序号、文件句柄、分块次序、声明长度和最终摘要，并确认每个二进制输出均来自本次运行中已校验的传输且对应声明的输出端口。一个句柄只能返回在一个输出端口；多个下游需消费同一制品时，应从该单一节点端口在 DAG 中扇出，不要重复返回同一文件以绕过额度或重复写入。JSON 结果体仅保留类型与文件元数据引用，不能据此声称平台已解析 Parquet／Arrow 等文件语义。
+
+平台解析并授权输入制品后，才把相应文件放入本次容器的只读 `/input/artifacts/` 挂载；名称与内容经平台生成的句柄关联，不接受作者给出的本机路径。输出文件先登记持久的 `sw_extension_artifact_stage` 暂存记录，再写入对象存储；同节点成功事务内才把暂存项发布为既有工作流制品。已发布文件通过现有授权的制品内容接口读取并校验长度和 SHA-256。结果页只在用户点击“下载文件”后请求完整内容，再在浏览器核验大小与摘要；不会为了列表展示自动拉取文件。
+
+未发布的 `reserved`／`ready` 暂存对象由既有维护路径检查：创建超过 15 分钟后，仍会按持久任务状态、取消标记、worker、attempt 与包撤销状态判断是否可清理；15 分钟是候选回收阈值，不是清理完成 SLA。仍由匹配 worker 执行中的暂存项会保留；已发布对象不属于暂存清理范围。Smoke 输入中的二进制样本必须引用包内 `fixtures/` 文件；ZIP 中每个文件条目最多 5 MiB，整个包最多 20 MiB。读取型 smoke 用例要实际绑定 fixture 并验证预期输出，不能只声明一个未使用的输入。平台校验扩展包摘要及 fixture 内容，不接受任意服务器路径或上传表单中的外部路径。
+
 ## 前端受限可视化 SDK
 
 `sdk/frontend/index.d.ts` 声明作者侧类型，`sdk/frontend/README.md` 给出对应脚本接口。作者包中的 `visualizers` 声明指向 `web/` 下的自包含 JavaScript 源码，并关联精确类型引用；当前包类型 SDK 是仓库内私有源码，不是已经发布的 npm 插件 API。结果展示请求使用 `GET /api/v1/extensions/{package_id}/visualizer?namespace=…&code=…&version=…`；此只读接口沿用 `workflow:read` 与包可见性检查，并只读取 schema 2 且处于已安装／已归档、未撤销状态的匹配声明。后端返回 JSON 中的源码文本、`quickjs-view-v1` 协议标识和 SHA-256；这不是给页面注入可执行 `<script>`。
@@ -171,16 +181,16 @@ schema 2 的 `publisher.<namespace>` 是同一发布者下的 namespace 别名�
 - 后端现有 DAG 首段已把当前用户启用且通过运行门禁的 `operators`／`algorithms` 投影为既有算子目录的 `NodeDefinition`，含精确版本、输入／输出端口和参数 Schema；发布工作流时冻结扩展包摘要、声明摘要和环境快照，运行时复用既有 workflow/task 协调器。仅安装尚不足以使用节点，用户还须启用包并满足运行环境和验证状态。
 - 扩展节点目录只从 `resource_inputs` 生成平台拥有的 `resource_version` 参数选择控件；作者自带的任意 JS 参数组件不受支持，`visualization_schema` 仍为空。受限 `ExtensionView` renderer 已接入结果页，只支持前述数据块并由平台 Angular 组件显示；这不是任意 React／Angular 插件或工作流节点定制宿主。
 - 当前节点运行已按精确类型引用检查输入和输出，并对有用版本记录冻结快照和使用引用；一个已验证的跨包类型路径不能代表完整多级依赖闭包、全部发布者组合或所有兼容回退情形。
-- 通用二进制 Artifact 通道、宿主签发并回收 Artifact、模型注册／下载／生命周期接入尚未实现。不要用普通 JSON `payload` 宣称这些能力已覆盖。
+- 有界不透明二进制 Artifact 通道已接入 SDK、既有 DAG、暂存对象存储、授权内容读取与未发布对象清理；它只传递字节，不解析 Arrow／Parquet 语义，也不提供模型注册／下载／生命周期。migration `0027_extension_lifecycle` 新增 `sw_extension_artifact_stage`，尚未部署或在目标服务器实机应用；对象存储、容器挂载与清理仍只有本地验证。下载组件已实现大小／摘要核验；单元检查覆盖按需请求和 HTTP 失败重试，但浏览器实际下载成功路径仍待验收。不要把该通道描述成已验收的生产文件服务。
 - Python 3.12 CPU 档是当前首个实现目标；其他 SDK、运行档、依赖审批机制、部署迁移、既有 schema 1 运行兼容及服务器运行验收仍需独立验证。
 
-因此，SDK 和后端最小 DAG 路径及受限结果 renderer 均不表示通用二进制 Artifact 通道、宿主签发并回收 Artifact、模型注册／下载／生命周期、正式拓扑产品／服务器验收、完整多级跨包依赖、自定义扩展节点／参数 UI 或完整生命周期产品已经完成。
+因此，已有 SDK 和后端路径不表示 Arrow／Parquet 等制品语义解析、模型注册／下载／生命周期、正式拓扑产品／服务器验收、完整多级跨包依赖、自定义扩展节点／参数 UI 或完整生命周期产品已经完成；二进制 Artifact 也尚未经过真实 Docker／MinIO 或部署验收。
 
 ## 本地检查证据与交接
 
-截至 2026-09-27，完整后端回归483项通过、15项因可选依赖缺失跳过、4项真实基础设施用例排除；迁移检查4项通过。网络资源绑定和跨包测试包含两节点示例与类型／所有者兼容场景。`test_two_node_package_runs_static_and_timeseries_against_versioned_resources` 在 SQLite 工作流库中以真实构建的版本资源验证静态与含时序流程、scene-template 起始草稿、绑定版本和结果观察；`test_shared_type_public_execution_version_rollback_and_result_ownership` 覆盖依赖公开审批、逐用户启用、V1/V2回退、版本引用、租约重试单产物及撤销后不提交产物。两项均使用可信测试 SDK 代码，不启动 Docker，不能作为容器隔离、线上资源或生产执行证据；本轮未部署。
+截至 2026-09-27，完整后端回归485项通过、15项因可选依赖缺失跳过、4项真实基础设施用例排除；迁移检查5项通过。网络资源绑定和跨包测试包含两节点示例与类型／所有者兼容场景。`test_two_node_package_runs_static_and_timeseries_against_versioned_resources` 在 SQLite 工作流库中以真实构建的版本资源验证静态与含时序流程、scene-template 起始草稿、绑定版本和结果观察；`test_shared_type_public_execution_version_rollback_and_result_ownership` 覆盖依赖公开审批、逐用户启用、V1/V2回退、版本引用、租约重试单产物及撤销后不提交产物。Artifact 增量另通过协议篡改／顺序检查和 SQLite 工作流节点发布、授权下载、暂存清理的定向测试；最近另有24项相关定向回归通过。所有新制品路径测试使用本地 SQLite、内存对象存储与可信测试 SDK 代码，不启动 Docker 或真实 MinIO；迁移未部署，也未在目标服务器应用。
 
-前端全量63个测试文件、257项测试通过。旧版 network 示例页面在1440／1024／768／390宽度检查无横向溢出，并检查了纯拓扑切换、键盘时间轴推进、节点搜索、曲线和控制台。新扩展画布目前单独检查了390与1440宽度的溢出，以及按键选择节点；尚未完成其余宽度和鼠标操作验收。两类浏览器检查均消费固定合成数据，不是用户上传→容器运行→授权可视化的端到端验收。QuickJS Worker／预算及同源摘要重验也不是独立安全审计。本地未验证真实 Linux Docker 引擎下的镜像就绪、隔离、输出、取消、OOM 与恢复。
+前端全量258项测试通过，Production build 通过。旧版 network 示例页面在1440／1024／768／390宽度检查无横向溢出，并检查了纯拓扑切换、键盘时间轴推进、节点搜索、曲线和控制台。新扩展画布目前单独检查了390与1440宽度的溢出，以及按键选择节点；尚未完成其余宽度和鼠标操作验收。两类浏览器检查均消费固定合成数据，不是用户上传→容器运行→授权可视化的端到端验收。QuickJS Worker／预算及同源摘要重验也不是独立安全审计。本地未验证真实 Linux Docker 引擎下的镜像就绪、隔离、输出、取消、OOM 与恢复，也未通过真实 MinIO 验收。
 
 合并 `feature/extension-lifecycle` 前，至少应确认：迁移 `0027` 在备份和校验流程后按预期运行；未配置或未就绪镜像时无宿主回退；私有包跨用户不可见；公开申请必须审批且逐用户启用；安全撤销和引用保护有效；真实容器下输入授权、事件限制、结果校验和清理通过。任何未执行项应记录为待验收，而不是由 SDK 单测或虚拟运行时替代。
 

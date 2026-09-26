@@ -943,7 +943,7 @@ areas:
         status: expand
         priority: P0
         modules: [M02, M03, M04, M05]
-        version: 0.6.0
+        version: 0.7.0
       - id: development.operator-sdk
         title: 内置算法接入与 Operator SDK 开发指南
         path: docs/06-development/operator-sdk.md
