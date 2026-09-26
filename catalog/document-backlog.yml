@@ -28,18 +28,18 @@ collaboration:
   completion_rule: A document becomes ready only after content review, link and
     metadata validation, site build, and inclusion in an approved snapshot.
 summary:
-  total: 126
+  total: 132
   ready: 2
-  expand: 124
+  expand: 130
   missing: 0
   deferred: 0
   by_area:
     platform: 7
     quick_start: 5
-    user_guide: 24
+    user_guide: 29
     scenario: 5
-    algorithm_operator: 42
-    api_development: 15
+    algorithm_operator: 46
+    api_development: 20
     operations: 10
     acceptance: 10
 areas:
@@ -183,7 +183,7 @@ areas:
         path: docs/03-user-guide/leakage-plan-layers.md
         status: expand
         priority: P1
-        version: 1.1.0
+        version: 1.2.0
         modules: [M03, M04]
       - id: user.account-access
         title: 注册、登录、退出与账户注销
@@ -202,6 +202,13 @@ areas:
           - M01
           - M07
         version: 1.0.0
+      - id: user.platform-navigation
+        title: 平台导航与模块入口
+        path: docs/03-user-guide/platform-navigation.md
+        status: expand
+        priority: P1
+        modules: [M01, M02, M04, M05, M07]
+        version: 0.1.1
       - id: user.csv-import
         title: CSV 上传、预览、字段映射与导入
         path: docs/03-user-guide/csv-import.md
@@ -235,6 +242,16 @@ areas:
           - M02
           - M05
         version: 0.1.1
+      - id: user.data-resources
+        title: 统一数据资源
+        path: docs/03-user-guide/data-resources.md
+        status: expand
+        priority: P0
+        modules:
+          - M02
+          - M03
+          - M05
+        version: 0.2.0
       - id: user.dataset-lineage
         title: 数据版本血缘树与历史版本查看
         path: docs/03-user-guide/dataset-lineage.md
@@ -311,6 +328,15 @@ areas:
         modules:
           - M04
         version: 1.3.0
+      - id: user.extensions
+        title: 声明式扩展管理
+        path: docs/03-user-guide/extensions.md
+        status: expand
+        priority: P0
+        modules:
+          - M04
+          - M05
+        version: 0.1.1
       - id: user.workflow-library
         title: 新建、克隆、派生、归档和删除工作流
         path: docs/03-user-guide/workflow-library.md
@@ -335,6 +361,17 @@ areas:
         modules:
           - M05
         version: 1.2.0
+      - id: user.scene-instances
+        title: 场景实例与数据资源运行
+        path: docs/03-user-guide/scene-instances.md
+        status: expand
+        priority: P0
+        modules:
+          - M02
+          - M04
+          - M05
+          - M06
+        version: 0.1.0
       - id: user.workflow-results
         title: 节点结果、Artifact 和最终报告查看
         path: docs/03-user-guide/workflow-results.md
@@ -888,6 +925,18 @@ areas:
         status: expand
         priority: P2
         version: 1.1.0
+      - id: development.data-resource-extension-foundation
+        title: 统一数据资源与声明式扩展基础
+        path: docs/06-development/data-resource-extension-foundation.md
+        status: expand
+        priority: P0
+        modules:
+          - M02
+          - M03
+          - M04
+          - M05
+          - M06
+        version: 0.2.1
       - id: development.operator-sdk
         title: 内置算法接入与 Operator SDK 开发指南
         path: docs/06-development/operator-sdk.md
@@ -911,13 +960,19 @@ areas:
         path: docs/06-development/industrial-design-language.md
         status: expand
         priority: P1
-        version: 1.5.0
+        version: 1.6.0
       - id: development.industrial-playground
         title: 青色工业组件实验场
         path: docs/06-development/industrial-playground.md
         status: expand
         priority: P1
-        version: 0.3.0
+        version: 0.4.2
+      - id: development.industrial-page-rollout
+        title: 工业风页面迁移与维护边界
+        path: docs/06-development/industrial-page-rollout.md
+        status: expand
+        priority: P1
+        version: 0.2.1
       - id: development.frontend-page-structure
         title: 数据资产、算子中心与快速试用的前端维护边界
         path: docs/06-development/frontend-page-structure.md
