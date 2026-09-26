@@ -2,16 +2,16 @@
 id: development.extension-lifecycle-sdk
 title: 扩展生命周期与 Python SDK 首段
 document_type: development
-document_version: 0.7.0
+document_version: 0.8.0
 status: draft
 locale: zh-CN
 audience: [developer, operator]
 related_modules: [M02, M03, M04, M05]
 related_operators: []
-related_apis: ["/api/v1/extensions/upload", "/api/v1/extensions/catalog", "/api/v1/extensions/{package_id}", "/api/v1/extensions/{package_id}/{operation}", "/api/v1/extensions/{package_id}/visualizer", "/api/v1/tasks/{task_id}", "/api/v1/workflow-templates", "/api/v1/workflows/from-template", "/api/v1/workflow-runs/{run_id}/artifacts", "/api/v1/workflow-artifacts/{artifact_id}", "/api/v1/workflow-artifacts/{artifact_id}/content"]
+related_apis: ["/api/v1/extensions/upload", "/api/v1/extensions/catalog", "/api/v1/extensions/{package_id}", "/api/v1/extensions/{package_id}/{operation}", "/api/v1/extensions/{package_id}/visualizer", "/api/v1/tasks/{task_id}", "/api/v1/workflow-templates", "/api/v1/workflows/from-template", "/api/v1/workflow-runs/{run_id}/artifacts", "/api/v1/workflow-artifacts/{artifact_id}", "/api/v1/workflow-artifacts/{artifact_id}/content", "/api/v1/workflow-versions/{version_id}/composite-graph", "/api/v1/workflow-versions/{version_id}/composite-operator", "/api/v1/workflow-runs/{run_id}"]
 owners: [backend-team]
 reviewed_at: 2026-09-27
-summary: 说明 Python 扩展 SDK、不透明二进制制品、资源绑定样例、受限结果视图及待验收边界。
+summary: 说明 Python 扩展 SDK、不透明二进制制品、资源绑定样例、动态子流程复用、受限结果视图及待验收边界。
 ---
 
 # 扩展生命周期与 Python SDK 首段
@@ -163,6 +163,27 @@ swext check ./network-inspection.zip
 
 创建来自模板的草稿不代表可以发布或运行。正式工作流仍遵循现有 `workflow:publish`、`workflow:run` 及每个数据源的 `data_file:read` 校验；完成发布后通过已有任务和结果接口执行。此功能只提供一个带拓扑摘要和可选时序叠层的双节点验收样例，不代表完整跨包依赖闭包、任意格式映射、正式拓扑产品包、模型运行或已部署服务。
 
+## 工作流版本封装为动态子流程节点
+
+复合目录节点可绑定到一个精确的已发布工作流版本，并声明外层可见的端口与参数。此动态子流程能力仍在开发分支，尚未部署到当前服务。注册使用现有 `operator:manage` 权限及来源工作流访问权；向导读取的是不可变发布 Graph，不会把当前未发布草稿包含进注册。
+
+接口由服务端相对于该发布版本复核：
+
+- 输入只能引用没有入边、但被内部连线或最终输出使用的边界源输出；外层输入连线运行时替换该边界源。
+- 输出必须对应已发布 Graph 声明的最终输出，且至少暴露一个。
+- 每个外部参数映射到发布 Graph 的一个唯一节点参数；其 JSON Schema 必须和该节点发布契约精确一致。本地 JSON Pointer `$ref`（包括 `#/$defs/...`）会重基址到按来源 Schema 隔离的 `$defs`，并保留原约束和默认值；远程 Schema 引用不支持。默认值优先使用已发布节点配置值，其次用 Schema `default`。
+- 端口的 `data_type`、`semantic_type`、`unit` 均需和来源定义完全一致。只有在接口中显式暴露的参数会投影到外层属性；被暴露的资源版本参数保留来源控件并将精确版本绑定传递给内部叶节点，不自动追随资源当前版本。
+
+编码、重复映射、未知端口／参数、未使用的输入或类型／语义／单位不匹配都会拒绝注册。相同目录 `node_code@node_version` 的接口不能修改，也不能重绑到另一来源版本；后续变更必须为来源或目录节点发布新版本。子流程节点与依赖摘要保存在现有算子目录中，来源删除受到版本引用保护；删除仍被引用的来源工作流会返回 `COMPOSITE_SOURCE_IN_USE`。目录按来源工作流可见性和目录节点状态筛选；内部扩展权限在展开校验、外层发布和运行时复核，数据权限在运行绑定和读取时检查，子流程节点不会成为权限代理。草稿校验也会展开子流程并检查内部叶节点规则，错误映射回外层子流程根节点；不会等到发布时才首次发现内部 Schema／端口问题。
+
+外层发布时保留作者图，同时冻结展开后的执行计划、来源发布版本和接口／依赖摘要。运行仍由既有 DAG 协调器处理展开后的叶节点，不启用另一套引擎。当前约束为最多 3 层嵌套、100 个叶节点、200 条边；循环或超限图会失败。新运行会重新检查来源权限、精确依赖和冻结摘要；此前内置固定复合节点的支持，不代表数据库新注册子流程已经接通。
+
+运行详情仅在确有子流程时返回 `subflow_sources`，包括来源名称、外层引用路径、目录节点编码／版本和来源发布版本 ID；没有子流程的旧运行不增加空数组字段。运行页按叶节点呈现状态和执行路径，不是折叠层级树。当前网络样例的 SQLite 集成测试确认封装后仍显示 `0` 与 `null`，并保留拓扑、时序两个精确文件版本引用。
+
+### 本地作者复现记录
+
+2026-09-27 使用已有 Neo Python 3.12.10 环境及已安装 SDK，对 `swext init` 生成的全新 scale 样例依次完成清单检查、ZIP 打包、ZIP 复查及显式信任的 `swext run-local --trust-local-code`。输入 `3`、参数 `factor=4`，类型化输出为 `12`。样例、请求和输出保存在仓库外的本地复现目录，不进入 Git。此记录只证明已知作者样例可通过 SDK 的本地运行路径，不表示包已上传或注册，不是容器隔离、服务器 API、数据库或对象存储验收；`run-local` 仍会在本机直接执行信任代码。
+
 ## 跨包类型、版本兼容与提交保护
 
 schema 2 的 `publisher.<namespace>` 是同一发布者下的 namespace 别名。平台在包解析时将它映射到当前所有者的实际 namespace；作者不应把某个用户数字 ID 写进类型引用。跨包使用仍逐项解析精确 kind／namespace／code／version，并检查依赖对当前用户可见、已安装且未撤销，并由该用户逐一启用。公开批准只决定依赖的可见性，不替用户启用。公开 consumer 不能只因其依赖类型“存在”就通过公开审核：依赖包需要先达到当前公开资格。
@@ -188,9 +209,9 @@ schema 2 的 `publisher.<namespace>` 是同一发布者下的 namespace 别名�
 
 ## 本地检查证据与交接
 
-截至 2026-09-27，完整后端回归485项通过、15项因可选依赖缺失跳过、4项真实基础设施用例排除；迁移检查5项通过。网络资源绑定和跨包测试包含两节点示例与类型／所有者兼容场景。`test_two_node_package_runs_static_and_timeseries_against_versioned_resources` 在 SQLite 工作流库中以真实构建的版本资源验证静态与含时序流程、scene-template 起始草稿、绑定版本和结果观察；`test_shared_type_public_execution_version_rollback_and_result_ownership` 覆盖依赖公开审批、逐用户启用、V1/V2回退、版本引用、租约重试单产物及撤销后不提交产物。Artifact 增量另通过协议篡改／顺序检查和 SQLite 工作流节点发布、授权下载、暂存清理的定向测试；最近另有24项相关定向回归通过。所有新制品路径测试使用本地 SQLite、内存对象存储与可信测试 SDK 代码，不启动 Docker 或真实 MinIO；迁移未部署，也未在目标服务器应用。
+截至 2026-09-27，完整后端回归486项通过、15项因可选依赖缺失跳过、4项真实基础设施用例排除；迁移检查5项通过。`test_nested_registered_subflow_preserves_parameters_types_authority_and_results` 在 SQLite 工作流库和可信作者代码下验证两层子流程结果35／18、以 `$defs` 本地引用保留参数 `minimum` 约束、草稿负值校验失败、私有包拒绝、停用后拒绝新运行及来源引用保护。`test_two_node_package_runs_static_and_timeseries_against_versioned_resources` 还验证将网络样例封装为子流程后保留 `0`／`null` 观察值和两个精确数据版本引用。另有2项子流程定向回归通过。二进制 Artifact 通道另有协议顺序／摘要检查、工作流节点发布、授权下载、暂存回收及迁移回退保护测试。上述后端流程未启动 Docker、未连接真实 MySQL／MinIO，也未应用 migration `0027` 到服务器。
 
-前端全量258项测试通过，Production build 通过。旧版 network 示例页面在1440／1024／768／390宽度检查无横向溢出，并检查了纯拓扑切换、键盘时间轴推进、节点搜索、曲线和控制台。新扩展画布目前单独检查了390与1440宽度的溢出，以及按键选择节点；尚未完成其余宽度和鼠标操作验收。两类浏览器检查均消费固定合成数据，不是用户上传→容器运行→授权可视化的端到端验收。QuickJS Worker／预算及同源摘要重验也不是独立安全审计。本地未验证真实 Linux Docker 引擎下的镜像就绪、隔离、输出、取消、OOM 与恢复，也未通过真实 MinIO 验收。
+前端65个测试文件共259项通过，Production build 通过；子流程注册对话框保留的26项相关测试及1项默认值测试也通过。旧版 network 示例页面在1440／1024／768／390宽度检查无横向溢出，并检查了纯拓扑切换、键盘时间轴推进、节点搜索、曲线和控制台。新扩展画布目前单独检查了390与1440宽度的溢出，以及按键选择节点；尚未完成其余宽度和鼠标操作验收。两类浏览器检查均消费固定合成数据，不是用户上传→容器运行→授权可视化的端到端验收。QuickJS Worker／预算及同源摘要重验也不是独立安全审计。本地未验证真实 Linux Docker 引擎下的镜像就绪、隔离、输出、取消、OOM 与恢复，也未通过真实 MinIO 验收。
 
 合并 `feature/extension-lifecycle` 前，至少应确认：迁移 `0027` 在备份和校验流程后按预期运行；未配置或未就绪镜像时无宿主回退；私有包跨用户不可见；公开申请必须审批且逐用户启用；安全撤销和引用保护有效；真实容器下输入授权、事件限制、结果校验和清理通过。任何未执行项应记录为待验收，而不是由 SDK 单测或虚拟运行时替代。
 
@@ -201,6 +222,8 @@ schema 2 的 `publisher.<namespace>` 是同一发布者下的 namespace 别名�
 - HTTP 与任务边界：`app/interfaces/http/extensions.py`、`app/interfaces/worker/foundation.py`、`app/entrypoints/{settings,celery}.py`。
 - Docker 与资源回收：`app/infrastructure/extensions/{container_policy,container_runner,execution_resources}.py`；授权只读源码见 `app/infrastructure/extensions/visualizations.py` 与 `app/interfaces/http/extensions.py`。数据库迁移见契约仓库 `migrations/versions/0027_extension_lifecycle.py`，字段和路径见 `docs/API_CONTRACT_V1.md` 的“扩展生命周期 schema 2”节。
 - DAG 执行与工作流接线：`app/infrastructure/extensions/node_execution.py`、`app/platform/workflows/application.py`、`app/infrastructure/runtime/workflow_execution.py`、`app/bootstrap/foundation.py`、`app/bootstrap/production_worker.py`。
+- 动态子流程接口与展开：`app/platform/workflows/{subflow_interface,subflow_expansion,application}.py`、`app/infrastructure/persistence/{subflow_registry,workflow_repository}.py`、`app/infrastructure/extensions/{dynamic_nodes,operator_catalog}.py`；来源引用、叶节点尝试和运行追溯在 `app/infrastructure/runtime/workflow_execution.py`。
+- 子流程作者与网络资源证据：`tests/extensions/test_subflows.py`、`tests/extensions/test_network_package.py`；对话框和只读来源展示见 `src/app/features/workflows/workflow-composite-registration-dialog.component.ts`、`composite-registration/`、`workflow-subflow-sources.component.ts` 及 `workflow-run-detail.page.*`。
 - 前端生命周期目录／分页及 `available_operations` 动作入口见 `src/app/features/extensions/extensions.page.*`、`extension-lifecycle.component.*`；受限结果视图位于 `src/app/shared/extensions/{runtime,view}/`，授权结果入口为 `extension-result.component.ts`，本地合成示例为 `src/playground/foundation/extension-host-demo.component.ts`。
 - 数据绑定／模板及样例：`app/infrastructure/extensions/{resource_inputs,workflow_templates}.py`、`sdk/python/src/smart_water_extensions/manifest.py`、`sdk/examples/network-inspection/`；对应本地构建和绑定证据在 `tests/extensions/{test_network_package,test_resource_inputs}.py`。跨包版本、安全回退和租约证据见 `tests/extensions/test_cross_package.py`。
 - 前端资源选择集成见 `src/app/shared/extensions/extension-resource-field.component.ts`、`src/app/shared/components/operator-parameter-form.component.ts` 与 `src/app/features/workflows/workflow-starter.page.ts`。
