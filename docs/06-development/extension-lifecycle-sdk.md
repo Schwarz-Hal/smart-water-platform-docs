@@ -2,13 +2,13 @@
 id: development.extension-lifecycle-sdk
 title: 扩展生命周期与 Python SDK 首段
 document_type: development
-document_version: 0.11.0
+document_version: 0.12.0
 status: draft
 locale: zh-CN
 audience: [developer, operator]
 related_modules: [M02, M03, M04, M05]
 related_operators: []
-related_apis: ["/api/v1/extensions/upload", "/api/v1/extensions/catalog", "/api/v1/extensions/{package_id}", "/api/v1/extensions/{package_id}/{operation}", "/api/v1/extensions/{package_id}/visualizer", "/api/v1/tasks/{task_id}", "/api/v1/workflow-templates", "/api/v1/workflows/from-template", "/api/v1/workflow-runs/{run_id}/artifacts", "/api/v1/workflow-artifacts/{artifact_id}", "/api/v1/workflow-artifacts/{artifact_id}/content", "/api/v1/workflow-versions/{version_id}/composite-graph", "/api/v1/workflow-versions/{version_id}/composite-operator", "/api/v1/workflow-runs/{run_id}"]
+related_apis: ["/api/v1/extensions/upload", "/api/v1/extensions/catalog", "/api/v1/extensions/{package_id}", "/api/v1/extensions/{package_id}/{operation}", "/api/v1/extensions/{package_id}/relations", "/api/v1/extensions/{package_id}/versions", "/api/v1/extensions/{package_id}/operations", "/api/v1/extensions/{package_id}/visualizer", "/api/v1/tasks/{task_id}", "/api/v1/workflow-templates", "/api/v1/workflows/from-template", "/api/v1/workflow-runs/{run_id}/artifacts", "/api/v1/workflow-artifacts/{artifact_id}", "/api/v1/workflow-artifacts/{artifact_id}/content", "/api/v1/workflow-versions/{version_id}/composite-graph", "/api/v1/workflow-versions/{version_id}/composite-operator", "/api/v1/workflow-runs/{run_id}"]
 owners: [backend-team]
 reviewed_at: 2026-09-27
 summary: 说明 Python 扩展 SDK、不透明二进制制品、资源绑定样例、动态子流程复用、受限结果视图、登录态生命周期验收及剩余边界。
@@ -20,7 +20,7 @@ summary: 说明 Python 扩展 SDK、不透明二进制制品、资源绑定样�
 
 本文面向扩展作者和平台维护者，说明如何用 SDK 生成、检查和打包扩展，以及平台如何区分私有上传、环境准备、试运行、安装、个人启用、公开审核和安全撤销。
 
-截至 2026-09-27，扩展生命周期的验收补丁已作为 release `20260927-extension-acceptance-r2` 部署并健康运行，Neo `c03d39e`、前端 `132f8b2`、契约 `1c840310`、文档 `ba19625`；相关 Draft PR 仍未合并，因此部署不代表完整主线已合并。此次没有重跑数据库 DDL；已应用的 MySQL migration `0027_extension_lifecycle` 保持不变，备份保留，自启动仍为 disabled，device B 未变。服务器129项定向测试、数值／GPU／预检／smoke 检查通过。部署测试环境曾继承 `softtime=0`，只在 deployment test environment 修复，生产配置未变。已验证批准镜像下的独立容器和 MinIO 组件路径，并完成登录态 HTTP 上传、任务、Worker、工作流 DAG、结果展示和文件读取验收；各项验收范围及清理情况见下文。
+截至 2026-09-27，扩展生命周期基线 PR Neo #32、前端 #62、契约 #54、文档 #34 已合并；对应合并主线基线为 Neo `5625d62`、前端 `69ec265`、契约 `9342fa3`、文档 `4d4b23a`。这与已部署 release `20260927-extension-acceptance-r2`（Neo `c03d39e`、前端 `132f8b2`、契约 `1c840310`、文档 `ba19625`）是不同事实：合并后主线未因此自动部署。服务器 release 的 MySQL migration `0027_extension_lifecycle` 未在后续扩展中心 UX 工作中重跑；R2、自启动 disabled 及 device B 状态保持不变。扩展中心关系/版本/操作记录新投影及相应前端体验仍在 `feature/extension-center-experience` 分支，尚未合并或部署；下节描述的是该分支的接口与读取语义，不应视为当前服务器 API 已上线。此前服务器定向测试及登录态验收范围见下文，均不等于本轮 UX 分支已验收或部署。
 
 ## 前置条件与角色
 
@@ -77,6 +77,21 @@ schema 2 包以所有者、发布命名空间、扩展 ID 和精确版本组成�
 | 停用、归档与撤销 | `disable`、`archive`、管理员 `revoke` | 停用当前用户的新使用；有活动启用、已记录引用或依赖关系时归档被拒绝。安全撤销立即阻止新的执行授权，并保留审计和历史引用。 |
 
 这些操作均为 `POST /api/v1/extensions/{package_id}/{operation}`，复用已有异步任务响应和任务状态，不创建第二套任务引擎。schema 2 lifecycle 操作需要 `workflow:edit`；对象所有权／管理员规则另外校验。公开审核和安全撤销另要求管理员权限。通过 `/api/v1/tasks/{task_id}` 与 `/api/v1/tasks/{task_id}/logs` 查看权威任务状态和日志，并以终态而非 HTTP `202` 判断操作结果。
+
+### 扩展中心只读工作区投影（未合并分支）
+
+`feature/extension-center-experience` 在已有扩展目录和详情之外增加三类只读投影；它们复用现有包可见性和任务权限，不创建执行状态、改变生命周期状态或授权新的包访问。以下端点仅记录该分支实现，不代表已合并或已部署：
+
+| 端点 | 读取内容 | 查询与可见范围 |
+| --- | --- | --- |
+| `GET /api/v1/extensions/catalog` | 可分页的目录摘要 | `scope`、`page`、`page_size`、`q`、`include_archived`；搜索名称或扩展标识。范围限于当前账号可见对象；`review` 仅管理员。 |
+| `GET /api/v1/extensions/{package_id}/relations` | 当前包中心、外部依赖、反向使用记录及包内引用计数 | 可分别分页 `requires_page` 和 `used_by_page`，并设置 `page_size`。依赖中只显示可访问包/平台内置能力；不存在或无权的引用只作为不可用精确引用呈现，不泄露隐藏包的名称或数量。 |
+| `GET /api/v1/extensions/{package_id}/versions` | 同一所有者与命名空间下扩展 ID 的可见版本摘要 | `page`、`page_size`。摘要不返回完整清单、依赖、贡献、环境或验证报告。 |
+| `GET /api/v1/extensions/{package_id}/operations` | 当前包相关的扩展操作任务摘要 | `page`、`page_size`，另需 `task:read`；非管理员只返回本人创建的操作任务。此处不替代场景运行历史。 |
+
+关系投影的 `requires` 是包声明的外部精确依赖；同一包内贡献之间的引用只计入 `internal_count`。`used_by` 汇集有权限查看的其他扩展依赖，以及真实工作流版本、运行和历史场景实例引用。工作流版本按所属工作流权限过滤，运行和历史场景实例分别按其资源权限过滤；因过滤后返回的数量不是全平台引用清单，不能用于推断隐藏对象是否存在。归档和历史引用仍由生命周期/引用保护规则决定，读取关系不会更改这些规则。
+
+前端在目录侧提供范围筛选、名称/标识搜索和归档筛选；包详情分为概览、依赖与使用、版本与操作记录、开发信息四页签。关系页可在确定性星形图与列表间切换，版本和操作记录在打开对应页签时按需读取。异步管理操作仍使用原有任务接口；本组 GET 投影不另建任务队列、执行引擎或迁移。该 UX 分支尚未完成合并后部署验收，具体线上可用性应以实际发布状态为准。
 
 迁移 `0027_extension_lifecycle` 顺接 `0026_data_resource_extensions`。迁移为包补充 schema、namespace、环境、验证、公开和安全状态，另建个人启用、使用引用和容器执行所有权记录；它不会替换任务表。历史 schema 1 包保留既有 package ID 和 legacy 可见性。执行降级前必须先核对数据；只要存在新增生命周期数据、schema 2 包或回退后会形成重复身份，downgrade 就会拒绝删除。需要回退时使用已验证的备份恢复流程，不要强制删表或绕过拒绝。
 
