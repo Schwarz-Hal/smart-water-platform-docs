@@ -2,7 +2,7 @@
 id: development.extension-lifecycle-sdk
 title: 扩展生命周期与 Python SDK 首段
 document_type: development
-document_version: 0.9.0
+document_version: 0.10.0
 status: draft
 locale: zh-CN
 audience: [developer, operator]
@@ -20,7 +20,7 @@ summary: 说明 Python 扩展 SDK、不透明二进制制品、资源绑定样�
 
 本文面向扩展作者和平台维护者，说明如何用 SDK 生成、检查和打包扩展，以及平台如何区分私有上传、环境准备、试运行、安装、个人启用、公开审核和安全撤销。
 
-截至 2026-09-27，`feature/extension-lifecycle` 开发分支已加入 schema 2 上传和静态检查、个人生命周期接口、Python SDK／运行适配器、后端既有 DAG 执行首段及受限结果视图入口。迁移为 `0027_extension_lifecycle`，尚未部署；当前部署的平台仍只接受 schema 1 包。分支中的扩展页面现有目录筛选／分页和生命周期操作按钮，并依据 `available_operations` 展示当前可申请操作；完整浏览器交互验收仍未完成。下文 SQLite DAG 验证使用可信测试适配器，浏览器 QuickJS 示例使用合成数据；均不等于平台 API 到结果页的端到端验收。目标服务器现已可连接，Docker Engine 29.1.3 可用且 SDK 镜像已构建。独立 `ContainerRunner` 实容器检查已通过，但它没有经过 HTTP／MySQL 任务流程；分支尚未部署，迁移 `0027` 尚未应用，完整 Worker／API／DAG／数据库／浏览器链路仍待验收。
+截至 2026-09-27，扩展生命周期已部署为 release `20260927T040000Z-extension-lifecycle`，包含 Neo `6cf09ae`、前端 `7b46f21`、契约 `65084651`、文档 `51a4ca0` 精确提交；这不表示相关 Draft PR 已合并或完整主线已合并。MySQL migration `0027_extension_lifecycle` 在核验压缩备份后应用，已发布 migration `0021`–`0026` 的字节保持不变；8 项服务健康，自启动仍为 disabled。服务器129项定向测试、数值／GPU／预检／smoke 检查通过。部署测试环境曾继承 `softtime=0`，只在 deployment test environment 修复，生产配置未变。当前已验证批准镜像下的独立容器与 MinIO 组件路径；完整 HTTP 上传→MySQL 任务→Worker→DAG→浏览器链路仍未验收，后续各节区分已通过的窄路径和剩余集成门槛。
 
 ## 前置条件与角色
 
@@ -84,7 +84,7 @@ schema 2 包以所有者、发布命名空间、扩展 ID 和精确版本组成�
 
 平台运行时通过 Worker 配置 `EXTENSION_RUNTIME_IMAGE`。该值必须是预先批准的不可变镜像 digest；Worker 启动装配读取此配置，有值时只构造适配器对象，不在装配阶段访问 Docker。后续环境准备、试运行或执行阶段才调用 readiness 检查 Docker Engine 的 Linux 能力、资源限制及镜像标签，未就绪时返回 `EXTENSION_RUNTIME_UNAVAILABLE`。实际执行使用 `--pull=never`，不会在处理任务时拉取镜像，也不会采用清单提供的宿主路径、命令或镜像。设置缺失或运行时不可用时不得切换到宿主执行。
 
-已实现的 Docker 启动策略包括非 root 用户、无网络、只读根文件系统和只读输入挂载、移除 Linux capabilities、默认 seccomp/no-new-privileges、CPU／内存／进程／时间限制，以及有界私有 tmpfs 输出和暂存目录。目标服务器 Docker 29.1.3 上的独立 `ContainerRunner` 实容器检查已通过：容器以 UID 65532 运行，只见 loopback 网络接口、无法建立外连，root、package 和 input 写入受拒；正常返回、失败、取消、超时、OOM 后均确认容器及宿主 staging workspace 清理。该脚本未走 HTTP／MySQL 任务流程；直接调用 `cleanup_owned` 的失联资源回收演练也不等于 Worker SIGKILL 加数据库 reaper 验收。上述窄路径不是完整容器安全审计；完整平台生命周期仍是发布门槛。
+已实现的 Docker 启动策略包括非 root 用户、无网络、只读根文件系统和只读输入挂载、移除 Linux capabilities、默认 seccomp/no-new-privileges、CPU／内存／进程／时间限制，以及有界私有 tmpfs 输出和暂存目录。Docker Engine 29.1.3 上独立 `ContainerRunner` 检查通过：容器以 UID 65532 运行，只见 loopback 网络接口、无法建立外连，root、package 和 input 写入受拒；正常返回、失败、取消、超时、OOM 后均确认容器及宿主 staging workspace 清理。该测试不走 HTTP／MySQL 任务流程；直接调用 `cleanup_owned` 的失联资源回收演练也不等于 Worker SIGKILL 加数据库 reaper 验收。上述窄路径不是完整容器安全审计；完整平台生命周期仍是发布门槛。
 
 每个用户跨 Worker 最多允许 **2 个未清理的扩展容器资源记录**。创建前在数据库事务中检查活跃账户、任务 owner、worker、attempt、包安全状态和当前数量；已回收记录不计入并发额度。开始写入包或输入文件之前，平台先持久登记容器所有权和宿主 workspace 身份；身份包括平台生成的 workspace 名称以及绑定主机名与 workspace 根目录的摘要，拒绝被重定向的根目录。执行结束或回收时，必须先按对应 Docker engine ID 确认目标容器已删除（或已不存在），再按登记的 workspace 身份清理宿主目录；容器检查／删除失败、身份不匹配或目录不安全时保留目录和未清理记录。持久清理记录交由现有 stale sweep 路径处理：只有任务、worker、attempt、包状态或 cleanup-pending 状态满足回收条件时才清理，不能仅凭本地容器列表推断陈旧。daemon 不可用时不把删除失败记作已清理；资源状态可能仍是 `allocated` 或 `cleanup_pending`。
 
@@ -175,13 +175,13 @@ swext check ./network-inspection.zip
 swext pack sdk/examples/water-scenario-preview ./water-scenario-preview.zip
 ```
 
-清单为每个模板声明三个普通节点：固定样例输入、预览数据整理、CSV 报告，并将报告制品列为模板输出。平台使用时仍须按扩展生命周期完成上传、环境准备、试运行、安装和个人启用；之后从场景模板创建普通工作流，配置／发布并运行。独立容器测试使用的 scale 样例不是这两个场景包，也没有通过 HTTP／MySQL、模板 DAG、结果 renderer 或浏览器下载端到端验证。当前 migration `0027` 和上述场景包的平台链路验收仍未完成。
+清单为每个模板声明三个普通节点：固定样例输入、预览数据整理、CSV 报告，并将报告制品列为模板输出。网络样例的2个 SDK smoke case 和场景包的3个 smoke case 均已通过；两个场景的三节点链还分别通过真实 `ContainerRunner` 执行，产生24点预览及 CSV（1196／1162 字节）。MinIO 中的临时验收对象完成上传、读取并核对 SHA、删除。以上是受控组件／容器验收，不是 HTTP 上传、MySQL 任务、Worker、平台 DAG、浏览器 renderer 或成功浏览器下载端到端验收；这些仍需分别完成。
 
 业务内容是固定的 24 个合成采样点，结果用 `is_preview: true` 标记；代码不读取真实管网、传感器、在线天气或模型。阈值只改变这些固定数值的超阈计数；“峰值”“预警”“漏损”等展示文案不代表检测算法、预测能力、准确率或实际预警服务。内涝及漏损结果都明确注明为示例；界面说明不会发送通知或控制设备。模板第三个节点输出的 CSV Artifact 根据同一组合成序列生成，不是外部文件或生产报告。自定义 renderer 接收类型化 JSON 结果并绘制预览；它不读取 CSV 字节，文件内容仍走平台授权的 Artifact 内容／下载入口。详见 Neo 包内 `sdk/examples/water-scenario-preview/docs/README.md`。
 
 ## 工作流版本封装为动态子流程节点
 
-复合目录节点可绑定到一个精确的已发布工作流版本，并声明外层可见的端口与参数。此动态子流程能力仍在开发分支，尚未部署到当前服务。注册使用现有 `operator:manage` 权限及来源工作流访问权；向导读取的是不可变发布 Graph，不会把当前未发布草稿包含进注册。
+复合目录节点可绑定到一个精确的已发布工作流版本，并声明外层可见的端口与参数。此动态子流程实现已包含在上述 extension-lifecycle 部署分支；本地 SQLite／可信代码验证不等于对当前服务器完成完整用户态发布和执行验收。注册使用现有 `operator:manage` 权限及来源工作流访问权；向导读取的是不可变发布 Graph，不会把当前未发布草稿包含进注册。
 
 接口由服务端相对于该发布版本复核：
 
@@ -214,24 +214,28 @@ schema 2 的 `publisher.<namespace>` 是同一发布者下的 namespace 别名�
 
 本次 SDK／生命周期单元没有完成完整扩展产品：
 
-- schema 2 包上传、静态解析、所有者私有身份、个人启用、公开申请／审核以及容器准备／试运行流程已有开发分支实现；现有部署未升级到 migration 0027。
+- schema 2 包上传、静态解析、所有者私有身份、个人启用、公开申请／审核以及容器准备／试运行流程已随 release `20260927T040000Z-extension-lifecycle` 部署；migration `0027` 已应用。相关 PR 仍是 Draft／未合并，不应把部署状态说成主线合并。
 - 后端现有 DAG 首段已把当前用户启用且通过运行门禁的 `operators`／`algorithms` 投影为既有算子目录的 `NodeDefinition`，含精确版本、输入／输出端口和参数 Schema；发布工作流时冻结扩展包摘要、声明摘要和环境快照，运行时复用既有 workflow/task 协调器。仅安装尚不足以使用节点，用户还须启用包并满足运行环境和验证状态。
 - 扩展节点目录只从 `resource_inputs` 生成平台拥有的 `resource_version` 参数选择控件；作者自带的任意 JS 参数组件不受支持，`visualization_schema` 仍为空。受限 `ExtensionView` renderer 已接入结果页，只支持前述数据块并由平台 Angular 组件显示；这不是任意 React／Angular 插件或工作流节点定制宿主。
 - 当前节点运行已按精确类型引用检查输入和输出，并对有用版本记录冻结快照和使用引用；一个已验证的跨包类型路径不能代表完整多级依赖闭包、全部发布者组合或所有兼容回退情形。
-- 有界不透明二进制 Artifact 通道已接入 SDK、既有 DAG、暂存对象存储、授权内容读取与未发布对象清理；它只传递字节，不解析 Arrow／Parquet 语义，也不提供模型注册／下载／生命周期。migration `0027_extension_lifecycle` 新增 `sw_extension_artifact_stage`，尚未部署或在目标服务器实机应用；对象存储、容器挂载与清理仍只有本地验证。下载组件已实现大小／摘要核验；单元检查覆盖按需请求和 HTTP 失败重试，但浏览器实际下载成功路径仍待验收。不要把该通道描述成已验收的生产文件服务。
-- Python 3.12 CPU 档是当前首个实现目标；其他 SDK、运行档、依赖审批机制、部署迁移、既有 schema 1 运行兼容及服务器运行验收仍需独立验证。
+- 有界不透明二进制 Artifact 通道已接入 SDK、既有 DAG、暂存对象存储、授权内容读取与未发布对象清理；它只传递字节，不解析 Arrow／Parquet 语义，也不提供模型注册／下载／生命周期。部署的 migration `0027_extension_lifecycle` 新增 `sw_extension_artifact_stage`。MinIO 中的临时验收对象完成 standalone put／verified-read／delete 和 SHA 核对，但不等于 HTTP／Worker／DAG 对象生命周期或浏览器成功下载；浏览器下载完整路径仍待验收。不要把该通道描述成全链路已验收的生产文件服务。
+- Python 3.12 CPU 档是当前首个实现目标；其他 SDK、运行档、依赖审批机制及既有 schema 1 运行兼容仍需独立验证。
 
-因此，已有 SDK 和后端路径不表示 Arrow／Parquet 等制品语义解析、模型注册／下载／生命周期、正式拓扑产品／服务器验收、完整多级跨包依赖、自定义扩展节点／参数 UI 或完整生命周期产品已经完成；二进制 Artifact 也尚未经过真实 Docker／MinIO 或部署验收。
+因此，已有 SDK 和已部署首段不表示 Arrow／Parquet 等制品语义解析、模型注册／下载／生命周期、正式拓扑产品、完整多级跨包依赖、自定义扩展节点／参数 UI 或完整生命周期产品已经完成；当前尚缺完整 HTTP／MySQL 任务／Worker／DAG／浏览器贯通与独立安全审计。
 
 ## 本地检查证据与交接
 
-截至 2026-09-27，历史完整后端回归为486项通过、15项因可选依赖缺失跳过、4项真实基础设施用例排除；迁移检查5项通过。`test_nested_registered_subflow_preserves_parameters_types_authority_and_results` 在 SQLite 工作流库和可信作者代码下验证两层子流程结果35／18、以 `$defs` 本地引用保留参数 `minimum` 约束、草稿负值校验失败、私有包拒绝、停用后拒绝新运行及来源引用保护。`test_two_node_package_runs_static_and_timeseries_against_versioned_resources` 还验证将网络样例封装为子流程后保留 `0`／`null` 观察值和两个精确数据版本引用。另有2项子流程定向回归通过。二进制 Artifact 通道另有协议顺序／摘要检查、工作流节点发布、授权下载、暂存回收及迁移回退保护测试。上述后端回归未启动 Docker、未连接真实 MySQL／MinIO，也未应用 migration `0027` 到服务器。当前另外94项 Neo 定向检查通过，并有2项场景预览测试通过；它们不替代历史全量回归或真实平台端到端验收。
+截至 2026-09-27，本地完整后端回归489项通过、15项因可选依赖缺失跳过、4项真实基础设施用例排除；5项迁移检查通过。子流程 SQLite／可信适配器回归和二进制 Artifact 协议／权限／回收测试结果见对应测试；它们不替代真实服务验收。此前486项回归、15项可选跳过、4项真实基础设施排除是较早检查点，不与当前489项相加。
 
-另以 Docker Engine 29.1.3 和已构建的批准 SDK 镜像运行了一次独立 `ContainerRunner` 验收脚本，共6项通过：成功输出 `3 * 4 = 12`；容器 UID 65532、package/input/root 写入拒绝、仅 loopback 网络接口且外连失败；两条 progress 事件间隔至少1秒；预期执行失败；取消与超时；128 MiB 限制下 OOM；以及一个人工遗留的归属容器／workspace 通过 `cleanup_owned` 回收。每个结束场景均检查容器和 workspace 已清理。该脚本不经过 HTTP、MySQL 任务所有权／持久化或完整 Worker 生命周期；人工调用清理也不是 Worker SIGKILL／数据库 reaper 测试，不能据此声称独立安全审计、目标服务部署、迁移 `0027`、MySQL 或 MinIO 已验收。
+服务器129项定向测试及数值、GPU、preflight、smoke 检查通过；部署测试环境最初继承 `softtime=0`，仅对 deployment test environment 做了修复，生产配置未变。release `20260927T040000Z-extension-lifecycle` 使用 Neo `6cf09ae`、前端 `7b46f21`、契约 `65084651`、文档 `51a4ca0`；核验 gzip 备份后应用 `0027`，确认已发布 `0021`–`0026` migration 文件字节未变，8 项服务健康且自启动仍为 disabled。此为部署分支 release，不代表完整主线合并。
 
-前端65个测试文件共260项通过，Production build 通过；子流程注册对话框保留的26项相关测试及1项默认值测试也通过。旧版 network 示例页面在1440／1024／768／390宽度检查无横向溢出，并检查了纯拓扑切换、键盘时间轴推进、节点搜索、曲线和控制台。新扩展画布目前单独检查了390与1440宽度的溢出，以及按键选择节点；尚未完成其余宽度和鼠标操作验收。两类浏览器检查均消费固定合成数据，不是用户上传→容器运行→授权可视化的端到端验收。QuickJS Worker／预算及同源摘要重验也不是独立安全审计。当前独立容器检查不等于完整 Worker／HTTP／DAG／数据库生命周期、场景预览浏览器链路或 MinIO 验收；该分支尚未部署，迁移 `0027` 也未应用。
+Docker Engine 29.1.3 独立 `ContainerRunner` 检查6项通过：成功输出 `3 * 4 = 12`；UID 65532、root/package/input 写入拒绝、仅 loopback 网络接口且外连失败；两条 progress 事件间隔至少1秒；预期执行失败；取消、超时；128 MiB 限制下 OOM；以及人工遗留归属容器／workspace 经 `cleanup_owned` 回收。容器和 staging workspace 均核验已清理。它不经过 HTTP、MySQL 任务所有权／持久化或完整 Worker 生命周期；人工清理演练不等于 Worker SIGKILL／数据库 reaper，也不是独立安全审计。
 
-合并 `feature/extension-lifecycle` 前，至少应确认：迁移 `0027` 在备份和校验流程后按预期运行；未配置或未就绪镜像时无宿主回退；私有包跨用户不可见；公开申请必须审批且逐用户启用；安全撤销和引用保护有效；真实平台 Worker／HTTP／数据库任务链路的输入授权、事件限制、结果校验和清理通过；两个场景模板的 DAG、renderer 与文件下载路径完成端到端验收。已通过的独立 `ContainerRunner` 检查不能代替这些集成门槛或独立安全审计。任何未执行项应记录为待验收，而不是由 SDK 单测或虚拟运行时替代。
+网络样例2个 SDK smoke case、场景包3个 smoke case 均通过；两个场景的实际 `ContainerRunner` 三节点链分别产出24点预览和1196／1162字节 CSV。MinIO 中的临时验收对象 put、read-and-SHA-verify、delete 成功。它们是有边界的实际容器／存储组件验收，不是正式 HTTP 上传→MySQL task→Worker→DAG 或浏览器链路验收。
+
+本地前端65个测试文件共260项通过，Production build 通过。浏览器当前为匿名状态，扩展目录／模板请求返回401；尚未通过登录态完成上传、启用、创建 DAG、结果展示与成功浏览器文件下载。既有4宽度 network 检查和扩展画布390／1440键盘检查使用固定合成数据，其余鼠标／宽度路径也待验。容器和 MinIO 中临时验收对象的组件测试不替代这些浏览器集成；QuickJS Worker／预算亦未通过独立安全审计。
+
+剩余门槛：登录态 HTTP 上传→MySQL task→Worker→DAG→renderer／成功浏览器下载；私有／公共扩展双账号隔离验证（新建验收账号待用户确认）；Worker SIGKILL／数据库 reaper 检查。Draft PR 仍未合并，当前部署不代表主线完整合并。本轮未进行独立安全审计，不据此作安全认证承诺。
 
 ## 实现与契约依据
 
