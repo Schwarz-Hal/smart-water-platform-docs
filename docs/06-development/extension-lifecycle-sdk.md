@@ -2,7 +2,7 @@
 id: development.extension-lifecycle-sdk
 title: 扩展生命周期与 Python SDK 首段
 document_type: development
-document_version: 0.8.0
+document_version: 0.9.0
 status: draft
 locale: zh-CN
 audience: [developer, operator]
@@ -20,7 +20,7 @@ summary: 说明 Python 扩展 SDK、不透明二进制制品、资源绑定样�
 
 本文面向扩展作者和平台维护者，说明如何用 SDK 生成、检查和打包扩展，以及平台如何区分私有上传、环境准备、试运行、安装、个人启用、公开审核和安全撤销。
 
-截至 2026-09-27，`feature/extension-lifecycle` 开发分支已加入 schema 2 上传和静态检查、个人生命周期接口、Python SDK／运行适配器、后端既有 DAG 执行首段及受限结果视图入口。迁移为 `0027_extension_lifecycle`，尚未部署；当前部署的平台仍只接受 schema 1 包。分支中的扩展页面现有目录筛选／分页和生命周期操作按钮，并依据 `available_operations` 展示当前可申请操作；完整浏览器交互验收仍未完成。下文的 DAG 验证是 SQLite 上使用可信测试适配器执行的窄路径；浏览器 QuickJS 示例使用合成数据。两者均不是上传包真实容器端到端或生产验收。
+截至 2026-09-27，`feature/extension-lifecycle` 开发分支已加入 schema 2 上传和静态检查、个人生命周期接口、Python SDK／运行适配器、后端既有 DAG 执行首段及受限结果视图入口。迁移为 `0027_extension_lifecycle`，尚未部署；当前部署的平台仍只接受 schema 1 包。分支中的扩展页面现有目录筛选／分页和生命周期操作按钮，并依据 `available_operations` 展示当前可申请操作；完整浏览器交互验收仍未完成。下文 SQLite DAG 验证使用可信测试适配器，浏览器 QuickJS 示例使用合成数据；均不等于平台 API 到结果页的端到端验收。目标服务器现已可连接，Docker Engine 29.1.3 可用且 SDK 镜像已构建。独立 `ContainerRunner` 实容器检查已通过，但它没有经过 HTTP／MySQL 任务流程；分支尚未部署，迁移 `0027` 尚未应用，完整 Worker／API／DAG／数据库／浏览器链路仍待验收。
 
 ## 前置条件与角色
 
@@ -84,9 +84,9 @@ schema 2 包以所有者、发布命名空间、扩展 ID 和精确版本组成�
 
 平台运行时通过 Worker 配置 `EXTENSION_RUNTIME_IMAGE`。该值必须是预先批准的不可变镜像 digest；Worker 启动装配读取此配置，有值时只构造适配器对象，不在装配阶段访问 Docker。后续环境准备、试运行或执行阶段才调用 readiness 检查 Docker Engine 的 Linux 能力、资源限制及镜像标签，未就绪时返回 `EXTENSION_RUNTIME_UNAVAILABLE`。实际执行使用 `--pull=never`，不会在处理任务时拉取镜像，也不会采用清单提供的宿主路径、命令或镜像。设置缺失或运行时不可用时不得切换到宿主执行。
 
-已实现的 Docker 启动策略包括非 root 用户、无网络、只读根文件系统和只读输入挂载、移除 Linux capabilities、默认 seccomp/no-new-privileges、CPU／内存／进程／时间限制，以及有界私有 tmpfs 输出和暂存目录。实现策略和自动化参数检查不等于真实容器隔离已经通过验收。当前本地没有可用的 Docker Linux 引擎；未启动容器。真实 Docker 执行、取消、OOM、回收和恢复测试仍是发布门槛。
+已实现的 Docker 启动策略包括非 root 用户、无网络、只读根文件系统和只读输入挂载、移除 Linux capabilities、默认 seccomp/no-new-privileges、CPU／内存／进程／时间限制，以及有界私有 tmpfs 输出和暂存目录。目标服务器 Docker 29.1.3 上的独立 `ContainerRunner` 实容器检查已通过：容器以 UID 65532 运行，只见 loopback 网络接口、无法建立外连，root、package 和 input 写入受拒；正常返回、失败、取消、超时、OOM 后均确认容器及宿主 staging workspace 清理。该脚本未走 HTTP／MySQL 任务流程；直接调用 `cleanup_owned` 的失联资源回收演练也不等于 Worker SIGKILL 加数据库 reaper 验收。上述窄路径不是完整容器安全审计；完整平台生命周期仍是发布门槛。
 
-每个用户跨 Worker 最多允许 **2 个未清理的扩展容器资源记录**。创建前在数据库事务中检查活跃账户、任务 owner、worker、attempt、包安全状态和当前数量；已回收记录不计入并发额度。执行结束后以平台生成的容器名和 task/attempt/extension 标签校验所有权再删除。持久清理记录交由现有 stale sweep 路径处理：只有任务、worker、attempt、包状态或 cleanup-pending 状态满足回收条件时才清理，并按对应 Docker engine ID 查询，不能仅凭本地容器列表推断陈旧。daemon 不可用时保留未清理记录，不把删除失败记作已清理；资源状态可能仍是 `allocated` 或 `cleanup_pending`。
+每个用户跨 Worker 最多允许 **2 个未清理的扩展容器资源记录**。创建前在数据库事务中检查活跃账户、任务 owner、worker、attempt、包安全状态和当前数量；已回收记录不计入并发额度。开始写入包或输入文件之前，平台先持久登记容器所有权和宿主 workspace 身份；身份包括平台生成的 workspace 名称以及绑定主机名与 workspace 根目录的摘要，拒绝被重定向的根目录。执行结束或回收时，必须先按对应 Docker engine ID 确认目标容器已删除（或已不存在），再按登记的 workspace 身份清理宿主目录；容器检查／删除失败、身份不匹配或目录不安全时保留目录和未清理记录。持久清理记录交由现有 stale sweep 路径处理：只有任务、worker、attempt、包状态或 cleanup-pending 状态满足回收条件时才清理，不能仅凭本地容器列表推断陈旧。daemon 不可用时不把删除失败记作已清理；资源状态可能仍是 `allocated` 或 `cleanup_pending`。
 
 SDK 为事件附上协议版本、运行 ID、attempt 和递增序号。事件类别包括：
 
@@ -116,6 +116,10 @@ SDK 提供内置类型 `builtin/artifact@1.0.0`，用于在既有 DAG 节点间�
 `canvas` 让 renderer 用数据计算几何、语义颜色和动作状态，但不把绘图代码或标记交给主站执行。作者只能返回 `rect`、`circle`、`polyline`、`text` 四种原语及坐标／颜色／文字等数据；颜色只能用平台语义色或 `#RRGGBB` 六位十六进制色。每个画布必须有非空 `label` 和 `description`，并声明宽高；主站重新校验后，以自有 SVG 模板重建白名单元素，不接收任意 SVG 标记、路径、HTML、CSS、远端资源或脚本。单画布最多 4096 个原语、32768 个折线顶点及 128 个唯一 action；超限或未知图元会被拒绝。图元上的 action 仅是 `{id,label}` 描述，交互由宿主提供按钮，触发后把 `{id}` 作为下一次 `render` 的 `event`，作者据此返回更新后的 `state` 和绘图数据。它不是任意 React／Angular 插件，也不是扩展直接操作 DOM。
 
 前端 SDK 的 `ViewCanvas`、`DrawingPrimitive` 和 `DrawingColor` 类型位于 `sdk/frontend/index.d.ts`。画布及 action 都只是 renderer 的序列化输出描述；运行时校验器和宿主组件才是最终能力边界，TypeScript 声明本身不授予额外权限。
+
+宿主还对单次视图的全部 blocks 合计执行总量限制：最多 16,000 个表格单元格（含表头）、96 个指标项、8 个 chart、120,000 个 chart 数据点、1 个 network、4,096 个 canvas 图元、32,768 个折线顶点及每个 canvas 分别去重后再求和最多 128 个 action ID。另有协议／局部结构上限：每视图最多 32 个 block 和 8 个顶层 action；单表最多 32 列、1,000 行，每个 metrics block 最多 24 项，每个 chart 最多 12 条 series 且每条最多 10,000 点，每个 network 最多 5,000 个节点、10,000 条管段和 50,000 条观察；序列化 state 最多 65,536 个字符。任一总量超限会拒绝扩展视图，结果页显示“扩展展示内容过多，请缩小展示范围；原始结果仍可查看。”并保留原始类型化数据，不把截断内容当作完整结果。
+
+`extension_visualizer` 是可选的 presentation metadata，不会覆盖 artifact 的原生 `data_type`、payload／preview、大小、摘要或存储信息，也不改变 DAG 下游端口值。若制品有匹配的 visualizer 声明，结果页可在保留文件卡片／授权下载入口的同时展示该扩展视图和原始类型化数据；没有匹配声明时继续使用内置标准结果查看器。二进制文件内容不会因此自动读取或传给 renderer，renderer 只接收结果载荷中显式提供的 JSON 数据。
 
 按钮只传递 action `id`，主机以新 event 调用 renderer，renderer 返回更新后的 `state` 和数据视图。宿主每 30 秒重新读取可视化授权与源码摘要；如果权限仍有效且摘要不变，不会因检查而重跑脚本或重置当前视图。读取失败或摘要变化时会终止当前 Worker 并清除旧扩展视图；结果页可回退到平台标准结果查看器及原始类型化数据。
 
@@ -163,6 +167,18 @@ swext check ./network-inspection.zip
 
 创建来自模板的草稿不代表可以发布或运行。正式工作流仍遵循现有 `workflow:publish`、`workflow:run` 及每个数据源的 `data_file:read` 校验；完成发布后通过已有任务和结果接口执行。此功能只提供一个带拓扑摘要和可选时序叠层的双节点验收样例，不代表完整跨包依赖闭包、任意格式映射、正式拓扑产品包、模型运行或已部署服务。
 
+## 漏损与内涝合成场景预览样例
+
+`sdk/examples/water-scenario-preview/` 提供两个明确标注为示例的普通 DAG 模板：漏损预览与内涝预警预览。可从 Neo 仓库根目录打包：
+
+```console
+swext pack sdk/examples/water-scenario-preview ./water-scenario-preview.zip
+```
+
+清单为每个模板声明三个普通节点：固定样例输入、预览数据整理、CSV 报告，并将报告制品列为模板输出。平台使用时仍须按扩展生命周期完成上传、环境准备、试运行、安装和个人启用；之后从场景模板创建普通工作流，配置／发布并运行。独立容器测试使用的 scale 样例不是这两个场景包，也没有通过 HTTP／MySQL、模板 DAG、结果 renderer 或浏览器下载端到端验证。当前 migration `0027` 和上述场景包的平台链路验收仍未完成。
+
+业务内容是固定的 24 个合成采样点，结果用 `is_preview: true` 标记；代码不读取真实管网、传感器、在线天气或模型。阈值只改变这些固定数值的超阈计数；“峰值”“预警”“漏损”等展示文案不代表检测算法、预测能力、准确率或实际预警服务。内涝及漏损结果都明确注明为示例；界面说明不会发送通知或控制设备。模板第三个节点输出的 CSV Artifact 根据同一组合成序列生成，不是外部文件或生产报告。自定义 renderer 接收类型化 JSON 结果并绘制预览；它不读取 CSV 字节，文件内容仍走平台授权的 Artifact 内容／下载入口。详见 Neo 包内 `sdk/examples/water-scenario-preview/docs/README.md`。
+
 ## 工作流版本封装为动态子流程节点
 
 复合目录节点可绑定到一个精确的已发布工作流版本，并声明外层可见的端口与参数。此动态子流程能力仍在开发分支，尚未部署到当前服务。注册使用现有 `operator:manage` 权限及来源工作流访问权；向导读取的是不可变发布 Graph，不会把当前未发布草稿包含进注册。
@@ -209,11 +225,13 @@ schema 2 的 `publisher.<namespace>` 是同一发布者下的 namespace 别名�
 
 ## 本地检查证据与交接
 
-截至 2026-09-27，完整后端回归486项通过、15项因可选依赖缺失跳过、4项真实基础设施用例排除；迁移检查5项通过。`test_nested_registered_subflow_preserves_parameters_types_authority_and_results` 在 SQLite 工作流库和可信作者代码下验证两层子流程结果35／18、以 `$defs` 本地引用保留参数 `minimum` 约束、草稿负值校验失败、私有包拒绝、停用后拒绝新运行及来源引用保护。`test_two_node_package_runs_static_and_timeseries_against_versioned_resources` 还验证将网络样例封装为子流程后保留 `0`／`null` 观察值和两个精确数据版本引用。另有2项子流程定向回归通过。二进制 Artifact 通道另有协议顺序／摘要检查、工作流节点发布、授权下载、暂存回收及迁移回退保护测试。上述后端流程未启动 Docker、未连接真实 MySQL／MinIO，也未应用 migration `0027` 到服务器。
+截至 2026-09-27，历史完整后端回归为486项通过、15项因可选依赖缺失跳过、4项真实基础设施用例排除；迁移检查5项通过。`test_nested_registered_subflow_preserves_parameters_types_authority_and_results` 在 SQLite 工作流库和可信作者代码下验证两层子流程结果35／18、以 `$defs` 本地引用保留参数 `minimum` 约束、草稿负值校验失败、私有包拒绝、停用后拒绝新运行及来源引用保护。`test_two_node_package_runs_static_and_timeseries_against_versioned_resources` 还验证将网络样例封装为子流程后保留 `0`／`null` 观察值和两个精确数据版本引用。另有2项子流程定向回归通过。二进制 Artifact 通道另有协议顺序／摘要检查、工作流节点发布、授权下载、暂存回收及迁移回退保护测试。上述后端回归未启动 Docker、未连接真实 MySQL／MinIO，也未应用 migration `0027` 到服务器。当前另外94项 Neo 定向检查通过，并有2项场景预览测试通过；它们不替代历史全量回归或真实平台端到端验收。
 
-前端65个测试文件共259项通过，Production build 通过；子流程注册对话框保留的26项相关测试及1项默认值测试也通过。旧版 network 示例页面在1440／1024／768／390宽度检查无横向溢出，并检查了纯拓扑切换、键盘时间轴推进、节点搜索、曲线和控制台。新扩展画布目前单独检查了390与1440宽度的溢出，以及按键选择节点；尚未完成其余宽度和鼠标操作验收。两类浏览器检查均消费固定合成数据，不是用户上传→容器运行→授权可视化的端到端验收。QuickJS Worker／预算及同源摘要重验也不是独立安全审计。本地未验证真实 Linux Docker 引擎下的镜像就绪、隔离、输出、取消、OOM 与恢复，也未通过真实 MinIO 验收。
+另以 Docker Engine 29.1.3 和已构建的批准 SDK 镜像运行了一次独立 `ContainerRunner` 验收脚本，共6项通过：成功输出 `3 * 4 = 12`；容器 UID 65532、package/input/root 写入拒绝、仅 loopback 网络接口且外连失败；两条 progress 事件间隔至少1秒；预期执行失败；取消与超时；128 MiB 限制下 OOM；以及一个人工遗留的归属容器／workspace 通过 `cleanup_owned` 回收。每个结束场景均检查容器和 workspace 已清理。该脚本不经过 HTTP、MySQL 任务所有权／持久化或完整 Worker 生命周期；人工调用清理也不是 Worker SIGKILL／数据库 reaper 测试，不能据此声称独立安全审计、目标服务部署、迁移 `0027`、MySQL 或 MinIO 已验收。
 
-合并 `feature/extension-lifecycle` 前，至少应确认：迁移 `0027` 在备份和校验流程后按预期运行；未配置或未就绪镜像时无宿主回退；私有包跨用户不可见；公开申请必须审批且逐用户启用；安全撤销和引用保护有效；真实容器下输入授权、事件限制、结果校验和清理通过。任何未执行项应记录为待验收，而不是由 SDK 单测或虚拟运行时替代。
+前端65个测试文件共260项通过，Production build 通过；子流程注册对话框保留的26项相关测试及1项默认值测试也通过。旧版 network 示例页面在1440／1024／768／390宽度检查无横向溢出，并检查了纯拓扑切换、键盘时间轴推进、节点搜索、曲线和控制台。新扩展画布目前单独检查了390与1440宽度的溢出，以及按键选择节点；尚未完成其余宽度和鼠标操作验收。两类浏览器检查均消费固定合成数据，不是用户上传→容器运行→授权可视化的端到端验收。QuickJS Worker／预算及同源摘要重验也不是独立安全审计。当前独立容器检查不等于完整 Worker／HTTP／DAG／数据库生命周期、场景预览浏览器链路或 MinIO 验收；该分支尚未部署，迁移 `0027` 也未应用。
+
+合并 `feature/extension-lifecycle` 前，至少应确认：迁移 `0027` 在备份和校验流程后按预期运行；未配置或未就绪镜像时无宿主回退；私有包跨用户不可见；公开申请必须审批且逐用户启用；安全撤销和引用保护有效；真实平台 Worker／HTTP／数据库任务链路的输入授权、事件限制、结果校验和清理通过；两个场景模板的 DAG、renderer 与文件下载路径完成端到端验收。已通过的独立 `ContainerRunner` 检查不能代替这些集成门槛或独立安全审计。任何未执行项应记录为待验收，而不是由 SDK 单测或虚拟运行时替代。
 
 ## 实现与契约依据
 
