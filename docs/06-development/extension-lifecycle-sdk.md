@@ -2,7 +2,7 @@
 id: development.extension-lifecycle-sdk
 title: 扩展生命周期与 Python SDK 首段
 document_type: development
-document_version: 0.12.1
+document_version: 0.13.0
 status: draft
 locale: zh-CN
 audience: [developer, operator]
@@ -37,16 +37,18 @@ summary: 说明 Python 扩展 SDK、不透明二进制制品、资源绑定样�
 
 ## 使用 SDK 创建与检查包
 
-SDK 0.1 使用 manifest schema 2.0 和执行协议 1.0。`swext init` 生成一个最小算术示例；`check` 检查清单或 ZIP；`pack` 生成 ZIP。静态检查和打包不会导入或执行作者代码。
+2026-09-30 的 `feature/extension-sdk-tooling` 增量提供工具发行 0.1.1、目录检查、带本地请求与原始视图输入的脚手架、独立真实渲染预览及可导出开发包。该分支尚未合并，不改变本页列明的历史 release／验收事实；独立开发包使用不要求先部署服务器变更，平台执行仍受既有运行档与审批约束。开发包安装、作者操作、预览交互和维护者导出见[扩展作者工具与独立开发包](./extension-author-tooling.md)；安装可能需要下载固定依赖，不是完全离线安装包，也未发布 PyPI／npm。
+
+运行 SDK 仍为 0.1.0，使用 manifest schema 2.0、执行协议 1.0 和 `python-cpu-v1`；工具更新不改变批准镜像或新增 GPU／任意依赖运行档。`swext init` 生成一个最小算术示例；`check` 检查目录、清单或 ZIP；`pack` 生成 ZIP。静态检查、打包和本地渲染预览不会导入或执行作者 Python；预览仅执行受限 JavaScript，不运行算法或连接平台 API。
 
 ```console
 swext init ./my-extension --namespace my-water --name example
-swext check ./my-extension/extension.json
+swext check ./my-extension
 swext pack ./my-extension ./example-1.0.0.zip
 swext check ./example-1.0.0.zip
 ```
 
-包内根目录应有 `extension.json`，可包含 `python/`、`web/` 和 `docs/`。SDK 检查精确版本、入口路径、包路径、JSON Schema、端口及包大小边界；包构建器只收集这些约定目录和清单，不覆盖已存在的目标 ZIP。检查通过表示清单或包结构通过静态校验，不表示平台已注册贡献、开放 DAG 节点或准备好运行代码。
+包内根目录应有 `extension.json`，可包含 `python/`、`web/`、`docs/` 和 `fixtures/`。SDK 检查精确版本、入口路径、包路径、JSON Schema、端口及包大小边界；目录检查也检查声明的入口存在性，单独检查清单则不能确认文件存在。包构建器只收集这些约定目录和清单，不覆盖已存在的目标 ZIP。检查通过表示清单或包结构通过静态校验，不表示平台已注册贡献、开放 DAG 节点或准备好运行代码。
 
 扩展输入和输出都使用精确 `{namespace, code, version}` 类型引用及 `payload`。参数按声明的 JSON Schema 校验；SDK 可校验本包定义的类型，跨包类型和依赖由平台依据其授权目录处理。缺少必需端口、未声明输出或类型不匹配应明确失败，不静默转换。
 
