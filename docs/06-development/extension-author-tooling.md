@@ -2,7 +2,7 @@
 id: development.extension-author-tooling
 title: 扩展作者工具与独立开发包
 document_type: development
-document_version: 0.1.0
+document_version: 0.1.1
 status: draft
 locale: zh-CN
 audience: [developer]
@@ -20,7 +20,7 @@ summary: 说明独立开发包的安装、脚手架、可信本地运行、真�
 
 开发包用于在平台源码之外编写和检查扩展：生成可运行样例、诊断包结构、调试自己的可信 Python、预览作者 JavaScript 返回的视图，最后生成扩展 ZIP。它不提供平台账号、上传授权或运行环境审批。
 
-本文描述 `feature/extension-sdk-tooling` 的工具发行 0.1.1；该分支尚未合并，工具未发布到 PyPI 或 npm，也不是公开托管的预览站点。开发包可独立分发和使用，不要求先部署服务器变更；平台执行仍按既有运行 SDK 0.1.0 的运行档和审批规则处理，不据此声称新镜像已部署。本地预览执行作者实际 JavaScript，复用平台的受限 QuickJS 解释器、视图校验和 Angular 显示组件；它不是替代算法的模拟画面，也不执行 Python 或连接平台 API。
+本文描述工具发行 0.1.1，开发包可独立分发和使用；工具未发布到 PyPI 或 npm，也不是公开托管的预览站点。代码合并与服务器部署是不同状态，使用开发包不要求先部署服务器变更；平台执行仍按既有运行 SDK 0.1.0 的运行档和审批规则处理，不据此声称新镜像已部署。本地预览执行作者实际 JavaScript，复用平台的受限 QuickJS 解释器、视图校验和 Angular 显示组件；它不是替代算法的模拟画面，也不执行 Python 或连接平台 API。
 
 ## 前置条件与角色
 
