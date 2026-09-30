@@ -28,9 +28,9 @@ collaboration:
   completion_rule: A document becomes ready only after content review, link and
     metadata validation, site build, and inclusion in an approved snapshot.
 summary:
-  total: 133
+  total: 134
   ready: 2
-  expand: 131
+  expand: 132
   missing: 0
   deferred: 0
   by_area:
@@ -39,7 +39,7 @@ summary:
     user_guide: 29
     scenario: 5
     algorithm_operator: 46
-    api_development: 21
+    api_development: 22
     operations: 10
     acceptance: 10
 areas:
@@ -943,7 +943,14 @@ areas:
         status: expand
         priority: P0
         modules: [M02, M03, M04, M05]
-        version: 0.12.1
+        version: 0.13.1
+      - id: development.extension-author-tooling
+        title: 扩展作者工具与独立开发包
+        path: docs/06-development/extension-author-tooling.md
+        status: expand
+        priority: P0
+        modules: [M02, M03, M04, M05]
+        version: 0.1.1
       - id: development.operator-sdk
         title: 内置算法接入与 Operator SDK 开发指南
         path: docs/06-development/operator-sdk.md
