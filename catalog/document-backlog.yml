@@ -350,7 +350,7 @@ areas:
         path: docs/03-user-guide/workflow-editor.md
         status: expand
         priority: P0
-        version: 1.6.0
+        version: 1.7.0
         modules:
           - M05
       - id: user.workflow-run
@@ -381,7 +381,7 @@ areas:
           - M05
           - M06
           - M07
-        version: 1.5.0
+        version: 1.6.0
       - id: user.task-center
         title: 任务筛选、日志、取消、重运行和删除
         path: docs/03-user-guide/task-center.md
