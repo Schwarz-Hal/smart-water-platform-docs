@@ -2,7 +2,7 @@
 id: api.workflows
 title: 工作流编排、子流程复用、运行与 Artifact API
 document_type: development
-document_version: 1.3.0
+document_version: 1.3.1
 status: published
 locale: zh-CN
 audience: [developer]
@@ -10,7 +10,7 @@ related_modules: [M05, M06, M07]
 related_operators: []
 related_apis: ["/api/v1/workflows", "/api/v1/workflows/{workflow_id}/validate", "/api/v1/workflow-versions/{version_id}/runs", "/api/v1/workflow-versions/{version_id}/composite-graph", "/api/v1/workflow-versions/{version_id}/composite-operator", "/api/v1/workflow-runs/{run_id}"]
 owners: [backend-team]
-reviewed_at: 2026-10-02
+reviewed_at: 2026-10-03
 summary: 工作流草稿、校验、不可变版本、动态子流程展开、运行和 Artifact 查询接口。
 ---
 
@@ -45,6 +45,8 @@ summary: 工作流草稿、校验、不可变版本、动态子流程展开、�
 Graph `contract_version` 仍为 `1.0`。可选根级 `ui` 用于区域和连线折点，形状为 `schema_version: "1"`、必需 `regions: []` 和可选 `reroutes: []`；未带 `ui` 的历史图保持可读，不强制改写。区域字段为 `id`、`title`、`color`、`node_ids`、`position:{x,y}`、`size:{width,height}`、`collapsed`。区域 ID 唯一，节点引用必须存在，每节点最多属于一个区域，不支持区域嵌套。
 
 `reroutes` 每项为 `id`、`edge:{source:{node_id,port},target:{node_id,port}}`、`points:[{x,y}]`；必须引用真实执行边，每边最多一条折点记录。坐标必须有限，尺寸必须大于零；最多100个区域、每区100个成员、200条折点记录、每条32个点。UI 对象不接受未声明字段，错误以 `WORKFLOW_INVALID` 和 `ui` 下的路径定位。区域折叠和代理端口不修改执行图；子流程展开时将区域成员映射到叶节点，不能明确映射的展示折点不进入展开图。此元数据使用既有 JSON 字段，无需数据库迁移。
+
+数据文件节点的可选卡片尺寸由编辑器写入现有 `nodes[].ui.size:{width,height}`，草稿读写沿用节点 UI 元数据的往返路径；服务端未为该尺寸新增专门校验。前端在调整结束时将尺寸与区域归属作为一次布局编辑提交，撤销和重新读取草稿可恢复尺寸；无需新端点或数据库迁移。
 
 ### 用途、来源与列表
 
