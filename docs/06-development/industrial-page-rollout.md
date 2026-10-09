@@ -2,7 +2,7 @@
 id: development.industrial-page-rollout
 title: 工业风页面迁移与维护边界
 document_type: development
-document_version: 0.3.2
+document_version: 0.3.4
 status: draft
 locale: zh-CN
 audience: [frontend_developer, designer]
@@ -130,6 +130,22 @@ summary: 说明工业风页面接入、平台导航收敛、展示职责拆分�
 - 本批不新增持续装饰动画，不用动画代替真实进度；既有减少动态效果规则继续适用。
 
 ## 本地检查与后续验收
+
+### 普通页面内容宽度与滚动归属（CONTENT-WIDTH-SCROLL）
+
+`styles.scss` 与 `_industrial.scss` 的 `--sw-content-max` 统一为1200px，普通内容居中；工作流编辑等 workspace-content 仍保留 max-width:none 和原编辑器高度／滚动边界。app-shell 的 host／shell 使用父级100%高度，`body:has(app-shell)` 以100dvh flex布局为离线工具栏单独留行，app-root占剩余高度；普通 main 内容最小高度按可用高度减页头计算，不再重复叠加整屏高度。
+
+快速试用 hub 使用 overflow:clip，其直接页签 body／content 使用 overflow:visible、height:auto，减少内容区重复竖向滚动；扩展中心窄屏目录移除原限高和overflow，随页面展开。保留表格横向滚动、弹窗、代码预览与画布编辑器的功能性滚动，不能用全局裁切隐藏焦点或长内容。本次仅本地布局改动，devserver编译与浏览器证据见下段；不运行测试或追加构建，不声称已部署、所有页面无溢出或业务验收通过。
+
+本轮主代理记录devserver编译成功：1800px视口下QuickTrial主区宽1200px、left421／right1621，在可用区域居中；body clientHeight／scrollHeight均1000px，活动外层页签overflow为visible。1280×720下QuickTrial与扩展中心body均720／720，内容保留主滚动及必要侧栏滚动，试用表格保留功能性overflow。未跑业务／全量测试或构建；这些抽样不代表全部页面、精确断点或编辑器浏览器验收，未部署。
+
+### 扩展中心局部表现层接入（EXTENSIONS-INK-FIELD）
+
+当前 `feature/quick-trial-ink-field` 中的扩展中心显式采用 `field.theme`，复用 `styles/_field-controls.scss` 的语义与 Material 映射；InkFieldHeading 提供 h1，InkFieldNav 的 pipes 外观用于包目录，仍绑定原包 ID、选中项、busy 和选择事件。概览、生命周期与关系组件仅调整层级、留白和状态阅读，原 Material 控件、请求、上传、权限、版本及任务跟踪不变。本次不增加 API／授权／任务语义，不纳入当前主线缺少的 SDK 作者分支能力。
+
+主题只作用于显式消费的页面或浮层：生命周期菜单使用 `.extension-management-menu` 局部主题，`presentation/extension-dialog.scss` 在弹窗自身 host 引入相同映射，不能依赖页面变量自动跨 CDK overlay 继承。264px目录加内容列在800px容器以下改为单列；关系图在640px以下转列表。维护时保留长文本换行、可见焦点、菜单／弹窗关闭回焦点与减少动态效果，不把装饰当作进度或伪造成功状态。
+
+本次仅本地预览，无提交、合并或部署，现有服务器保持不变。主代理记录 devserver 模板／SCSS 编译成功；本地离线夹具核对初始空态、目录选中、四页签、内容弹窗、管理菜单及取消动作确认弹窗（未执行操作），未选文件时上传禁用。750px下 scrollWidth=750px且单列，380px下 scrollWidth=380px、关系图隐藏且列表为grid。导入／管理 SquareToggleIcon 绑定实际开关，记录区增加时间线标记，页签内容320ms进入并保留 reduced-motion 媒体规则；未据此宣称系统减少动态效果人工通过。本次未跑全量／业务测试或完整构建，未真实上传、安装或撤销，也未穷尽权限／失败状态。前端覆盖入口为 `design-system/smart-water-platform/pages/extensions.md`；文档只做相关校验，不以离线展示代替真实任务终态验收。
 
 独立实验场与离线业务预览的用途不同：前者查看共享组件的固定样例；后者运行真实业务页面，但响应来自开发专用样例。普通生产构建仍保留真实服务请求，不能把离线保存或运行反馈视作服务器执行证据。
 
