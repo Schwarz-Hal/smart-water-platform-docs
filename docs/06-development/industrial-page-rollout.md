@@ -2,7 +2,7 @@
 id: development.industrial-page-rollout
 title: 工业风页面迁移与维护边界
 document_type: development
-document_version: 0.2.1
+document_version: 0.3.2
 status: draft
 locale: zh-CN
 audience: [frontend_developer, designer]
@@ -10,7 +10,7 @@ related_modules: []
 related_operators: []
 related_apis: []
 owners: [frontend-team]
-reviewed_at: 2026-09-25
+reviewed_at: 2026-10-09
 summary: 说明工业风页面接入、平台导航收敛、展示职责拆分及本地验证边界。
 ---
 
@@ -79,6 +79,48 @@ summary: 说明工业风页面接入、平台导航收敛、展示职责拆分�
 本次有界页面整理还将 AppShell、dashboard、workflow-library 与 workflow-runs 的内联模板／样式拆到相邻文件；这不等于工作流编辑器整体重构。生产构建通过，初始包约671kB，仍有既知500kB预算与Rete依赖警告；57个测试文件、247项测试以 `maxWorkers=2` 通过，未跳过测试。开发预览中检查了数据资源页、质量页刷新与场景运行页签；历史场景配置仅确认旧路由仍在，离线样例源没有覆盖该页面的操作数据，因此不作完整交互或服务器验收声明。上述均为本地分支证据，不代表部署验收。
 
 ## 控件与样式约束
+
+### 单算法快速试用的局部形式迁移（2026-10-07）
+
+`QUICK-TRIAL-EDITORIAL-VISUAL` 在当前本地工作分支试用墨金实验的标题和索引形式，但保留青色识别与既有业务语义。范围仅为单算法 `quick-trial.page.*` 及 `components/trial-input-panel.component.*` 的展示；管网漏损与治理两个页签不变。没有新全局主题、API或训练引擎，不表示全平台迁移完成，当前未提交、未部署。
+
+| 接入 | 本页设置 | 共享与业务边界 |
+| --- | --- | --- |
+| 胶囊与斜纹标题 | InkFieldHeading 的 level=1，标题为 h1；局部字号32px、窄宽28px | 新增 `level: 1 \| 2` 默认2、可选 `--if-heading-size` 保留原回退；标题语义不靠字号猜测 |
+| 任务索引 | InkFieldNav 短标记由16px到52px，200ms状态反馈 | items／selected／disabled／selectedChange 继续接原任务状态；nav-paper／marker／columns CSS变量可选，默认不变 |
+| 轻量面板 | 本页 `--sw-panel-*` 设置浅色标题、42px最小高、14px字、3×14px标记和细分隔线 | IndustrialPanel 只新增可选外观变量并保留默认 fallback，其他调用方未显式设置时不换主题；内容与操作投影仍由原组件处理 |
+| 面板与状态进入 | 输入配置、映射、预览、运行配置和结果使用420ms，分组间隔55ms；运行状态360ms | InkFieldMotion 只处理进入，原业务事件立即生效；焦点／指针可中断，减少动态效果和销毁清理继续适用 |
+| 背景与布局 | 局部水纹透明度默认0.09，桌面200px索引加内容列 | 非交互装饰，不替代真实图表；`--if-*` 只在本页映射青色语义，不写根主题 |
+
+`trial-workspace` 不超过900px时隐藏辅助介绍，索引缩至180px并收紧间距；不超过760px时改为单列、导航换行、索引取消吸顶、隐藏 blueprint。断点依据页面工作区而非浏览器总宽，不能把隐藏装饰的规则扩展到任务、错误或主要操作。
+
+真实上传、列映射、参数与最小窗口校验、模型版本、任务跟踪、输入快照、结果和导出绑定保持原路径，不使用实验场假值代替。本轮没有真实训练验收；页面文案中的“真实结果”描述原功能职责，不是本次已经运行成功的证据。
+
+前端页面覆盖文件为 `design-system/smart-water-platform/pages/quick-trial.md`。焦点核对采用 ui-ux-pro-max 的 Web focus-not-obscured 定向建议：检查吸顶索引、浮层和裁切区域不遮挡聚焦控件，保留 Tab／Escape与关闭后回焦点；建议仅补充验收清单，不代表已完成浏览器检查或全面无障碍合规。
+
+本次验证记录如下，依据实现任务主代理反馈逐项登记；此前章节的历史通过记录不能替代本轮结果，未覆盖检查继续待验：
+
+| 检查项 | 需核对内容 | 当前记录 |
+| --- | --- | --- |
+| 自动测试与构建 | 全量测试与独立构建 | 77个测试文件、328项最终通过；最终production及Playground均通过，保留671.08kB初始包预算与Rete CommonJS既有警告 |
+| 宽窄容器 | 请求视口与实际工作区分别记录 | 请求1440／1024／768px时实际clientWidth为1300／922／689px，各scrollWidth等于clientWidth；workspace 982px为200px+712px两列，604／445px为单列。请求390px时实际client与scrollWidth均345px、单列、blueprint隐藏，水纹opacity为0.09；900／760邻界值精确扫描及其他分屏待验 |
+| 焦点与动态效果 | 不以点击路径代替完整人工检查 | 已操作任务切换、展开列映射与算法菜单；完整键盘／焦点恢复、系统减少动态效果及动画中断人工检查仍待验 |
+| 原功能回归 | 可见配置与最小窗口恢复 | DLinear“本次预训练”参数可见；最近24小时97点低于636点要求时弹窗并恢复1342点。未执行真实训练／上传，不据此证明真实结果终态通过 |
+| 真实训练与发布 | 独立范围和验收证据 | 本次未执行／未部署 |
+
+### 快速试用无框索引与预览隔离（2026-10-07）
+
+后续 `TRIAL-NAV-PIPE-PREVIEW` 移除任务索引外层 IndustrialPanel，保留普通标题和原任务导航。选中色带通过 `--if-nav-bleed` 延至 trial-container 左边缘，24／18／12px 分别对应页面 padding；QuickTrial 在不超过760px容器显式设 `--if-nav-bleed-display: none`，配合导航既有不超过700px隐藏规则避免横排覆盖。其他 scope 的显示默认回退 block。
+
+该区域不再引用 PipeBlueprint 插画，但保留空点阵板、边线和角标，整体 aria-hidden、不捕获点击，窄容器继续隐藏。其他区域的共享插画与工程面板不因此移除。原任务选择、禁用、上传、校验与结果绑定不变。
+
+2026-10-09 用户明确批准 `TRIAL-NAV-PIPE-ADOPTION` 后，快速试用显式传入 `texture="pipes"`、`pipeDensity=14`、`pipeFade=0.18`。InkFieldNav 共享默认仍为 geometric，实验场继续提供可调参考与旧纹理对照，其他页面不自动迁移。该纹理不是实际水流；560ms显现／900ms光带均为单次，减少动态效果机制不变。本次为获准的本地接入，未提交、未部署；索引、色带、空板、窄屏及焦点的新回归结果待父任务记录，不以用户批准替代验证。
+
+2026-10-07 历史预览记录为329项全量测试、production与Playground构建通过，既有警告保留。当时快速试用 aside 内 IndustrialPanel／PipeBlueprint／InkPipePattern 数量均为0，空点阵板260px；按钮left 304.67px减bleed 24px等于trial-container left 280.67px。InkPipePattern 为0只描述批准前的结构，不是10月9日接入后的预期；历史检查不代表本次回归或真实业务端到端通过。
+
+2026-10-09 主代理记录的本次证据：QuickTrial与InkField共14项定向测试通过，production构建通过，保留671.08kB初始包预算及Rete CommonJS既有警告。离线浏览器核对3个管状纹理组件各14条路径、fade=0.18，任务选择只更新对应active状态，动画迭代次数为1。离线检测切换报告未覆盖请求，不能据此声称算法端到端通过；未复验的其他检查仍为历史记录或待验。本次未提交、未部署。
+
+### 既有共享约束
 
 - `IndustrialPanelComponent` 只保留工程折角；不再传 `cornerStyle`，不保留生产端A／C切换。旧 `corner-variants` 示例链接继续有效，但仅展示B方案。
 - `IndustrialPageHeaderComponent` 增加 `level: 1 | 2`，默认2；独立页面使用1，内嵌内容保持正确标题层级，样式不决定文档层级。

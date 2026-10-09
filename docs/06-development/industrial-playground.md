@@ -2,7 +2,7 @@
 id: development.industrial-playground
 title: 青色工业组件实验场
 document_type: development
-document_version: 0.4.2
+document_version: 0.5.2
 status: draft
 locale: zh-CN
 audience: [frontend_developer, designer]
@@ -10,7 +10,7 @@ related_modules: []
 related_operators: []
 related_apis: []
 owners: [frontend-team]
-reviewed_at: 2026-09-23
+reviewed_at: 2026-10-09
 summary: 说明独立开发入口的组件示例、共享控件 API、隔离边界与新增示例验证方法。
 ---
 
@@ -42,7 +42,7 @@ npm run build:playground
 
 ## 使用流程与首版控制范围
 
-1. 按“基础、控件、反馈、动效、组合、页面组合”分类或按示例 ID／名称搜索。通过“独立打开此示例”或 `/dev/playground?example=data-table` 聚焦注册 ID；这是同一开发应用的查询参数，不是新业务路由。选择分类或搜索会清除 example 参数。搜索和分类组合过滤；基础与工作台示例主要通过 hidden 保留，分析与本批基础组合采用条件模板可卸载控件，不将过滤统一视为保留或销毁测试。
+1. 按“基础、控件、反馈、动效、组合、页面组合、扩展、设计语言”分类或按示例 ID／名称搜索。通过“独立打开此示例”或 `/dev/playground?example=data-table` 聚焦注册 ID；这是同一开发应用的查询参数，不是新业务路由。选择分类或搜索会清除 example 参数。搜索和分类组合过滤；基础与工作台示例主要通过 hidden 保留，分析与本批基础组合采用条件模板可卸载控件，不将过滤统一视为保留或销毁测试。
 2. 设置内容宽度（280–1600px），检查长名称、字段与布局。该值限制预览主区域宽度，不模拟设备视口或浏览器缩放。
 3. 切换“禁用示例控件”和“减少动态效果”。禁用只影响已绑定该状态的示例：按钮、部分选择器、输入、复选／单选／滑块、参数区域、选择块和折叠示例的触发按钮等；它不是整页禁用锁，独立反向切换、状态选择和配置组合仍有可交互入口。
 4. “方框／展开时长”范围为 0–2000ms，默认 260ms，修改实验场局部 `--sw-motion-disclosure`。消费同一令牌的过渡也会受到影响；它不是所有动画的统一调速器。选择标记线仍使用默认 420ms，菜单和面板等保留各自默认令牌／设置。减少动态效果另行覆盖 CSS，并关闭示例面板动画、缩短弹窗动画。
@@ -50,9 +50,9 @@ npm run build:playground
 6. 展开“用法与复用入口”查看源码路径和复制片段。片段是集成起点，使用前核对组件输入输出、standalone imports 和所需 providers，不能将片段视为完整业务实现。
 7. 通过“恢复默认”清除独立示例参数、重置页面状态，并重建新增工作台示例子组件以清理其局部状态；没有跨会话持久化，刷新不会恢复本次修改。装饰区可切换三张预生成纹理并调整 120–1200px 显示尺寸，不会实时生成图像。
 
-## 30 个注册示例
+## 32 个注册示例
 
-真实清单为 `src/playground/playground-catalog.ts` 的 `PLAYGROUND_EXAMPLES`，页面读取该目录；下面是当前30个注册项，不表示30套业务功能。工作台六例在 `workbench-examples.component.ts/html` 组合，分析四例在 `analysis-examples.component.ts` 组合，第一批四例及新增角标对比由 `foundation/foundation-examples.component.ts` 组织，均使用局部示例状态，不连接业务服务。
+真实清单为 `src/playground/playground-catalog.ts` 的 `PLAYGROUND_EXAMPLES`，页面读取该目录；下面是当前32个注册项，不表示32套业务功能。工作台六例在 `workbench-examples.component.ts/html` 组合，分析四例在 `analysis-examples.component.ts` 组合，第一批四例及新增角标对比由 `foundation/foundation-examples.component.ts` 组织。墨金组合使用本地示例状态，不连接业务服务。
 
 | ID | 分类 | 名称与可检查内容 |
 | --- | --- | --- |
@@ -86,6 +86,8 @@ npm run build:playground
 | `async-states` | 页面组合 | 就绪、加载、无数据、无匹配、失败、无权限六种内容状态 |
 | `page-frame` | 页面组合 | 页面标题、紧凑摘要和主操作插槽，窄容器自动换行 |
 | `corner-variants` | 控件 | 工程折角面板；单一B方案和内容展开，使用实验场通用内容宽度控制，保留旧示例链接 |
+| `extension-host` | 扩展 | SDK 隔离展示，保留已有注册入口 |
+| `ink-field` | 设计语言 | 墨金档案 · 第二设计语言，局部明暗主题、四页签和令牌导出 |
 
 ### 工程折角面板（2026-09-23，已选定样式）
 
@@ -98,6 +100,46 @@ npm run build:playground
 本次增量仍在 `feature/playground-foundation` 本地工作区，未部署。真实页面的接入范围和职责拆分见[工业风页面迁移与维护边界](./industrial-page-rollout.md)。
 
 ## 新增共享控件 API
+
+### 墨金导航管状纹理参考与获准接入
+
+`TRIAL-NAV-PIPE-PREVIEW` 最初在现有 `?example=ink-field` 中增加管状纹理控制器，不新增 ID，目录仍32项。示例默认选 pipes，并允许切回 geometric 对照、调整密度与渐隐。共享 `InkFieldNavComponent` 的 `texture: 'geometric' | 'pipes'` 默认仍为 geometric；提供 `pipeDensity=14`、`pipeFade=0.18`、`textureRevision=0`、`reduced=false`。2026-10-09 用户明确批准后，快速试用显式传入 pipes／14／0.18 进行本地接入，其他调用方不自动改变。
+
+`InkPipePatternComponent` 的 active／reduced 控制显示和运动，density 约束为8–24条并取整，默认14；fade 表示左端遮罩保留值，范围0.08–0.5，默认0.18。它使用本地纯 SVG 管状路径和接头，遮罩从右侧清晰向左渐隐；不是实际水流、方向或真实管网，不带原站资产。选中单次显现560ms、光带900ms，不持续循环；系统减少动态效果或传入 reduced 停止动画与过渡。导航 textureRevision 用于重播时重建实例，不调度任务。
+
+实验场现为获准纹理的可调参考，不再是等待批准的门槛。检查仍需覆盖8／14／24密度、8%／18%／50%左侧保留、旧纹理对照、明暗文字和焦点、单次重播与减少动态效果；10月9日接入的新增结果由父任务记录，不能以用户批准或历史主题验收替代回归。本增量未提交、未部署，不修改默认青色主题或快速试用业务。
+
+2026-10-07 历史预览反馈：329项全量测试及production／Playground构建通过，保留既有警告；浏览器检查24条可调、mask左端0.18到右端1、animationIterationCount为1，勾选 reduced 后动画为none且无横向溢出。已查看明暗并修正dark选中文字继承 `--if-text`。这些是接入批准前的有界预览证据，不涵盖全部参数组合、10月9日回归或真实业务端到端；当时仅实验场展示的限制已由上文的明确批准更新。
+
+### 墨金档案接入（2026-10-07，局部设计语言实验）
+
+独立 HTML 设计研究现以 Angular 组件接入实验场“设计语言”分类，入口为 `/dev/playground?example=ink-field`。当前 `playground-catalog.ts` 共 32 项；第31项为已有 `extension-host`，第32项为本节 `ink-field`。本节只说明墨金接入，不扩展 SDK 示例说明。本次是本地开发增量，不是生产业务迁移；默认青色工业主题、普通业务路由和业务服务不因此改变，合并与实际部署以协调记录为准。
+
+墨金示例提供四个内部页签：空间总览、组件档案、动效编排、色彩与规范。页签只切换本地内容；总览水系为本地 SVG 示意图，不是真实 GIS／管网，流量和压力为固定示例数值。浅／深主题切换保留档案名称与范围等本地状态，导航、按钮和输入响应实验场禁用设置。可局部减少动效、调整 240–1200ms 入场时长、重播／中断重播，复制或下载当前令牌 JSON。该导出不是生产主题发布或全量 Material 主题配置。
+
+共享目录 `src/app/shared/components/ink-field/` 中新增以下 opt-in 展示能力；示例数据、四页签组合、下载和弹窗放在 `src/playground/ink-field/`，不搬入业务状态层。
+
+| 能力 | 实际 API 与职责 | 边界 |
+| --- | --- | --- |
+| `InkFieldScopeComponent` | `theme='light'`（light／dark）、`reduced=false`；投影内容 | 只在宿主写入调色板 `--if-*`，局部映射部分 `--sw-*` 与 Material tokens，不修改根主题 |
+| `InkFieldHeadingComponent` | 必填 `heading`、`category='设计语言'` | 胶囊、斜纹和竖线服务标题层级，装饰不表达业务状态 |
+| `InkFieldNavComponent` | `label`、`items: {id,label,code}[]`、`selected`、`disabled`；输出 `selectedChange` | Material 按钮与 aria-current；调用方决定本地页签，不新增路由服务 |
+| `InkFieldPanelComponent` | 必填 `heading`、`code=''`；内容与 `[panel-actions]` 投影 | 局部墨金面板，不替换现有 IndustrialPanel |
+| `InkFieldMotionDirective` | `[inkFieldMotion]` 内容键、`inkDuration=640`、`inkReduced=false`、`inkPicture=false`、`inkOrder=0` | 普通模式上移淡入，picture 模式裁切显露；不延迟 Angular 状态更新或请求 |
+
+按钮、输入、主题／范围切换、滑块、checkbox 和弹窗继续使用 Material；折叠直接复用 `IndustrialDisclosureComponent`，保留 expandedChange、inert 和 aria-expanded。Scope 不使其他未接入控件自动完成墨金适配，不能把实验页有主题色等同于全套组件与浮层已迁移。
+
+导航竖向装饰标记放在 Material 按钮外的兄弟层，相对 nav-row 独立定位，不依赖按钮文字 label 的内部布局，避免覆盖文字；标记为 aria-hidden 且不捕获点击。
+
+Material Dialog 的内容位于原 Scope DOM 之外，因此 `InkFieldDialogComponent` 内部建立独立 Scope，并传入打开时的 theme／reduced。`panelClass='ink-field-dialog'` 对外壳的透明背景与圆角调整仅在实验场 `theme.scss` 中定义，不加入生产全局主题。其他菜单、tooltip、日期选择器或弹窗并未由此获得自动主题继承，后续需逐项映射和验收。
+
+入场默认 640ms，子项间隔 55ms（inkOrder 计最多 4 级），导航反馈 200ms；指令将有效时长约束到 0–1200ms。新内容键、指针按下、焦点进入、减少动态效果偏好改变和销毁会取消在途动画；系统或传入 reduced 生效时不启动入场。页面滑块只调整墨金入场，不给全部动画统一调速。短时间多次切换不应排队播放旧状态。
+
+设计研究参考导览的视觉组织，但组件为独立 Angular 实现；本次未复制原站 JavaScript、发布包、媒体或字体。源码采用本地 SVG／CSS 与已有字体栈，示意数据不构成真实监测或算法证据。
+
+后续迁移按三步评估，以下是计划，不是本次完成项：先把旧组件语义颜色、状态、边框和间距映射到局部令牌；再为确需差异的控件增加显式外观变体，保留原 Input/Output、Material/CDK 行为和业务校验；最后按页面信息密度组合标题、导航与内容。每步分别检查明暗、禁用、错误、键盘焦点、减少动效和浮层，不以替换页面骨架或复制示例业务状态完成迁移。
+
+本节依据为 `ink-field.tokens.ts`、Scope／Heading／Nav／Panel／Motion 源码、`ink-field-example.component.ts/html/scss`、`ink-field-dialog.component.ts` 及实验场注册。页面覆盖约定在前端 `design-system/smart-water-platform/pages/ink-field-playground.md`。交接需分别记录源码核对、自动测试与实际浏览器验证；至少检查 4 页签、明暗切换后字段保留、局部与外层减少动效、快速重播、窄容器、弹窗焦点恢复和令牌下载清理，不能宣称全部浮层或生产任务已验收。
 
 基础分支合并的控件外观包括：共享选择框默认白色 `#fff`，菜单打开后 field 才变为浅青；当前选项为浅青底深字。共享选择块的 `SELECTED →` 独立为按钮外的兄弟 small，位于宿主右下角，aria-hidden 且不捕获点击，不进入按钮 label。按钮最小高 82px、底部 padding 30px 给角标留位；真实选中语义仍是按钮 aria-pressed，API 不变。
 

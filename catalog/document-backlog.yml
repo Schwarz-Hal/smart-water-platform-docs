@@ -980,13 +980,13 @@ areas:
         path: docs/06-development/industrial-playground.md
         status: expand
         priority: P1
-        version: 0.4.2
+        version: 0.5.2
       - id: development.industrial-page-rollout
         title: 工业风页面迁移与维护边界
         path: docs/06-development/industrial-page-rollout.md
         status: expand
         priority: P1
-        version: 0.2.1
+        version: 0.3.2
       - id: development.frontend-page-structure
         title: 数据资产、算子中心与快速试用的前端维护边界
         path: docs/06-development/frontend-page-structure.md
