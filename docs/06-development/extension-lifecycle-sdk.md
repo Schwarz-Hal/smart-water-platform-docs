@@ -2,21 +2,23 @@
 id: development.extension-lifecycle-sdk
 title: 扩展生命周期与 Python SDK 首段
 document_type: development
-document_version: 0.13.1
+document_version: 0.14.0
 status: draft
 locale: zh-CN
 audience: [developer, operator]
 related_modules: [M02, M03, M04, M05]
 related_operators: []
-related_apis: ["/api/v1/extensions/upload", "/api/v1/extensions/catalog", "/api/v1/extensions/{package_id}", "/api/v1/extensions/{package_id}/{operation}", "/api/v1/extensions/{package_id}/relations", "/api/v1/extensions/{package_id}/versions", "/api/v1/extensions/{package_id}/operations", "/api/v1/extensions/{package_id}/visualizer", "/api/v1/tasks/{task_id}", "/api/v1/workflow-templates", "/api/v1/workflows/from-template", "/api/v1/workflow-runs/{run_id}/artifacts", "/api/v1/workflow-artifacts/{artifact_id}", "/api/v1/workflow-artifacts/{artifact_id}/content", "/api/v1/workflow-versions/{version_id}/composite-graph", "/api/v1/workflow-versions/{version_id}/composite-operator", "/api/v1/workflow-runs/{run_id}"]
+related_apis: ["/api/v1/extensions/preflight", "/api/v1/extensions/upload", "/api/v1/extensions/catalog", "/api/v1/extensions/{package_id}", "/api/v1/extensions/{package_id}/{operation}", "/api/v1/extensions/{package_id}/relations", "/api/v1/extensions/{package_id}/versions", "/api/v1/extensions/{package_id}/operations", "/api/v1/extensions/{package_id}/visualizer", "/api/v1/tasks/{task_id}", "/api/v1/workflow-templates", "/api/v1/workflows/from-template", "/api/v1/workflow-runs/{run_id}/artifacts", "/api/v1/workflow-artifacts/{artifact_id}", "/api/v1/workflow-artifacts/{artifact_id}/content", "/api/v1/workflow-versions/{version_id}/composite-graph", "/api/v1/workflow-versions/{version_id}/composite-operator", "/api/v1/workflow-runs/{run_id}"]
 owners: [backend-team]
-reviewed_at: 2026-09-27
+reviewed_at: 2026-10-04
 summary: 说明 Python 扩展 SDK、不透明二进制制品、资源绑定样例、动态子流程复用、受限结果视图、登录态生命周期验收及剩余边界。
 ---
 
 # 扩展生命周期与 Python SDK 首段
 
 ## 用途与当前状态
+
+扩展内容和权限边界见[扩展开发者入门与能力边界](./extension-developer-introduction.md)。本文保留详细契约及历次验收记录，历史阶段的分支状态不代表当前部署状态。
 
 本文面向扩展作者和平台维护者，说明如何用 SDK 生成、检查和打包扩展，以及平台如何区分私有上传、环境准备、试运行、安装、个人启用、公开审核和安全撤销。
 
@@ -37,18 +39,22 @@ summary: 说明 Python 扩展 SDK、不透明二进制制品、资源绑定样�
 
 ## 使用 SDK 创建与检查包
 
-2026-09-30 的工具增量提供工具发行 0.1.1、目录检查、带本地请求与原始视图输入的脚手架、独立真实渲染预览及可导出开发包。代码合并不改变本页列明的历史 release／验收事实，也不表示已更新服务器；独立开发包使用不要求先部署服务器变更，平台执行仍受既有运行档与审批约束。开发包安装、作者操作、预览交互和维护者导出见[扩展作者工具与独立开发包](./extension-author-tooling.md)；安装可能需要下载固定依赖，不是完全离线安装包，也未发布 PyPI／npm。
+作者工具版本 0.2.0 增加作者项目、资源增量、差异检查、依赖锁、环境诊断和分层测试流程；详细命令见[扩展作者工具与独立开发包](./extension-author-tooling.md)。这一版本号不改变运行 SDK `0.1.0`、manifest schema `2.0` 或执行协议 `1.0`。本批在干净临时环境完成独立包安装和作者 CLI 流程，在浏览器完成 QuickJS 视图与四档宽度检查，并在临时合成账号/内存目录下验证预检页面与真实后端预检。经授权的临时服务器上，既有批准镜像通过六类真实容器检查。以上均为有边界的验证：未完成正式上传、安装、个人启用及完整 Worker/任务生命周期验收，也没有生产部署或数据库/生产任务变更。本段不改写下方历史发布与验收记录。
 
-运行 SDK 仍为 0.1.0，使用 manifest schema 2.0、执行协议 1.0 和 `python-cpu-v1`；工具更新不改变批准镜像或新增 GPU／任意依赖运行档。`swext init` 生成一个最小算术示例；`check` 检查目录、清单或 ZIP；`pack` 生成 ZIP。静态检查、打包和本地渲染预览不会导入或执行作者 Python；预览仅执行受限 JavaScript，不运行算法或连接平台 API。
+运行 SDK 仍为 0.1.0，使用 manifest schema 2.0、执行协议 1.0 和 `python-cpu-v1`；工具更新不改变批准镜像或新增 GPU／任意依赖运行档。`swext init` 默认创建 algorithm 作者项目，并支持七种用途模板及兼容保留的 `legacy` 清单模板。`build` 从资源声明编译既有 schema 2.0 清单；`add` 仅添加新文件，不覆盖源码。`check`、`inspect`、`diff` 默认简洁输出并支持 `--json`；`doctor` 不指定 `--runtime` 时只检查本机环境，不连接 Docker。`test` 要求在 `--trust-local-code` 与 `--runtime` 中二选一；运行描述使用 `runtime_version`、`image`、`profile`，容器模式需要不可变镜像引用，不拉取镜像，也不回退宿主执行。`verify-report` 只验证报告新鲜度，不是授权或隔离证明。静态检查、打包和本地渲染预览不会导入或执行作者 Python；预览执行受限 JavaScript，不运行算法或连接平台 API。
+
+作者项目资源文件内的 `tests` 编译为既有 smoke test 声明；`local-requests/scale.json` 用于作者运行请求，`fixtures/scale-preview.json` 提供视图输入，`preview-cases/scale-view.json` 可切换视图输入但不会自动触发渲染。时序模板名为 `average`，样例用于说明结构，不构成领域算法验收。
+
+依赖锁命令 `swext lock PROJECT [--snapshot FILE]` 只替换生成的 `extension.lock.json`；SDK 会把根锁文件收入包并检查。锁文件中的 `source_sha256` 绑定源码与精确依赖提供方；源码变化会使静态检查报 `SDK_LOCK_SOURCE_CHANGED`。含外部依赖时须从平台只读上传预检取得快照。预检的 `dependency_snapshot` 中含 `source_sha256`，预检结果顶层的 `lock_status` 为 `not_provided`、`matched` 或 `changed`；不匹配时 `lock_status=changed` 且 `can_upload=false`。`EXTENSION_DEPENDENCY_LOCK_CHANGED` 用于平台解析或安装时依赖/当前账号不匹配，不是预检返回该错误码的同义状态。快照并非授权凭据；平台在解析及安装时重新解析并复核。预检只读，不创建对象或任务；前端先展示预检结果，用户确认后才继续原上传流程。对操作者不可见的私有依赖与缺失依赖同态呈现。上传完成后，既有环境准备、试运行、安装、个人启用和公开审核步骤保持独立。
 
 ```console
 swext init ./my-extension --namespace my-water --name example
 swext check ./my-extension
-swext pack ./my-extension ./example-1.0.0.zip
-swext check ./example-1.0.0.zip
+swext pack ./my-extension ./author-build.zip
+swext check ./author-build.zip
 ```
 
-包内根目录应有 `extension.json`，可包含 `python/`、`web/`、`docs/` 和 `fixtures/`。SDK 检查精确版本、入口路径、包路径、JSON Schema、端口及包大小边界；目录检查也检查声明的入口存在性，单独检查清单则不能确认文件存在。包构建器只收集这些约定目录和清单，不覆盖已存在的目标 ZIP。检查通过表示清单或包结构通过静态校验，不表示平台已注册贡献、开放 DAG 节点或准备好运行代码。
+包内根目录应有 `extension.json`，作者项目还包含 `extension.project.json`。打包会收集 `resources/`、`python/`、`web/`、`docs/`、`fixtures/`，以及存在时的 `extension.lock.json`；开发专用的 `preview-cases/`、`local-requests/` 不进入 ZIP。SDK 检查精确版本、入口路径、包路径、JSON Schema、端口及包大小边界；目录检查也检查声明的入口存在性，单独检查清单则不能确认文件存在。包构建器不覆盖已存在的目标 ZIP，复用工作目录时应为新产物选择新文件名。检查通过表示清单或包结构通过静态校验，不表示平台已注册贡献、开放 DAG 节点或准备好运行代码。
 
 扩展输入和输出都使用精确 `{namespace, code, version}` 类型引用及 `payload`。参数按声明的 JSON Schema 校验；SDK 可校验本包定义的类型，跨包类型和依赖由平台依据其授权目录处理。缺少必需端口、未声明输出或类型不匹配应明确失败，不静默转换。
 
@@ -57,7 +63,7 @@ swext check ./example-1.0.0.zip
 作者可以对自己编写且信任的代码显式运行：
 
 ```console
-swext run-local --trust-local-code --package ./my-extension --request ./request.json --output ./local-output
+swext run-local --trust-local-code --package ./my-extension --request ./my-extension/local-requests/scale.json --output ./local-output
 ```
 
 这条命令直接在本机 Python 进程执行扩展代码，**不是沙箱，也不是隔离测试**。仅用于自己掌握的本地源码；不要用它检查或运行未知上传包。镜像中的 `execute` 命令是容器入口，同样不是安全边界。平台不得在 Docker 或批准环境不可用时回退到 `run-local`、`execute` 或宿主 Python。
