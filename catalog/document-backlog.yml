@@ -28,9 +28,9 @@ collaboration:
   completion_rule: A document becomes ready only after content review, link and
     metadata validation, site build, and inclusion in an approved snapshot.
 summary:
-  total: 135
+  total: 136
   ready: 2
-  expand: 133
+  expand: 134
   missing: 0
   deferred: 0
   by_area:
@@ -40,7 +40,7 @@ summary:
     scenario: 5
     algorithm_operator: 46
     api_development: 23
-    operations: 10
+    operations: 11
     acceptance: 10
 areas:
   - id: platform
@@ -1019,6 +1019,12 @@ areas:
         status: expand
         priority: P0
         version: 1.1.0
+      - id: operations.frontend-release
+        title: 前端与文档独立发布及指针回退
+        path: docs/07-operations/frontend-release.md
+        status: expand
+        priority: P1
+        version: 0.1.0
       - id: operations.configuration
         title: 配置项、密钥边界与环境检查
         path: docs/07-operations/configuration.md
