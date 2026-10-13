@@ -2,7 +2,7 @@
 id: development.extension-lifecycle-sdk
 title: 扩展生命周期与 Python SDK 首段
 document_type: development
-document_version: 0.14.0
+document_version: 0.14.1
 status: draft
 locale: zh-CN
 audience: [developer, operator]
@@ -11,7 +11,7 @@ related_operators: []
 related_apis: ["/api/v1/extensions/preflight", "/api/v1/extensions/upload", "/api/v1/extensions/catalog", "/api/v1/extensions/{package_id}", "/api/v1/extensions/{package_id}/{operation}", "/api/v1/extensions/{package_id}/relations", "/api/v1/extensions/{package_id}/versions", "/api/v1/extensions/{package_id}/operations", "/api/v1/extensions/{package_id}/visualizer", "/api/v1/tasks/{task_id}", "/api/v1/workflow-templates", "/api/v1/workflows/from-template", "/api/v1/workflow-runs/{run_id}/artifacts", "/api/v1/workflow-artifacts/{artifact_id}", "/api/v1/workflow-artifacts/{artifact_id}/content", "/api/v1/workflow-versions/{version_id}/composite-graph", "/api/v1/workflow-versions/{version_id}/composite-operator", "/api/v1/workflow-runs/{run_id}"]
 owners: [backend-team]
 reviewed_at: 2026-10-04
-summary: 说明 Python 扩展 SDK、不透明二进制制品、资源绑定样例、动态子流程复用、受限结果视图、登录态生命周期验收及剩余边界。
+summary: 说明 Python 扩展 SDK、不透明二进制制品、资源绑定样例、多模态漏损离线演示、动态子流程复用、受限结果视图及生命周期边界。
 ---
 
 # 扩展生命周期与 Python SDK 首段
@@ -201,6 +201,47 @@ swext pack sdk/examples/water-scenario-preview ./water-scenario-preview.zip
 清单为每个模板声明三个普通节点：固定样例输入、预览数据整理、CSV 报告，并将报告制品列为模板输出。网络样例的2个 SDK smoke case 和场景包的3个 smoke case 均已通过；两个场景的三节点链还分别通过真实 `ContainerRunner` 执行，产生24点预览及 CSV（1196／1162 字节）。MinIO 中的临时验收对象完成上传、读取并核对 SHA、删除。以上组件／容器测试自身不覆盖 HTTP 上传、MySQL 任务、Worker、平台 DAG、浏览器 renderer 或下载；其中一个场景 CSV 的登录态 DAG、结果读取和用户确认下载已在下文单独记录，不应将单个样例泛化到所有模板。
 
 业务内容是固定的 24 个合成采样点，结果用 `is_preview: true` 标记；代码不读取真实管网、传感器、在线天气或模型。阈值只改变这些固定数值的超阈计数；“峰值”“预警”“漏损”等展示文案不代表检测算法、预测能力、准确率或实际预警服务。内涝及漏损结果都明确注明为示例；界面说明不会发送通知或控制设备。模板第三个节点输出的 CSV Artifact 根据同一组合成序列生成，不是外部文件或生产报告。自定义 renderer 接收类型化 JSON 结果并绘制预览；它不读取 CSV 字节，文件内容仍走平台授权的 Artifact 内容／下载入口。详见 Neo 包内 `sdk/examples/water-scenario-preview/docs/README.md`。
+
+## 多模态漏损离线演示
+
+Neo 仓库的 `sdk/examples/multimodal-leak-demo/` 面向扩展作者，提供三种固定回放预设：基础流量／压力、加入标注评测、加入合成声学。每种预设由 24 个节点实例、36 条连线和 6 个编辑器区域组成，复用 15 个算子与 1 个算法资源；每种预设还生成一个工作流模板和一个场景模板。它读取 LeakDB Hanoi Scenario-1 源文件并制作演示快照，不运行训练，也不代表经过验证的漏损检测或点位定位算法。
+
+将 LeakDB 目录作为只读输入；源目录需包含根目录 `LICENSE.md`，以及 `Hanoi_CMH/Scenario-1/` 内的模型、流量和压力 CSV、`Labels.csv` 与 `Leaks/Leak_19_info.csv`。在 Neo 仓库根目录运行以下命令，并为每个输出选一个尚不存在的新目录。数据、作者工程、编译包、测试报告、上传材料和扩展 ZIP 均是本地生成物，不要提交到 Git：
+
+```powershell
+python sdk/examples/multimodal-leak-demo/prepare_demo.py --source <LeakDB目录> --output <仓库外数据目录>
+python sdk/examples/multimodal-leak-demo/build_demo.py --data <仓库外数据目录> --output <仓库外作者工程目录>
+swext build <仓库外作者工程目录> --output <仓库外编译目录>
+swext test --package <仓库外编译目录> --output <仓库外样例报告目录> --trust-local-code
+swext pack <仓库外编译目录> <仓库外扩展ZIP路径>
+python sdk/examples/multimodal-leak-demo/check_graphs.py <仓库外编译目录>
+```
+
+生成器不改写 LeakDB 源文件，并把许可证复制到本地产物中；它会生成固定回放快照和声学合成数据。`--trust-local-code` 会在本机运行扩展代码，只用于你已审阅的作者工程；图校验仅调用 Neo 的工作流图校验器，不写数据库。若要准备单独的数据集上传材料，可执行：
+
+```powershell
+python sdk/examples/multimodal-leak-demo/export_dataset.py --demo-json <仓库外数据目录>/demo-data.json --leakdb-root <LeakDB目录> --output <新的仓库外上传材料目录>
+```
+
+此命令只导出本地 CSV／JSON，不会上传或导入平台。生成的标签文件只用于检测后的下游对照评测，不能连入检测节点；标注不能被当作检测输入或基准真值来宣称算法效果。数据集清单会区分主要时序、补充台账、评测标签、可选演示数据和仅供本地参考的完整值，并保留 LeakDB 许可证。演示声学是合成波形，不是现场录音或经物理验证的数据。
+
+### 配套开发者演示页面
+
+如需在旧前端中查看节点回放与报告，先从已检查的编译包生成被 Git 忽略的本地 fixture，再启动独立的 `developer-demo` 配置：
+
+```powershell
+python sdk/examples/multimodal-leak-demo/export_frontend.py --package <仓库外编译目录> --frontend <前端仓库目录>
+```
+
+然后在前端仓库目录运行：
+
+```powershell
+npm run start:demo
+```
+
+若 `demo.generated.ts` 已存在，只有在确认要替换本地产物时才加 `--replace-generated`。启动后在本机打开 `http://127.0.0.1:4228/workflows/9001/edit?demo=leak`，可选预设、暂停／继续固定回放、查看检测总览、异常事件、标注评测和管网复核，并下载摘要。编辑布局不会改变快照；修改节点、连线或参数后需重新选择匹配预设。演示草稿和回放记录留在隔离的浏览器会话空间；此页面不调用服务器执行接口。`start:demo` 使用单独入口和本地生成数据；普通 `start:offline` 仍使用原离线样例，production build 不包含该演示处理器或数据。
+
+源时间戳不含时区，图表显示的 `+08:00` 只是展示假设；原始时间戳不会改写。该演示用于说明扩展编排、快照回放和结果视图，不用于算法基准、训练、生产部署或实际漏损诊断。
 
 ## 工作流版本封装为动态子流程节点
 
