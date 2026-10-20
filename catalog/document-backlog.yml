@@ -28,9 +28,9 @@ collaboration:
   completion_rule: A document becomes ready only after content review, link and
     metadata validation, site build, and inclusion in an approved snapshot.
 summary:
-  total: 138
+  total: 139
   ready: 2
-  expand: 136
+  expand: 137
   missing: 0
   deferred: 0
   by_area:
@@ -208,7 +208,7 @@ areas:
         status: expand
         priority: P0
         modules: [M01, M02, M05, M07]
-        version: 1.8.1
+        version: 1.9.0
       - id: user.platform-navigation
         title: 平台导航与模块入口
         path: docs/03-user-guide/platform-navigation.md
@@ -581,6 +581,19 @@ areas:
         scope_keys:
           - missing_value_repair_dataset_v1
         version: 1.1.0
+      - id: operator.table-preparation
+        title: 表格预处理算子
+        path: docs/05-algorithms/table-preparation.md
+        status: expand
+        priority: P0
+        scope_keys:
+          - table_prepare_quality_v1
+          - table_prepare_time_v1
+          - table_prepare_sort_v1
+          - table_prepare_repair_v1
+          - table_prepare_resample_v1
+          - table_prepare_series_v1
+        version: 0.1.0
       - id: operator.outlier-repair
         title: 异常值检测与处理算子
         path: docs/05-algorithms/outlier-repair.md
