@@ -208,7 +208,7 @@ areas:
         status: expand
         priority: P0
         modules: [M01, M02, M05, M07]
-        version: 1.9.0
+        version: 1.14.1
       - id: user.platform-navigation
         title: 平台导航与模块入口
         path: docs/03-user-guide/platform-navigation.md
@@ -1075,7 +1075,7 @@ areas:
         path: docs/07-operations/gpu-runtime.md
         status: expand
         priority: P0
-        version: 1.2.0
+        version: 1.3.0
       - id: operations.backup-recovery
         title: MySQL、MinIO 与发布版本备份恢复
         path: docs/07-operations/backup-and-recovery.md
