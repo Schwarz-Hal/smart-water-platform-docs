@@ -208,7 +208,7 @@ areas:
         status: expand
         priority: P0
         modules: [M01, M02, M05, M07]
-        version: 1.14.1
+        version: 1.17.0
       - id: user.platform-navigation
         title: 平台导航与模块入口
         path: docs/03-user-guide/platform-navigation.md
