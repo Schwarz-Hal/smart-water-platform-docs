@@ -208,14 +208,14 @@ areas:
         status: expand
         priority: P0
         modules: [M01, M02, M05, M07]
-        version: 1.18.1
+        version: 1.18.2
       - id: user.platform-navigation
         title: 平台导航与模块入口
         path: docs/03-user-guide/platform-navigation.md
         status: expand
         priority: P1
         modules: [M01, M02, M04, M05, M07]
-        version: 0.3.1
+        version: 0.3.2
       - id: user.csv-import
         title: CSV 上传、预览、字段映射与导入
         path: docs/03-user-guide/csv-import.md
@@ -1004,11 +1004,11 @@ areas:
         priority: P0
         version: 0.1.0
       - id: development.industrial-design-language
-        title: 青色工业设计语言 v1 与旧页面迁移
+        title: 历史青色工业设计语言与当前蓝白界面优先级
         path: docs/06-development/industrial-design-language.md
         status: expand
         priority: P1
-        version: 1.6.0
+        version: 1.7.0
       - id: development.industrial-playground
         title: 青色工业组件实验场
         path: docs/06-development/industrial-playground.md
