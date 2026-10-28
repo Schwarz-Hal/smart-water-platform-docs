@@ -208,14 +208,14 @@ areas:
         status: expand
         priority: P0
         modules: [M01, M02, M05, M07]
-        version: 1.17.0
+        version: 1.18.1
       - id: user.platform-navigation
         title: 平台导航与模块入口
         path: docs/03-user-guide/platform-navigation.md
         status: expand
         priority: P1
         modules: [M01, M02, M04, M05, M07]
-        version: 0.1.1
+        version: 0.3.1
       - id: user.csv-import
         title: CSV 上传、预览、字段映射与导入
         path: docs/03-user-guide/csv-import.md
