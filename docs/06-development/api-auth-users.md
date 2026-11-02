@@ -2,7 +2,7 @@
 id: api.auth-users
 title: 认证、账户、用户与角色 API
 document_type: development
-document_version: 1.1.0
+document_version: 1.2.0
 status: published
 locale: zh-CN
 audience: [developer]
@@ -11,7 +11,7 @@ related_operators: []
 related_apis: ["/api/v1/auth/login", "/api/v1/auth/register", "/api/v1/auth/me", "/api/v1/users"]
 owners: [backend-team]
 reviewed_at: 2026-08-21
-summary: JWT 登录、Token 刷新、账户状态和角色管理接口。
+summary: JWT 登录、Token 刷新、账户状态、角色管理和密码创建长度规则接口。
 ---
 
 # 认证、账户、用户与角色 API
@@ -45,10 +45,12 @@ summary: JWT 登录、Token 刷新、账户状态和角色管理接口。
 
 除登录、注册、刷新和健康检查外，使用 `Authorization: Bearer <access_token>`。客户端应从 `/auth/me` 的 `permissions` 控制页面，不按角色名硬编码功能。
 
+公开注册和管理员创建用户时，新密码长度为 8–256 个字符；不要求大小写、数字或符号的组合。此规则只约束创建请求，不改变登录接口对已有密码的兼容。
+
 ## 2. 用户管理
 
 需要 `user:manage` 的管理员调用 `POST /api/v1/users` 创建用户、`GET /api/v1/users` 查询列表、`GET /api/v1/users/{user_id}` 查询详情、`PATCH /api/v1/users/{user_id}` 修改显示名称或启停状态、`DELETE /api/v1/users/{user_id}` 注销用户，以及 `POST /api/v1/users/{user_id}/restore` 恢复。
 
 ## 3. 角色管理
 
-`PUT /api/v1/users/{user_id}/roles` 覆盖单个用户角色；`POST /api/v1/users/batch/roles` 批量覆盖。分别需要 `role:manage`。角色变化会使旧 Access Token 失效，调用方应要求重新登录。密码至少 12 位；重复用户名返回 `409`，无效角色返回 `422`。
+`PUT /api/v1/users/{user_id}/roles` 覆盖单个用户角色；`POST /api/v1/users/batch/roles` 批量覆盖。分别需要 `role:manage`。角色变化会使旧 Access Token 失效，调用方应要求重新登录。创建用户密码至少 8 个字符且最多 256 个字符，无字符类别组合要求；重复用户名返回 `409`，无效角色返回 `422`。

@@ -33,3 +33,9 @@ git push -u origin docs/your-topic
 - `npm run export -- --ref HEAD --formats html`：交付导出预检。
 
 PDF/DOCX 的完整导出使用 CI 容器完成，不要求本机安装 TeX。
+
+## 发布文档网站
+
+文档通过审阅并合入 `main` 后，在 Actions 中手动运行【Publish approved documentation site】，填写新的快照标签，如 `docs-snapshot-2026-11-02-site`。该任务校验、构建并发布 GitHub Pages，不等待全套 PDF/Word 导出；`publication.json` 记录本次标签和源码提交。已有标签仅允许从相同提交重试，不得移动或覆盖。
+
+仓库 Settings → Pages 的发布来源应为 GitHub Actions。需要完整交付包时，仍使用【Publish approved documentation snapshot】并指定另一个新的快照标签。日常主线构建仍只生成预览，不自动更新公开站点。

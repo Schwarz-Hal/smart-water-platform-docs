@@ -192,7 +192,7 @@ areas:
         priority: P0
         modules:
           - M01
-        version: 1.1.0
+        version: 1.2.1
       - id: user.portal
         title: 平台概览、快捷入口与继续工作
         path: docs/03-user-guide/platform-portal.md
@@ -208,14 +208,14 @@ areas:
         status: expand
         priority: P0
         modules: [M01, M02, M05, M07]
-        version: 1.18.2
+        version: 1.24.1
       - id: user.platform-navigation
         title: 平台导航与模块入口
         path: docs/03-user-guide/platform-navigation.md
         status: expand
         priority: P1
         modules: [M01, M02, M04, M05, M07]
-        version: 0.3.2
+        version: 0.3.5
       - id: user.csv-import
         title: CSV 上传、预览、字段映射与导入
         path: docs/03-user-guide/csv-import.md
@@ -902,7 +902,7 @@ areas:
         path: docs/06-development/api-auth-users.md
         status: expand
         priority: P1
-        version: 1.1.0
+        version: 1.2.0
       - id: api.data-assets
         title: 数据源、CSV 导入、数据资产与质量 API
         path: docs/06-development/api-data-assets.md
@@ -970,7 +970,7 @@ areas:
         status: expand
         priority: P0
         modules: [M02, M03, M04, M05]
-        version: 0.2.0
+        version: 0.2.1
       - id: development.extension-lifecycle-sdk
         title: 扩展生命周期与 Python SDK 首段
         path: docs/06-development/extension-lifecycle-sdk.md
@@ -1099,7 +1099,7 @@ areas:
         path: docs/07-operations/document-publication.md
         status: expand
         priority: P1
-        version: 1.1.0
+        version: 1.2.0
   - id: acceptance
     name: 测试验收与交付
     evidence_sources:
