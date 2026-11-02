@@ -2,7 +2,7 @@
 id: user.extensions
 title: 资源广场与扩展管理
 document_type: user_guide
-document_version: 0.4.0
+document_version: 0.4.1
 status: published
 locale: zh-CN
 audience: [platform_user, admin]
@@ -21,6 +21,8 @@ summary: 查找扩展、检查内容，并完成安装与个人启用。
 浏览扩展提供的算法、节点、流程模板和结果视图，按需要安装并为自己的账户启用。
 
 ## 前置条件与角色
+
+![扩展查找和使用状态](../../static/assets/user-manual/extensions.png)
 
 从左侧【资源广场】进入。导入、安装及版本管理操作按账户权限显示。
 

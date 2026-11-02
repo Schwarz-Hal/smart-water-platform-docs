@@ -2,7 +2,7 @@
 id: user.operator-center
 title: 算法中心
 document_type: user_guide
-document_version: 1.3.0
+document_version: 1.3.1
 status: published
 locale: zh-CN
 audience: [platform_user, developer, admin]
@@ -21,6 +21,8 @@ summary: 搜索算法与算子，查看输入输出、参数及版本并用于�
 查找算法与算子，了解输入要求、可调整参数、输出内容和版本，为流程选择合适的处理节点。
 
 ## 前置条件与角色
+
+![算法目录和说明页签](../../static/assets/user-manual/operators.png)
 
 从左侧【算法中心】进入。目录中显示当前账户可访问的内容；训练、参数管理等操作按权限开放。
 
