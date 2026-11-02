@@ -1,0 +1,66 @@
+name: Publish approved documentation site
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: New immutable documentation snapshot tag
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    env:
+      DOCS_PUBLICATION_TAG: ${{ inputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with: {node-version: 24, cache: npm}
+      - run: npm ci
+      - name: Validate snapshot name and existing tag
+        run: |
+          npm run snapshot -- "$DOCS_PUBLICATION_TAG"
+          if git show-ref --verify --quiet "refs/tags/$DOCS_PUBLICATION_TAG"; then
+            test "$(git rev-list -n 1 "$DOCS_PUBLICATION_TAG")" = "$GITHUB_SHA"
+          fi
+      - run: npm run lint
+      - run: npm run build
+      - name: Record public source revision
+        run: |
+          node --input-type=module -e 'import {writeFileSync} from "node:fs"; writeFileSync("build/publication.json", JSON.stringify({tag:process.env.DOCS_PUBLICATION_TAG,commit:process.env.GITHUB_SHA})+"\n");'
+      - name: Preserve immutable snapshot tag
+        run: |
+          if ! git show-ref --verify --quiet "refs/tags/$DOCS_PUBLICATION_TAG"; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git tag -a "$DOCS_PUBLICATION_TAG" -m "Approved documentation site snapshot" "$GITHUB_SHA"
+            git push origin "refs/tags/$DOCS_PUBLICATION_TAG"
+          fi
+      - uses: actions/upload-pages-artifact@v3
+        with: {path: build}
+  deploy:
+    needs: build
+    runs-on: ubuntu-24.04
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy documentation site
+        id: deployment
+        uses: actions/deploy-pages@v4

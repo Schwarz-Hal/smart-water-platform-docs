@@ -2,7 +2,7 @@
 id: development.extension-developer-introduction
 title: 扩展开发者入门与能力边界
 document_type: development
-document_version: 0.2.0
+document_version: 0.2.1
 status: draft
 locale: zh-CN
 audience: [developer]
@@ -11,7 +11,7 @@ related_operators: []
 related_apis: ["/api/v1/extensions/preflight"]
 owners: [backend-team, frontend-team]
 reviewed_at: 2026-10-04
-summary: 介绍扩展可贡献的资源、当前作者工具路径、版本与权限边界，以及仍在规划中的能力。
+summary: 介绍扩展可贡献的资源、当前作者工具路径、版本与权限边界，以及科学计算示例的运行环境责任。
 ---
 
 # 扩展开发者入门与能力边界
@@ -51,6 +51,12 @@ swext pack ./build/my-extension ./example-1.0.0.zip
 工具可分别运行明确标记为可信的本机测试，或指定不可变容器镜像测试；二者不能同时选择，容器不可用时不回退宿主。`verify-report` 只核对报告新鲜度，不授予授权。预览 cases 可切换输入，但不会自动重渲染。新导入组件的预检验证使用临时合成账号和内存目录；它没有验证正式扩展上传、安装或个人启用。本批未部署。完整命令及已完成验证边界见[扩展作者工具与独立开发包](./extension-author-tooling.md)。
 
 本地 Python SDK 源码可从 Neo 项目的 `sdk/python` 安装；这与平台上传后使用的已批准运行镜像是两回事。SDK 源码安装不能代替平台环境准备或运行审批，开发包也不意味着任意依赖可安装。
+
+### SICAMS 示例与科学计算运行环境
+
+Neo SDK 的 `sicams-leakage` 示例展示了如何把 SICAMS 正常参考拟合、观测检测、拓扑关联与可选标注评测组织为扩展算法、节点和工作流模板。示例使用 `numpy` 与 `scipy`；它用于说明 SDK 集成方式，不会改变平台支持的扩展资源种类，也不意味着默认执行环境已包含科学计算库。
+
+扩展作者不能在包清单或运行时自行 `pip install` 任意依赖，也不能自行选择平台镜像。默认 SDK 执行环境仍是 SDK 基础依赖集；若扩展确需示例中的科学依赖，应由平台管理员审核并配置带固定摘要的批准科学镜像。是否可运行取决于管理员为平台配给的环境；本机安装 SDK 或在本地安装依赖不能替代该配置。
 
 ## 资源版本与能力审批
 

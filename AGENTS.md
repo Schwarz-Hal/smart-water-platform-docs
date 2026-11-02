@@ -72,6 +72,6 @@ Feature, API, permission, workflow, algorithm, deployment, or user-behaviour cha
 ## Release
 
 - `main` is collaborative source, not an automatic public release.
-- Only the manual snapshot workflow creates a public Pages release and a delivery bundle.
+- Public Pages releases require a manually approved immutable snapshot. `publish-site.yml` publishes the website; `publish-snapshot.yml` also exports a full delivery bundle.
 - Snapshot tags are immutable. Never force-push or move one.
 - Only an approved task may be merged or included in a manual snapshot. The coordinator/reviewer records the final board update and release decision.
