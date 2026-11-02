@@ -37,7 +37,7 @@ const moduleCards: ModuleCard[] = [
     tag: 'M04 · SCENARIOS',
     title: '多源协同漏损检测',
     description: '载入整组资料，浏览管网与观测曲线，编排分析并回放检测结果。',
-    to: '/docs/user-guide/user.task-workdesk#管网分析多源协同漏损检测',
+    to: '/docs/user-guide/user.task-workdesk',
     icon: '💧',
   },
   {

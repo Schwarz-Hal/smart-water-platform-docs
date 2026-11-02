@@ -134,7 +134,7 @@ const config: Config = {
             },
             {
               label: '多源协同漏损检测',
-              to: '/docs/user-guide/user.task-workdesk#管网分析多源协同漏损检测',
+              to: '/docs/user-guide/user.task-workdesk',
             },
             {
               label: '扩展开发入门',

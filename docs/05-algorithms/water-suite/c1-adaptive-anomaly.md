@@ -136,4 +136,4 @@ $$
 
 ## 参考资料
 
-本文依据平台 `water_adaptive_anomaly@0.3.0` 的 Provider、训练、模型与推理实现及推理算子 `1.2.0` 的契约整理。输入准备见[管网数据集](../../03-user-guide/network-datasets.md)，缺失与不规则数据处理见[质量报告与治理](../../03-user-guide/data-quality-governance.md)。
+本文依据平台 `water_adaptive_anomaly@0.3.0` 的 Provider、训练、模型与推理实现及推理算子 `1.2.0` 的契约整理。输入准备见[数据集管理](../../03-user-guide/data-collections.md)，缺失与不规则数据处理见[质量报告与治理](../../03-user-guide/data-quality-governance.md)。

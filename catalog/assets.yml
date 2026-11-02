@@ -1,5 +1,35 @@
 schema_version: 1
 assets:
+  - path: static/assets/user-manual/analysis-cycle.png
+    title: 分析操作闭环
+    alt: 选择业务、准备和核对数据、编排、确认运行、查看和导出结果，可返回调整。
+    source: 项目原创操作流程图
+    license: 项目自有文档图示
+    used_by: [user.task-workdesk]
+  - path: static/assets/user-manual/flow-choice.png
+    title: 分析流程选择界面
+    alt: 选择分析方案并在下方准备数据。
+    source: 2026-11-02 平台界面截图，使用公开 LeakDB 演示资料，已裁去账户和服务器地址
+    license: 项目自有界面截图，限项目使用说明
+    used_by: [user.task-workdesk]
+  - path: static/assets/user-manual/data-view.png
+    title: 数据浏览界面
+    alt: 数据分布、关联曲线和资料目录。
+    source: 2026-11-02 平台界面截图，使用公开 LeakDB 演示资料，已裁去账户和服务器地址
+    license: 项目自有界面截图，限项目使用说明
+    used_by: [user.task-workdesk]
+  - path: static/assets/user-manual/compose.png
+    title: 流程编排界面
+    alt: 节点流程画布与运行准备面板。
+    source: 2026-11-02 平台界面截图，使用公开 LeakDB 演示资料，已裁去账户和服务器地址
+    license: 项目自有界面截图，限项目使用说明
+    used_by: [user.workflow-editor]
+  - path: static/assets/user-manual/results.png
+    title: 分析结果界面
+    alt: 流程状态、空间可视化、关联曲线与时间回放。
+    source: 2026-11-02 平台界面截图，使用公开 LeakDB 演示资料，已裁去账户和服务器地址
+    license: 项目自有界面截图，限项目使用说明
+    used_by: [user.workflow-results, user.result-visualization]
   - path: static/assets/chronos2-architecture.svg
     title: Chronos-2 时序预测架构示意图
     alt: 历史时序经过分块编码和预测模型后输出未来多个分位数预测值。
