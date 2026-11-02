@@ -1,5 +1,35 @@
 schema_version: 1
 assets:
+  - path: static/assets/user-manual/files.png
+    title: 个人文件夹与资料目录
+    alt: 文件夹、搜索、上传和资料卡片入口。
+    source: 2026-11-02 平台界面截图，仅展示公开演示文件，裁去账号与服务器地址
+    license: 项目自有界面截图，限项目使用说明
+    used_by: [user.data-file-explorer]
+  - path: static/assets/user-manual/datasets.png
+    title: 数据集目录
+    alt: 数据集统计与新建管理入口。
+    source: 2026-11-02 平台界面截图，仅展示示例资料，裁去账号与服务器地址
+    license: 项目自有界面截图，限项目使用说明
+    used_by: [user.data-collections]
+  - path: static/assets/user-manual/library.png
+    title: 流程中心
+    alt: 项目范围筛选、搜索和项目卡片。
+    source: 2026-11-02 平台界面截图，仅展示演示项目，裁去账号与服务器地址
+    license: 项目自有界面截图，限项目使用说明
+    used_by: [user.workflow-library]
+  - path: static/assets/user-manual/operators.png
+    title: 算法中心
+    alt: 算法筛选、列表与简介参数页签。
+    source: 2026-11-02 平台界面截图，裁去账号与服务器地址
+    license: 项目自有界面截图，限项目使用说明
+    used_by: [user.operator-center]
+  - path: static/assets/user-manual/extensions.png
+    title: 资源广场
+    alt: 扩展查找与个人启用状态。
+    source: 2026-11-02 平台界面截图，仅展示示例扩展，裁去账号与服务器地址
+    license: 项目自有界面截图，限项目使用说明
+    used_by: [user.extensions]
   - path: static/assets/user-manual/analysis-cycle.png
     title: 分析操作闭环
     alt: 选择业务、准备和核对数据、编排、确认运行、查看和导出结果，可返回调整。

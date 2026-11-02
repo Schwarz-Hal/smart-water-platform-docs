@@ -2,7 +2,7 @@
 id: user.data-file-explorer
 title: 我的文件与个人文件夹
 document_type: user_guide
-document_version: 1.1.0
+document_version: 1.1.1
 status: published
 locale: zh-CN
 audience: [platform_user, operator]
@@ -21,6 +21,8 @@ summary: 整理个人文件夹、查看资料，并将文件用于项目分析�
 在【数据中心】的【我的文件】中整理个人文件、数据集和项目。左侧选择文件夹，中间浏览资料，右侧查看详情和文件预览。
 
 ## 前置条件与角色
+
+![个人文件夹与资料目录](../../static/assets/user-manual/files.png)
 
 登录后使用个人空间。页面显示当前账户可读取的资料，并按权限提供上传和整理操作。
 

@@ -2,7 +2,7 @@
 id: user.data-collections
 title: 数据集与文件管理
 document_type: user_guide
-document_version: 0.2.0
+document_version: 0.2.1
 status: published
 locale: zh-CN
 audience: [platform_user, operator]
@@ -21,6 +21,8 @@ summary: 创建数据集、上传和预览文件，并在分析中选择使用�
 数据集用于集中管理一组相关资料。同一数据集可以包含不同格式的文件，便于后续查找和分析使用。
 
 ## 前置条件与角色
+
+![数据集目录和管理入口](../../static/assets/user-manual/datasets.png)
 
 登录后，从【数据中心】切换到【数据集】。创建、上传和管理操作由当前账户权限决定。
 

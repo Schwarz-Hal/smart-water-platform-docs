@@ -2,7 +2,7 @@
 id: user.workflow-library
 title: 查找和管理项目流程
 document_type: user_guide
-document_version: 1.4.0
+document_version: 1.4.1
 status: published
 locale: zh-CN
 audience: [platform_user, developer, operator]
@@ -21,6 +21,8 @@ summary: 说明流程中心的查找、新建、草稿、版本和回收操作�
 流程中心集中展示当前账户可访问的项目。可从这里继续编辑、查看分析记录，或使用已有版本建立新的草稿。
 
 ## 进入流程中心
+
+![流程中心的筛选和项目卡片](../../static/assets/user-manual/library.png)
 
 点击左侧【流程中心】。页面提供卡片和列表两种查看方式；选择项目后，在详情区域查看其状态、版本和可用操作。
 
