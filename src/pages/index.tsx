@@ -22,22 +22,22 @@ const moduleCards: ModuleCard[] = [
   {
     tag: 'M02 · QUICK START',
     title: '快速上手指南',
-    description: '从上传第一份管网监测 CSV 到配置并运行完整数据质量评估工作流。',
-    to: '/docs/quick-start/quickstart.first-quality-workflow',
+    description: '从选择业务和准备数据开始，完成流程编排、运行与结果查看。',
+    to: '/docs/user-guide/user.task-workdesk',
     icon: '⚡',
   },
   {
     tag: 'M03 · USER GUIDE',
     title: '工作流与操作手册',
-    description: '掌握可视化拖拽画布、算子参数在线调整、版本发布与运行记录诊断。',
-    to: '/docs/user-guide/user.workflow-editor',
+    description: '了解项目工作台、个人资料、流程调整和分析结果的日常操作。',
+    to: '/docs/user-guide/user.task-workdesk',
     icon: '🛠️',
   },
   {
     tag: 'M04 · SCENARIOS',
-    title: 'DMA 漏损评估场景',
-    description: '以水量平衡、夜间最小流量 (MNF) 与多源证据融合构建端到端漏损筛查。',
-    to: '/docs/scenarios/scenario.s01-dma-leakage',
+    title: '多源协同漏损检测',
+    description: '载入整组资料，浏览管网与观测曲线，编排分析并回放检测结果。',
+    to: '/docs/user-guide/user.task-workdesk#管网分析多源协同漏损检测',
     icon: '💧',
   },
   {
@@ -49,9 +49,9 @@ const moduleCards: ModuleCard[] = [
   },
   {
     tag: 'M06 · DEVELOPMENT',
-    title: 'API 与二次开发',
-    description: '包含 JWT 认证、RESTful OpenAPI 接口调用、WebSocket 实时推送与自定义算子接入。',
-    to: '/docs/development/development.first-api-call',
+    title: '扩展 SDK 与二次开发',
+    description: '了解扩展资源、SDK 工程与打包方式，以及运行环境和权限边界。',
+    to: '/docs/development/development.extension-developer-introduction',
     icon: '💻',
   },
   {
@@ -88,10 +88,10 @@ export default function Home(): ReactNode {
           </div>
           <h1 className={styles.heroTitle}>智慧水务时序分析与算法编排平台</h1>
           <p className={styles.heroSubtitle}>
-            提供多源管网时序数据资产治理、可视化算子拓扑编排、基础时序大模型预测与 DMA 管网漏损智能评估的全链路技术指南与 API 规范。
+            查阅数据准备、流程编排、分析结果、算法应用与扩展开发说明，以及平台接口和运维指南。
           </p>
           <div className={styles.actions}>
-            <Link className={styles.primaryButton} to="/docs/quick-start/quickstart.first-quality-workflow">
+            <Link className={styles.primaryButton} to="/docs/user-guide/user.task-workdesk">
               <span>🚀 快速上手</span>
             </Link>
             <Link className={styles.secondaryButton} to="/docs/algorithms/algorithm.chronos2.overview">

@@ -113,15 +113,15 @@ const config: Config = {
             },
             {
               label: '快速开始',
-              to: '/docs/quick-start/quickstart.first-quality-workflow',
+              to: '/docs/user-guide/user.task-workdesk',
             },
             {
               label: '用户手册',
-              to: '/docs/user-guide/user.workflow-editor',
+              to: '/docs/user-guide/user.task-workdesk',
             },
             {
               label: '业务场景实践',
-              to: '/docs/scenarios/scenario.s01-dma-leakage',
+              to: '/docs/user-guide/user.task-workdesk',
             },
           ],
         },
@@ -133,12 +133,12 @@ const config: Config = {
               to: '/docs/algorithms/algorithm.chronos2.overview',
             },
             {
-              label: 'DMA 水量平衡分析',
-              to: '/docs/scenarios/scenario.s01-dma-leakage',
+              label: '多源协同漏损检测',
+              to: '/docs/user-guide/user.task-workdesk#管网分析多源协同漏损检测',
             },
             {
-              label: '最小夜间流量 (MNF)',
-              to: '/docs/scenarios/scenario.s01-dma-leakage',
+              label: '扩展开发入门',
+              to: '/docs/development/development.extension-developer-introduction',
             },
           ],
         },
