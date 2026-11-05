@@ -1,24 +1,26 @@
 ---
 id: api.personal-space
-title: 个人文件夹与资源位置 API
+title: 个人数据与资源空间 API
 document_type: api
-document_version: 0.1.0
+document_version: 0.2.0
 status: draft
 locale: zh-CN
 audience: [developer]
 related_modules: [M02, M05]
 related_operators: []
-related_apis: ["/api/v1/personal-space", "/api/v1/personal-space/folders", "/api/v1/personal-space/folders/{folder_id}", "/api/v1/personal-space/move"]
+related_apis: ["/api/v1/personal-space", "/api/v1/personal-space/data", "/api/v1/personal-space/data-trash", "/api/v1/personal-space/data-trash/{item_id}/restore", "/api/v1/personal-space/folders", "/api/v1/personal-space/folders/{folder_id}", "/api/v1/personal-space/move", "/api/v1/data-files/uploads"]
 owners: [backend-team]
-reviewed_at: 2026-10-15
-summary: 个人逻辑目录的浏览、文件夹管理、资源位置移动及并发冲突处理。
+reviewed_at: 2026-11-05
+summary: 当前用户数据集与文件的列表、个人数据回收恢复、目录上传路径，以及既有逻辑目录接口。
 ---
 
-# 个人文件夹与资源位置 API
+# 个人数据与资源空间 API
 
 ## 用途与权限
 
-个人空间只记录资源的组织位置，不代表服务器磁盘路径。每个登录账户拥有自己的虚拟根目录，根目录在 JSON 中用 `null` 表示。目录移动不修改文件内容、资源编号、版本、工作流图或数据集成员关系。
+数据中心使用个人数据接口读取当前用户的文件与数据集，不返回项目或工作流。管理员调用个人数据接口时也受当前所有者范围约束。文件内容仍通过既有文件接口读取；删除、处理和上传沿用原有权限与不可变快照机制。
+
+既有个人目录接口继续用于逻辑位置组织，不代表服务器磁盘路径。每个登录账户拥有自己的虚拟根目录，根目录在 JSON 中用 `null` 表示。目录移动不修改文件内容、资源编号、版本、工作流图或数据集成员关系。
 
 文件夹操作以当前登录账户为所有者。资源查询与移动均要求资源归属于当前账户；管理员没有跨所有者例外。资料权限如下：
 
@@ -30,13 +32,37 @@ summary: 个人逻辑目录的浏览、文件夹管理、资源位置移动及�
 
 缺少某类读取权限时，浏览响应不返回该类资料。文件夹本身仍属于当前账户，不从资源的可读数量推断其所有者。旧资源没有位置记录时自动出现在根目录，无需复制、重建或改写原记录。
 
-本接口为本地候选。启用前需按契约仓库的正式迁移链升级至 `0029_personal_resource_space`，其脚本为 `migrations/versions/0029_personal_resource_space.py`，前置版本为 `0028_workflow_purpose`。迁移新增 `sw_personal_folder` 和 `sw_resource_location`；API 启动不会自动建表。当前未完成真实 MySQL 迁移和联机并发验收，不将本地或离线检查等同于部署完成。
+既有目录接口依赖正式迁移 `0029_personal_resource_space`，其脚本为 `migrations/versions/0029_personal_resource_space.py`，前置版本为 `0028_workflow_purpose`。迁移新增 `sw_personal_folder` 和 `sw_resource_location`；API 启动不会自动建表。本次个人数据列表、回收恢复和相对路径增量不新增数据库迁移，目录上传路径存入既有数据集成员关系的 `metadata_json`。这些增量的发布与联机验收需随产品变更单独记录。
 
 迁移仅在两张新表都为空时允许降级。已有任何文件夹或位置记录时，降级报错 `PERSONAL_SPACE_DOWNGRADE_REQUIRES_VERIFIED_RESTORE`，避免静默丢弃用户整理结果；需要回退时先准备并核验备份恢复方案，不通过删表或清空记录绕过保护。
 
 ## 请求
 
-所有路径均以 `/api/v1/personal-space` 为前缀。写入请求拒绝未声明字段。
+### 个人数据列表与回收站
+
+| 方法与路径 | 参数 | 行为与权限 |
+| --- | --- | --- |
+| `GET /api/v1/personal-space/data` | `scope`、可选 `collection_id`、`query`、`page`、`page_size` | 读取当前账户的数据；数据集列表要求 `data_collection:read`，文件列表要求 `data_file:read`，打开数据集同时要求两项读取权限 |
+| `GET /api/v1/personal-space/data-trash` | 可选 `page`、`page_size` | 只返回当前账户的回收文件与数据集；按 `data_file:read`、`data_collection:read` 分别过滤类型 |
+| `POST /api/v1/personal-space/data-trash/{item_id}/restore` | 空请求体 | 恢复当前账户的数据文件或数据集，分别要求 `data_file:write` 或 `data_collection:write` |
+
+列表 `scope` 为 `datasets`（默认）、`files` 或 `unassigned`。`datasets` 返回当前账户创建的活动数据集；`files` 返回当前账户的活动非示例文件；`unassigned` 只返回未归入当前账户活动数据集的文件。查询不受旧个人文件夹位置限制。指定正整数 `collection_id` 后返回该数据集内部文件，数据集不存在、已失效或不属于当前账户时返回 404。
+
+`query` 最长 160 字符，搜索当前范围的名称。分页默认第 1 页、每页 50 项，`page_size` 范围 1–100。个人回收站只读取状态为 `trashed` 的 `data_file` 和 `data_collection`，不开放流程、任务等其他资源。个人回收和恢复不要求或授予 `recycle:manage`；原管理员回收接口保持不变。
+
+恢复请求在执行前核对所有者、资源类型和可恢复状态。不存在、属于其他用户或类型不在授权范围内的项目统一返回 `RECYCLE_ITEM_NOT_FOUND`，不提供跨账户的管理员例外。此入口不包含永久清理操作。
+
+### 目录上传路径
+
+既有 `POST /api/v1/data-files/uploads` 的 multipart 请求新增可选 `relative_path`。单个请求仍上传一个文件；批量与目录上传由客户端队列组织，逐项返回上传结果。
+
+`relative_path` 最长 1024 字符，提供时必须同时指定 `collection_id`，且该数据集属于当前账户。路径必须非空，禁止绝对路径、反斜杠、冒号、控制字符及空路径段、`.`、`..`。非法值在写入对象存储前拒绝，返回 `DATA_FILE_PATH_INVALID`。`file_name` 仍是基本文件名，不接受目录分隔符。
+
+路径保存在数据集成员关系的 `metadata_json.relative_path` 中，不作为对象存储键。新增成员关系时记录路径；通过已有 `file_id` 更新同一文件时沿用原成员路径。读取个人文件列表时，`file.relative_path` 返回用户可见路径，`file.parent_collection_id` 返回所属数据集编号。
+
+### 既有逻辑目录接口
+
+以下路径均以 `/api/v1/personal-space` 为前缀。写入请求拒绝未声明字段。
 
 | 方法与路径 | 参数或请求体 | 行为 |
 | --- | --- | --- |
@@ -72,6 +98,16 @@ summary: 个人逻辑目录的浏览、文件夹管理、资源位置移动及�
 ## 响应
 
 成功使用现有 JSON 信封，包含 `code: 0`、`message: "success"`、`data`、`trace_id`。以下为 `data` 中的字段：
+
+| 个人数据操作 | 字段 |
+| --- | --- |
+| `/data` 列表 | `items`、`total`、`page`、`page_size`、`collection` |
+| `/data-trash` 列表 | `items`、`total`、`page`、`page_size` |
+| 个人数据恢复 | 恢复后的回收项目，包含 `item_id`、资源身份及状态 |
+
+个人数据列表的每项包含 `id`、`kind`、`name`、`updated_at`。`kind` 为 `dataset` 时携带标准数据集摘要 `collection`，包含真实 `file_count`；为 `file` 时携带文件摘要 `file`，包含当前内容身份、解析状态、质量信息和操作权限提示。没有质量报告时相关分数为空，不填充示例评分。打开数据集时顶层 `collection` 为该数据集摘要，其他范围为 `null`。响应不返回对象存储键。
+
+下表为既有目录接口的响应：
 
 | 操作 | 字段 |
 | --- | --- |
