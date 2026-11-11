@@ -2,7 +2,7 @@
 id: user.data-file-explorer
 title: 数据中心
 document_type: user_guide
-document_version: 1.3.2
+document_version: 1.3.3
 status: published
 locale: zh-CN
 audience: [platform_user, operator]
@@ -10,7 +10,7 @@ related_modules: [M02]
 related_operators: []
 related_apis: ["/api/v1/personal-space/data", "/api/v1/personal-space/data-trash", "/api/v1/personal-space/data-trash/{item_id}/restore", "/api/v1/data-files/uploads", "/api/v1/data-collections", "/api/v1/data-files/{file_id}"]
 owners: [product-team]
-reviewed_at: 2026-11-10
+reviewed_at: 2026-11-11
 summary: 在同一页面完成个人数据集与文件的上传、预览、处理、整理、下载、删除和恢复。
 ---
 
@@ -36,7 +36,7 @@ summary: 在同一页面完成个人数据集与文件的上传、预览、处�
 ### 上传文件或目录
 
 1. 点击【上传数据】，选择保存到已有数据集、创建新数据集或【暂不归集】。
-2. 点击【选择文件（可多选）】或【选择文件夹】，也可将文件、目录拖入上传窗口。目录上传需要选择或创建数据集，文件的相对路径会随数据集保存。
+2. 将文件或文件夹拖到【拖入文件或文件夹】区域。也可点击该区域，再选【选择文件】或【选择文件夹】。文件可多选；上传文件夹时需要选择或创建数据集。
 3. 确认同名文件的处理方式：保留两份、跳过或更新当前文件。确认清单后点击【开始上传】。
 4. 上传前可点击【取消】。上传期间，【停止剩余上传】只停止尚未开始的文件，正在上传的文件会继续完成。
 5. 上传结束后，【开始上传】变为【完成】。如有失败项，可点击【重试失败项】；已上传的文件不会重复上传。上传与解析是两个阶段，是否完成解析以数据列表中的状态为准。
