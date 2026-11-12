@@ -294,7 +294,7 @@ areas:
         priority: P0
         modules:
           - M04
-        version: 1.3.1
+        version: 1.4.0
       - id: user.result-visualization
         title: 查看算法结果与评测
         path: docs/03-user-guide/result-visualization.md
