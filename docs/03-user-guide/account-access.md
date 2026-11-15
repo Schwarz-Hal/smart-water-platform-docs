@@ -2,7 +2,7 @@
 id: user.account-access
 title: 注册、登录、退出与账户管理
 document_type: user_guide
-document_version: 1.3.0
+document_version: 1.4.0
 status: published
 locale: zh-CN
 audience: [platform_user, operator, developer, admin]
@@ -10,7 +10,7 @@ related_modules: [M01]
 related_operators: []
 related_apis: ["/api/v1/auth/login", "/api/v1/auth/register", "/api/v1/auth/me", "/api/v1/auth/logout", "/api/v1/auth/account"]
 owners: [product-team]
-reviewed_at: 2026-11-02
+reviewed_at: 2026-11-15
 summary: 说明平台账号注册、登录、侧栏账户菜单中的退出和注销操作与密码创建规则。
 ---
 
@@ -35,3 +35,13 @@ summary: 说明平台账号注册、登录、侧栏账户菜单中的退出和�
 ## 结果与失败处理
 
 用户名已存在、注册未开启、密码少于 8 个字符或两次密码不一致时，页面会提示失败原因，修正后重新提交。登录失败时检查用户名和密码；账号不是可用状态时联系管理员。受保护的系统账号不能注销，最后一个活动管理员也不能注销。注销成功后返回登录页，不能继续使用原会话。
+
+## 个人模型设置（开发测试）
+
+未登录时，点击侧栏左下角的【登录账户】直接打开登录窗口。登录后，从账户菜单或齿轮菜单进入【个人设置】。
+
+在【模型服务】中填写 DeepSeek API Key，开启【使用自己的 API Key】并保存。该设置用于 L-Town 示例对话：发送的消息及必要分析摘要会交给 DeepSeek，原始文件和完整时序不会上传。关闭开关并保存后继续使用预设回复，普通使用不要求填写 Key。
+
+Key 按当前账号保存在服务内存，最多保留 8 小时；服务重启后需要重新填写。关闭开关并保存会保留 Key，点击【清除 Key】将其移除。已保存的 Key 不回显，输入框留空时保留当前 Key。请使用 HTTPS 或本机安全转发入口配置。
+
+Key 被拒绝、余额不足或请求过多时，对话中显示相应提示，可回到个人设置替换 Key 或关闭服务。

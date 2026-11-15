@@ -2,7 +2,7 @@
 id: user.data-collections
 title: 数据集与文件管理
 document_type: user_guide
-document_version: 0.2.2
+document_version: 0.2.3
 status: published
 locale: zh-CN
 audience: [platform_user, operator]
@@ -10,7 +10,7 @@ related_modules: [M02, M05]
 related_operators: [data_file_input_v1]
 related_apis: ["/api/v1/data-collections", "/api/v1/data-files/uploads", "/api/v1/data-file-versions/{version_id}/preview", "/api/v1/data-file-versions/{version_id}/views", "/api/v1/data-views/{view_id}"]
 owners: [product-team]
-reviewed_at: 2026-11-10
+reviewed_at: 2026-11-15
 summary: 创建数据集、上传和预览文件，并在分析中选择使用。
 ---
 
@@ -24,7 +24,7 @@ summary: 创建数据集、上传和预览文件，并在分析中选择使用�
 
 ![数据集目录和管理入口](../../static/assets/user-manual/datasets.png)
 
-登录后，从【数据中心】切换到【数据集】。创建、上传和管理操作由当前账户权限决定。
+登录后进入【数据中心】，默认显示数据集列表，不需要切换顶部页签。创建、上传和管理操作由当前账户权限决定。尚未加入数据集的文件可从【无归属文件】入口查找。
 
 ## 操作步骤
 

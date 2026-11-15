@@ -2,7 +2,7 @@
 id: user.platform-navigation
 title: 平台导航与模块入口
 document_type: user_guide
-document_version: 0.4.0
+document_version: 0.5.0
 status: published
 locale: zh-CN
 audience: [platform_user]
@@ -10,7 +10,7 @@ related_modules: [M01, M02, M04, M05, M07]
 related_operators: []
 related_apis: []
 owners: [product-team]
-reviewed_at: 2026-11-02
+reviewed_at: 2026-11-15
 summary: 介绍任务首页、数据中心、流程中心、算法中心和资源广场的常用入口。
 ---
 
@@ -33,6 +33,8 @@ summary: 介绍任务首页、数据中心、流程中心、算法中心和资�
 | 开发文档 | 阅读操作说明和开发参考 |
 
 ## 操作步骤
+
+数据中心、算法中心和流程中心采用统一的操作位置：标题下方卡片首行左侧为搜索框和【搜索】，右侧为【刷新】及新建、上传或导入入口。分类筛选、流程范围与展示方式位于下一行。流程的【运行记录】和【历史入口】保留在范围切换区。操作是否显示取决于当前账号权限。
 
 1. 点击【开启新任务】，选择业务，或输入目标查找适用方案。选择可用流程后继续准备数据。
 2. 处理已有工作时，点击侧栏【最近项目】，或进入【流程中心】搜索项目并打开。
