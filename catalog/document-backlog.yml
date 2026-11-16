@@ -208,7 +208,7 @@ areas:
         status: expand
         priority: P0
         modules: [M01, M02, M05, M07]
-        version: 1.25.0
+        version: 1.25.2
       - id: user.platform-navigation
         title: 平台导航与模块入口
         path: docs/03-user-guide/platform-navigation.md
@@ -294,7 +294,7 @@ areas:
         priority: P0
         modules:
           - M04
-        version: 1.4.1
+        version: 1.4.2
       - id: user.result-visualization
         title: 查看算法结果与评测
         path: docs/03-user-guide/result-visualization.md
