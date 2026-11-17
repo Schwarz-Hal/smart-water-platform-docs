@@ -277,7 +277,7 @@ areas:
           - M02
           - M03
           - M07
-        version: 1.9.1
+        version: 1.10.0
       - id: user.network-datasets
         title: 管网数据集的构建、导入与读取
         path: archive/user-guide/network-datasets.md
@@ -431,7 +431,7 @@ areas:
         priority: P0
         modules:
           - M02
-        version: 1.4.1
+        version: 1.5.1
   - id: scenario
     name: 业务场景方案
     evidence_sources:
@@ -1026,7 +1026,7 @@ areas:
         path: docs/06-development/frontend-page-structure.md
         status: expand
         priority: P1
-        version: 0.1.10
+        version: 0.2.0
       - id: development.dialogue-workspace-plan
         title: 对话驱动工作台实施计划
         path: docs/06-development/dialogue-workspace-plan.md
