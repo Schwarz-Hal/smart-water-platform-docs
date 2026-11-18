@@ -294,7 +294,7 @@ areas:
         priority: P0
         modules:
           - M04
-        version: 1.4.2
+        version: 1.4.11
       - id: user.result-visualization
         title: 查看算法结果与评测
         path: docs/03-user-guide/result-visualization.md
@@ -921,7 +921,7 @@ areas:
         path: docs/06-development/api-algorithms.md
         status: expand
         priority: P0
-        version: 1.2.0
+        version: 1.4.0
       - id: api.workflows
         title: 工作流模板、子流程、草稿、发布、运行和 Artifact API
         path: docs/06-development/api-workflows.md
