@@ -192,7 +192,7 @@ areas:
         priority: P0
         modules:
           - M01
-        version: 1.4.0
+        version: 1.5.0
       - id: user.portal
         title: 平台概览、快捷入口与继续工作
         path: archive/user-guide/platform-portal.md
@@ -277,7 +277,7 @@ areas:
           - M02
           - M03
           - M07
-        version: 1.10.0
+        version: 1.12.0
       - id: user.network-datasets
         title: 管网数据集的构建、导入与读取
         path: archive/user-guide/network-datasets.md
@@ -294,7 +294,7 @@ areas:
         priority: P0
         modules:
           - M04
-        version: 1.4.11
+        version: 1.5.1
       - id: user.result-visualization
         title: 查看算法结果与评测
         path: docs/03-user-guide/result-visualization.md
@@ -351,7 +351,7 @@ areas:
         priority: P0
         modules:
           - M05
-        version: 1.4.1
+        version: 1.5.0
       - id: user.workflow-editor
         title: 工作流编辑、连线、参数和工作区布局
         path: docs/03-user-guide/workflow-editor.md
