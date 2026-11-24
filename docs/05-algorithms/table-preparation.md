@@ -2,16 +2,16 @@
 id: operator.table-preparation
 title: 表格预处理算子
 document_type: algorithm
-document_version: 0.1.0
+document_version: 0.2.0
 status: draft
 locale: zh-CN
 audience: [algorithm_user, platform_user]
 related_modules: [M04, M05]
-related_operators: [table_prepare_quality_v1, table_prepare_time_v1, table_prepare_sort_v1, table_prepare_repair_v1, table_prepare_resample_v1, table_prepare_series_v1]
+related_operators: [table_prepare_quality_v1, table_prepare_time_v1, table_prepare_sort_v1, table_prepare_deduplicate_v1, table_prepare_repair_v1, table_prepare_resample_v1, table_prepare_series_v1]
 related_apis: []
 owners: [algorithm-team]
 reviewed_at: 2026-10-16
-summary: 说明工作台表格预处理的六个内置节点、端口、参数约束和适用边界。
+summary: 说明编排器表格预处理节点、端口、参数约束和适用边界。
 ---
 
 # 表格预处理算子
@@ -20,7 +20,7 @@ summary: 说明工作台表格预处理的六个内置节点、端口、参数�
 
 这些节点供工作台将表格检查或转换步骤编入工作流。节点按工作流执行，不在配置窗口打开或预览时执行；输入源文件保持原样，处理结果作为工作流制品及报告输出，不覆盖上传文件。当前仅覆盖表格输入和可选的单点位时序输出，不提供完整批量、多点位预处理，也不改变既有 `dataset_bundle` 节点。
 
-六个节点包均为精确版本 `1.0.0`，输入端口为必需的 `table`（`table` 类型）。其中质量检查、时间轴检查、排序、修复和重采样均输出 `table` 与 `report`；表格转时序仅输出 `series`（`timeseries` 类型）。节点包在 manifest 中标记为 `experimental`。
+七个节点包均为精确版本 `1.0.0`，输入端口为必需的 `table`。质量检查、时间轴检查、排序、重复行删除、缺失修复和重采样输出 `table` 与 `report`；表格转时序只输出 `series`（`timeseries` 类型）。重复行删除的成熟度为 `production`，其余为 `experimental`。
 
 ## 输入与输出
 
@@ -29,6 +29,7 @@ summary: 说明工作台表格预处理的六个内置节点、端口、参数�
 | `table_prepare_quality_v1@1.0.0` | `table`、`report` | 可选 `time_column`；`expected_interval_seconds` 整数，最小 0，默认 0。 |
 | `table_prepare_time_v1@1.0.0` | `table`、`report` | 必填 `time_column` 与正整数 `expected_interval_seconds`；可选 `timezone`。 |
 | `table_prepare_sort_v1@1.0.0` | `table`、`report` | 必填单列 `columns`；`ascending` 默认 `true`；`na_position` 为 `first` 或 `last`，默认 `last`。 |
+| `table_prepare_deduplicate_v1@1.0.0` | `table`、`report` | 不需要参数。只删完整重复行，保留首次出现的记录。 |
 | `table_prepare_repair_v1@1.0.0` | `table`、`report` | 必填唯一列名列表 `columns` 和正整数 `max_gap_points`（默认 8）；`method` 为 `linear`、`forward_fill`、`backward_fill` 或 `seasonal_naive`；`seasonal_period` 默认 96，最小 2。 |
 | `table_prepare_resample_v1@1.0.0` | `table`、`report` | 必填 `time_column`、`interval` 和 `aggregations`；每个非时间列选择 `mean`、`sum`、`min`、`max`、`median`、`first` 或 `last`。 |
 | `table_prepare_series_v1@1.0.0` | `series` | 必填 `time_column`、`value_column`；`point_column` 可选。 |
@@ -45,14 +46,16 @@ summary: 说明工作台表格预处理的六个内置节点、端口、参数�
 
 ## 参数说明
 
+**删除表格重复行**（`table_prepare_deduplicate_v1@1.0.0`）：接收表格，无需设置参数，按所有字段去重并保留每组第一次出现的记录。同一时间、同一测点但读数不同的行仍然保留。输出去重后的表格、删除统计和剩余行的来源，不覆盖原件。这个节点可在画布手动添加；不会自动插进既有工作流。
+
 上述参数名称、类型、必填项及枚举以各节点 `1.0.0` 的参数 Schema 为准。工作台的“时序整理”默认不启用排序、修复或重采样；选择起始方案不会替代人工确认必要的列映射、采样间隔及聚合方式。工作台重采样框接受正整数加 `ms`、`s`、`min`、`h` 或 `D` 后缀（如 `15min`）；节点参数 Schema 将 `interval` 定义为字符串，底层继续使用现有执行器支持的 Pandas 合法频率表达式。启用重采样后，工作台生成的处理后质量检查使用重采样间隔；现有质量评估契约以整秒表示，非整秒间隔传 `0`，不沿用原采样间隔，也不做四舍五入。
 
 ## 结果解释与限制
 
-处理结果是本次工作流运行产生的节点输出，不会覆盖输入源文件，也不会自动改写其他数据集或历史运行结果。六个节点当前在工作台方案中按检查、时间轴、可选转换及可选时序转换的固定次序编排；需要不同流程时，可在画布上自行调整或删除节点。
+处理结果是本次工作流运行产生的节点输出，不会覆盖输入源文件，也不会自动改写其他数据集或历史运行结果。工作台的数据准备方案不自动加入重复行删除；需要时可在编排画布手动添加。
 
 ## 参考资料
 
-- Neo 内置算子包 `table_prepare_{quality,time,sort,repair,resample,series}_v1` 的 `1.0.0` manifest 与参数 Schema。
+- Neo 内置算子包 `table_prepare_{quality,time,sort,deduplicate,repair,resample,series}_v1` 的 `1.0.0` manifest 与参数 Schema。
 - Neo `app/platform/data_assets/table_preparation.py` 及 `tests/data_assets/test_table_preparation.py`。
 - 工作台数据准备方案、配置窗口、偏好服务与数据插入服务实现。

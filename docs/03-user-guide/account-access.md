@@ -2,7 +2,7 @@
 id: user.account-access
 title: 注册、登录、退出与账户管理
 document_type: user_guide
-document_version: 1.5.0
+document_version: 1.7.0
 status: published
 locale: zh-CN
 audience: [platform_user, operator, developer, admin]
@@ -10,7 +10,7 @@ related_modules: [M01]
 related_operators: []
 related_apis: ["/api/v1/auth/login", "/api/v1/auth/register", "/api/v1/auth/me", "/api/v1/auth/logout", "/api/v1/auth/account"]
 owners: [product-team]
-reviewed_at: 2026-11-22
+reviewed_at: 2026-11-23
 summary: 使用登录 ID 注册和登录，在侧栏修改显示名称、退出或注销账户。
 ---
 
@@ -26,7 +26,7 @@ summary: 使用登录 ID 注册和登录，在侧栏修改显示名称、退出�
 
 ## 操作步骤
 
-1. 打开登录页或点击侧栏左下角的登录入口，在登录窗口选择【注册账号】。
+1. 未登录时可进入首页、数据中心、算法中心、流程中心和开发文档。业务页面不会显示资料、算法或流程列表。点左下角或页面内的【登录 / 注册】；已有账号可直接登录。
 2. 填写【登录 ID】【显示名称】和【密码】，点击【创建账号】。看到注册成功提示后，用登录 ID 和密码登录。
 3. 要改名，点击侧栏左下角的账户名称，选择【修改显示名称】，输入新名称并保存。再次登录仍使用原登录 ID；原有资料、流程和对话仍属于同一账户。
 4. 结束使用时，打开侧栏底部的【账户与设置】菜单，点击【退出登录】。
@@ -40,7 +40,7 @@ summary: 使用登录 ID 注册和登录，在侧栏修改显示名称、退出�
 
 ## 个人模型设置（开发测试）
 
-未登录时，点击侧栏左下角的【登录账户】直接打开登录窗口。登录后，从账户菜单或齿轮菜单进入【个人设置】。
+登录后默认进入首页工作台。若从数据中心等站内链接进入登录页，登录成功后返回目标页面，并按账号权限决定能否访问。旧的快速试用首页书签会转到现有入口；算法中心的【试用】和【试用记录】仍可使用。登录后，从账户菜单或齿轮菜单进入【个人设置】。
 
 在【模型服务】中填写 DeepSeek API Key，开启【使用自己的 API Key】并保存。该设置用于 L-Town 示例对话：发送的消息及必要分析摘要会交给 DeepSeek，原始文件和完整时序不会上传。关闭开关并保存后继续使用预设回复，普通使用不要求填写 Key。
 
