@@ -2,7 +2,7 @@
 id: user.data-collections
 title: 数据集与文件管理
 document_type: user_guide
-document_version: 0.2.3
+document_version: 0.2.4
 status: published
 locale: zh-CN
 audience: [platform_user, operator]
@@ -10,7 +10,7 @@ related_modules: [M02, M05]
 related_operators: [data_file_input_v1]
 related_apis: ["/api/v1/data-collections", "/api/v1/data-files/uploads", "/api/v1/data-file-versions/{version_id}/preview", "/api/v1/data-file-versions/{version_id}/views", "/api/v1/data-views/{view_id}"]
 owners: [product-team]
-reviewed_at: 2026-11-15
+reviewed_at: 2026-11-23
 summary: 创建数据集、上传和预览文件，并在分析中选择使用。
 ---
 
@@ -28,8 +28,8 @@ summary: 创建数据集、上传和预览文件，并在分析中选择使用�
 
 ## 操作步骤
 
-1. 点击【新建数据集】，填写名称和说明后创建。名称可说明资料范围或用途，方便后续识别。
-2. 点击目标数据集名称，在窗口中查看文件，点击【添加文件】补充资料。也可直接使用数据集行内的【添加文件】。关闭窗口后回到原列表。
+1. 点击搜索栏右侧的【新建数据集】，填写名称和说明后创建。也可在此点击【上传数据】并选择保存位置。
+2. 点击目标数据集名称查看文件。进入数据集后，搜索栏右侧的【上传数据】使用当前数据集作为目标；点击【返回】回到目录。
 3. 点击文件名称或【预览】，查看列名和样本。若文件仍在解析，待状态更新后再继续；若显示【仅存储】或【解析失败】，点击状态查看原因和建议。
 4. 在分析流程中选择已有数据时，打开对应数据集并选取所需文件；也可从项目右侧资料目录添加到画布。
 5. 进入数据准备窗口，选择表格或时序读取方式，核对时间列、数值列等设置，再应用到输入节点。
